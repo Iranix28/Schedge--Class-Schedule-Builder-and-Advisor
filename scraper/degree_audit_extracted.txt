@@ -1,0 +1,437 @@
+Requirement: 
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: ***PLEASE NOTE: GENERAL EDUCATION IS CHANGING STARTINGFALL 2024. ADDITIONAL INFORMATION CAN BE FOUNDHERE.***PLEASE SEE YOUR ACADEMIC ADVISOR IF YOU HAVE ANYQUESTIONS.
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: PRIOR CREDENTIAL
+Status: Requirement Complete
+    Subrequirement: ASSOCIATE DEGREE POSTED
+    Status: Sub-Requirement Complete
+
+------------------------------------------------------------
+
+Requirement: MINIMUM U OF U GPA REQUIREMENT
+Status: Requirement Complete
+    EARNED:  3.900 GPA: 3.900
+
+------------------------------------------------------------
+
+Requirement: TOTAL HOUR REQUIREMENT
+Status: Requirement In Progress
+    IPEARNED:   GPA: 
+    IN PROG:   
+    Subrequirement: U OF U COURSE CREDIT HOURS THAT WERE COUNTED TOWARDSTHE 122 TOTAL HOURS REQUIRED.
+    Status: Sub-Requirement In Progress
+    Subrequirement: ACCEPTED TEST CREDIT COUNTED TOWARDS REQUIRED HOURS
+    Status: Sub-Requirement Complete
+    Subrequirement: TRANSFER COURSE CREDIT HOURS COUNTED TOWARDSTHE 122 TOTAL HOURS REQUIRED.
+    Status: Sub-Requirement
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+    Subrequirement: REPEATED COURSES
+    Status: Sub-Requirement
+    Subrequirement: COURSES WITH CR GRADES
+    Status: Sub-Requirement
+        FA23 CS   1960 1.0 CR Success in CS
+
+------------------------------------------------------------
+
+Requirement: UPPER DIVISION HOURS
+Status: Requirement In Progress
+    IPEARNED:   GPA: 
+    IN PROG:   
+    Subrequirement: (No Subreq Title)
+    Status: Sub-Requirement In Progress
+        FA23 MUSC 3600 IRFF 3.0 A World Music PROCESSED AS:  MUSC 1250 IRFF
+        SP24 CS   3130 QI 3.0 A Eng Prob Stats
+        SP24 CS   3500 4.0 A- Software Practice
+        SP24 WRTG 3015 CW 3.0 A Professional Writing
+        FA24 CS   3190 3.0 A Found. of Data Analysis
+        FA24 CS   3505 3.0 A Software Practice II
+        FA24 CS   3810 QI 3.0 A Computer Organization
+        SP25 CS   3100 QI 3.0 A Models Of Computation
+        SP25 CS   3550 3.0 A Web Software Dev I
+        SP25 CS   4150 QI 3.0 A Algorithms
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+
+------------------------------------------------------------
+
+Requirement: RESIDENCE HOUR REQUIREMENT************************************************************  This requirement is only relevant within the last   ****             30 hours prior to graduation             ************************************************************This requirement does not classify residency status fortuition purposes.
+Status: Requirement In Progress
+    Subrequirement: COMPLETED MINIMUM OF 30 HOURS OF COURSE WORK TAKEN INRESIDENCE AT THE UNIVERSITY OF UTAH.
+    Status: Sub-Requirement In Progress
+    Subrequirement: A minimum of 20 out of the last 30 hours must be takenin residence at the University.No more than 10 out of the last 30 hours may be takenas transfer, test, special credit, correspondence, orchallenge credit.
+    Status: Sub-Requirement In Progress
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+        SP25 MUSC 1236 DVFF 3.0 A Survey Of Jazz
+        SP25 CS   4150 QI 3.0 A Algorithms
+        SP25 CS   3550 3.0 A Web Software Dev I
+        SP25 CS   3100 QI 3.0 A Models Of Computation
+        FA24 PHYS 2220 PS 4.0 A Phys For Scien & Eng II
+        FA24 CS   3810 QI 3.0 A Computer Organization
+
+------------------------------------------------------------
+
+Requirement: GENERAL EDUCATION CORE REQUIREMENTS
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: AMERICAN INSTITUTIONS (AI)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA21 HIST 1700 AI 3.0 A AI AMERICAN HISTORY WSU: HIST 1700
+
+------------------------------------------------------------
+
+Requirement: WRITING REQUIREMENT (WR1)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA22 WRTG 1010 WR1 3.0 A EN1 INTRODUCT COLLEGE WRITING WSU: ENGL 1010
+
+------------------------------------------------------------
+
+Requirement: WRITING REQUIREMENT (WR2)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        SP23 WRTG 2010 3.0 A EN2 INTERMD COLL WRTNG & RSRC WSU: ENGL 2015
+
+------------------------------------------------------------
+
+Requirement: QUANTITATIVE LITERACY REQUIREMENT (QL)
+Status: Requirement Complete
+    Subrequirement: Completed by Exam/Special Credit
+    Status: Sub-Requirement Complete
+        SP23 MATH 1210 4.0 AP AP CR: AP0005MCAB
+
+------------------------------------------------------------
+
+Requirement: GENERAL EDUCATION BREADTH REQUIREMENTSCOMPLETE 1 COURSE IN EACH AREA
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: FINE ARTS IE AREA (FF)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        SP22 XS   1010 FF 3.0 A CA INTRO TO INTERACT ENTERTAI WSU: CS   1010
+
+------------------------------------------------------------
+
+Requirement: HUMANITIES IE AREA (HF)
+Status: Requirement Complete
+    Subrequirement: Completed with Associate Degree
+    Status: Sub-Requirement Complete
+
+------------------------------------------------------------
+
+Requirement: LIFE SCIENCE IE AREA  (LS)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA21 XHEM 1110 SF 5.0 A PS ELEMENTARY CHEMISTRY WSU: CHEM 1110
+
+------------------------------------------------------------
+
+Requirement: PHYSICAL SCIENCE IE AREA  (PS)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA24 PHYS 2220 PS 4.0 A Phys For Scien & Eng II
+
+------------------------------------------------------------
+
+Requirement: SOCIAL SCIENCE IE AREA (BF)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA22 FCS  1500 BF 3.0 A SS DV HUMAN DEVELOPMENT WSU: CHF  1500
+
+------------------------------------------------------------
+
+Requirement: UNIVERSITY BACHELOR DEGREE REQUIREMENTS
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: COMMUNICATION/UPPER DIVISION WRITING REQUIREMENT (CW)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        SP24 WRTG 3015 CW 3.0 A Professional Writing
+
+------------------------------------------------------------
+
+Requirement: DIVERSITY REQUIREMENT (DV)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        SP25 MUSC 1236 DVFF 3.0 A Survey Of Jazz
+
+------------------------------------------------------------
+
+Requirement: INTERNATIONAL REQUIREMENT (IR)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        FA23 MUSC 3600 IRFF 3.0 A World Music PROCESSED AS:  MUSC 1250 IRFF
+
+------------------------------------------------------------
+
+Requirement: B.S. DEGREE - METHODS REQUIREMENT (QI/DI)
+Status: Requirement Complete
+    Subrequirement: Completed Requirement
+    Status: Sub-Requirement Complete
+        SP24 CS   3130 QI 3.0 A Eng Prob Stats >>MATCHED AS: ECE  3530
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+
+------------------------------------------------------------
+
+Requirement: Minimum Cumulative GPA Requirements Complete
+Status: Requirement In Progress
+    Subrequirement: Minimum Cumulative GPA Of 2.50 Completed
+    Status: Sub-Requirement In Progress
+    Subrequirement: Minimum GPA of 2.50 from all 2000+ levelComputer Science courses completed
+    Status: Sub-Requirement In Progress
+        FA23 CS   2420 4.0 B+ Intro Alg & Data Struct
+        SP24 CS   2100 3.0 A- Discrete Structures
+        SP24 CS   3130 QI 3.0 A Eng Prob Stats
+        SP24 CS   3500 4.0 A- Software Practice
+        FA24 CS   3190 3.0 A Found. of Data Analysis
+        FA24 CS   3505 3.0 A Software Practice II
+        FA24 CS   3810 QI 3.0 A Computer Organization
+        SP25 CS   3100 QI 3.0 A Models Of Computation
+        SP25 CS   3550 3.0 A Web Software Dev I
+        SP25 CS   4150 QI 3.0 A Algorithms
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+
+------------------------------------------------------------
+
+Requirement: Pre-Major Requirements
+Status: Requirement Complete
+    EARNED:  3.767 GPA: 3.767
+    Subrequirement: Earned a minimum grade of C- in each of the following:
+    Status: Sub-Requirement Complete
+        SP22 CS   1400 4.0 A PROGRAMMING I: WSU: CS   1400
+        FA22 CS   1410 4.0 A OBJECT- ORIENTED PROGRAMMING WSU: CS   1410
+    Subrequirement: Earned a minimum grade of B- in each of the following:
+    Status: Sub-Requirement Complete
+        FA23 CS   2420 4.0 B+ Intro Alg & Data Struct
+    Subrequirement: Complete Calculus I
+    Status: Sub-Requirement Complete
+        SP23 MATH 1210 0.0 AP >D AP CR: AP0005MCBC
+        SP23 MATH 1210 4.0 AP AP CR: AP0005MCAB
+
+------------------------------------------------------------
+
+Requirement: Upper Division Writing Requirement(Must be completed with a grade of C- or better)
+Status: Requirement Complete
+    Subrequirement: (No Subreq Title)
+    Status: Sub-Requirement Complete
+        SP24 WRTG 3015 CW 3.0 A Professional Writing
+
+------------------------------------------------------------
+
+Requirement: Math/Science Electives
+Status: Requirement Complete
+    Subrequirement: Complete the following:
+    Status: Sub-Requirement Complete
+        SP23 MATH 1220 4.0 AP AP CR: AP0005MCBC
+        FA23 MATH 2270 4.0 A Linear Algebra
+        SP24 CS   3130 QI 3.0 A Eng Prob Stats
+    Subrequirement: Complete at least 1 of the following:Courses used to fulfill a General Education requirementcannot be used here. Must take an additional course.See advisor for details.
+    Status: Sub-Requirement Complete
+        SP23 PHYS 2210 4.0 AP AP CR: AP0004PHYME
+
+------------------------------------------------------------
+
+Requirement: Major Requirements
+Status: Requirement In Progress
+    Subrequirement: Completed Required Courses
+    Status: Sub-Requirement In Progress
+        SP24 CS   2100 3.0 A- Discrete Structures
+        SP24 CS   3500 4.0 A- Software Practice
+        FA24 CS   3505 3.0 A Software Practice II
+        FA24 CS   3810 QI 3.0 A Computer Organization
+        SP25 CS   4150 QI 3.0 A Algorithms
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+
+------------------------------------------------------------
+
+Requirement: Computer Science ElectivesComplete 7 or more CS electives for at least 21 credits.
+Status: Requirement Unfulfilled
+    EARNED:   GPA: 
+    NEEDS:   GPA: 
+    Subrequirement: (No Subreq Title)
+    Status: Sub-Requirement
+        FA24 CS   3190 3.0 A Found. of Data Analysis
+        SP25 CS   3550 3.0 A Web Software Dev I
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+    Subrequirement: (Optional) Only one Ethics course may be used as aCS Elective:
+    Status: Sub-Requirement
+    Subrequirement: (Optional) Complete at least 3 credits from thefollowing:
+    Status: Sub-Requirement
+
+------------------------------------------------------------
+
+Requirement: Theory Restricted Elective
+Status: Requirement Complete
+    Subrequirement: (No Subreq Title)
+    Status: Sub-Requirement Complete
+        SP25 CS   3100 QI 3.0 A Models Of Computation
+
+------------------------------------------------------------
+
+Requirement: Capstone RequirementComplete one of the following:
+Status: Requirement Unfulfilled
+    Subrequirement: Project
+    Status: Sub-Requirement Unfulfilled
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+    Subrequirement: Research/Thesis
+    Status: Sub-Requirement Unfulfilled
+
+------------------------------------------------------------
+
+Requirement: *******************
+Status: Requirement
+    Subrequirement: U OF U CURRENT REGISTRATION
+    Status: Sub-Requirement In Progress
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+    Subrequirement: 
+    Status: Sub-Requirement
+        FA20 SPAN 1010 3.0 A FIRST SEMESTER SPANISH WSU: SPAN 1010
+        SP21 TRNSF1XXX 3.0 A INTRO ENGINEERING/TECH DESIGN WSU: PDD  1010
+        FA21 SPAN 1020 3.0 A SECOND SEMESTER SPANISH WSU: SPAN 1020
+        FA22 NUIP 1020 AS 3.0 A LS SUS SCI OF HUMAN NUTRITION WSU: NUTR 1020
+        SP23 MATH 1XXX 2.0 AP AP CR: AP0005MCAB
+        SP23 MUSC 1010 FF 3.0 A CA INTRO TO MUSIC WSU: MUSC 1010
+        SP23 PHYS 2215 1.0 AP AP CR: AP0004PHYME
+        SP23 PSY  1010 3.0 B+ SS INTRODUCTORY PSYCHOLOGY WSU: PSY  1010
+        SP23 SPAN 1010 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 1020 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 2010 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 2020 4.0 AP AP CR: AP0005SLC
+        SP23 TRNSF2XXX 1.0 A EN2 INTERMD COLL WRTNG & RSRC WSU: ENGL 2015
+        FA23 CS   1960 1.0 CR Success in CS
+    Subrequirement: ATTEMPTED COURSES WITHOUT CREDIT
+    Status: Sub-Requirement
+        SP23 MATH 1210 0.0 AP >D AP CR: AP0005MCBC
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+    Subrequirement: AP, IB, CLEP & SPECIAL CREDIT
+    Status: Sub-Requirement
+        SP23 MATH 1210 0.0 AP >D AP CR: AP0005MCBC
+        SP23 MATH 1210 4.0 AP AP CR: AP0005MCAB
+        SP23 MATH 1220 4.0 AP AP CR: AP0005MCBC
+        SP23 MATH 1XXX 2.0 AP AP CR: AP0005MCAB
+        SP23 PHYS 2210 4.0 AP AP CR: AP0004PHYME
+        SP23 PHYS 2215 1.0 AP AP CR: AP0004PHYME
+        SP23 SPAN 1010 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 1020 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 2010 4.0 AP AP CR: AP0005SLC
+        SP23 SPAN 2020 4.0 AP AP CR: AP0005SLC
+        FA23 MATH QA 3.0 SC MATH INT: MATH QA
+    Subrequirement: PLACEMENT SCORES
+    Status: Sub-Requirement
+        SP22 ACT  0026SSSCI 0.0 AT ACT SCR: ACT  0026SSSCI
+        FA22 ACT  0024SCIRE 0.0 AT ACT SCR: ACT  0024SCIRE
+        FA22 ACT  0026ENGL 0.0 AT ACT SCR: ACT  0026ENGL
+        FA22 ACT  0026SSENG 0.0 AT ACT SCR: ACT  0026SSENG
+        FA22 ACT  0027COMP 0.0 AT ACT SCR: ACT  0027COMP
+        FA22 ACT  0027STEM 0.0 AT ACT SCR: ACT  0027STEM
+        FA22 ACT  0028SSCOM 0.0 AT ACT SCR: ACT  0028SSCOM
+        FA22 ACT  0028SSTEM 0.0 AT ACT SCR: ACT  0028SSTEM
+        FA22 ACT  0029READ 0.0 AT ACT SCR: ACT  0029READ
+        FA22 ACT  0029SSREA 0.0 AT ACT SCR: ACT  0029SSREA
+        FA22 ACT  0030MATH 0.0 AT ACT SCR: ACT  0030MATH
+        FA22 ACT  0030SSMAT 0.0 AT ACT SCR: ACT  0030SSMAT
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+    EARNED:  3.955 GPA: 3.955
+    Subrequirement: CONCURRENT ENROLLMENT TRANSFER COURSES
+    Status: Sub-Requirement
+        SP22 CS   1400 4.0 A PROGRAMMING I: WSU: CS   1400
+        FA22 CS   1410 4.0 A OBJECT- ORIENTED PROGRAMMING WSU: CS   1410
+        FA22 FCS  1500 BF 3.0 A SS DV HUMAN DEVELOPMENT WSU: CHF  1500
+        FA21 HIST 1700 AI 3.0 A AI AMERICAN HISTORY WSU: HIST 1700
+        SP23 MUSC 1010 FF 3.0 A CA INTRO TO MUSIC WSU: MUSC 1010
+        FA22 NUIP 1020 AS 3.0 A LS SUS SCI OF HUMAN NUTRITION WSU: NUTR 1020
+        SP23 PSY  1010 3.0 B+ SS INTRODUCTORY PSYCHOLOGY WSU: PSY  1010
+        FA20 SPAN 1010 3.0 A FIRST SEMESTER SPANISH WSU: SPAN 1010
+        FA21 SPAN 1020 3.0 A SECOND SEMESTER SPANISH WSU: SPAN 1020
+        SP21 TRNSF1XXX 3.0 A INTRO ENGINEERING/TECH DESIGN WSU: PDD  1010
+        SP23 TRNSF2XXX 1.0 A EN2 INTERMD COLL WRTNG & RSRC WSU: ENGL 2015
+        FA22 WRTG 1010 WR1 3.0 A EN1 INTRODUCT COLLEGE WRITING WSU: ENGL 1010
+        SP23 WRTG 2010 3.0 A EN2 INTERMD COLL WRTNG & RSRC WSU: ENGL 2015
+        FA21 XHEM 1110 SF 5.0 A PS ELEMENTARY CHEMISTRY WSU: CHEM 1110
+        SP22 XS   1010 FF 3.0 A CA INTRO TO INTERACT ENTERTAI WSU: CS   1010
+
+------------------------------------------------------------
+
+Requirement: 
+Status: Requirement
+    Subrequirement: ALL UNDERGRADUATE U OF U COURSES
+    Status: Sub-Requirement
+        FA23 CS   1960 1.0 CR Success in CS
+        SP24 CS   2100 3.0 A- Discrete Structures
+        FA23 CS   2420 4.0 B+ Intro Alg & Data Struct
+        SP25 CS   3100 QI 3.0 A Models Of Computation
+        SP24 CS   3130 QI 3.0 A Eng Prob Stats
+        FA24 CS   3190 3.0 A Found. of Data Analysis
+        SP24 CS   3500 4.0 A- Software Practice
+        FA24 CS   3505 3.0 A Software Practice II
+        SP25 CS   3550 3.0 A Web Software Dev I
+        FA24 CS   3810 QI 3.0 A Computer Organization
+        FA25 CS   4000 3.0 IP Senior Capstone Design
+        SP25 CS   4150 QI 3.0 A Algorithms
+        FA25 CS   4300 3.0 IP Artificial Intelligence
+        FA25 CS   4400 QI 3.0 IP Computer Systems
+        FA25 CS   5150 3.0 IP Advanced Algorithms
+        FA23 MATH 2270 4.0 A Linear Algebra
+        SP25 MUSC 1236 DVFF 3.0 A Survey Of Jazz
+        FA23 MUSC 3600 IRFF 3.0 A World Music PROCESSED AS:  MUSC 1250 IRFF
+        FA24 PHYS 2220 PS 4.0 A Phys For Scien & Eng II
+        SP24 WRTG 3015 CW 3.0 A Professional Writing
+
+------------------------------------------------------------
+
