@@ -1,0 +1,1 @@
+#for custom exceptions will be helpful for debuggin later on and also good for letting users know general issue
