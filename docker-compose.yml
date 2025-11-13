@@ -7,3 +7,9 @@ services:
     volumes:
       - .:/app          # ← live-mount your local code
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  scraper:
+    build: .
+    container_name: course_scraper
+    volumes:
+      - .:/app           # Mount local folder into container
+    tty: true            # Keep container open for logs
