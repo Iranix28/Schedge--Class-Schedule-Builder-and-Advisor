@@ -1,0 +1,715 @@
+CS 1400 - Intro Comp Programming (Section 001)
+Instructor: DE ST GERMAIN, H. James 'Jim'
+Time: MoWe 03:00PM-04:20PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section. CS 1400 is the common and recommended first CS course. Students with prior experience may choose the accelerated and advanced alternative CS 1420. For advice on choosing your first CS course, see https://utah.sjc1.qualtrics.com/jfe/form/SV_4Iz3s5lM7eLYncO
+------------------------------------------------------------
+CS 1400 - Intro Comp Programming (Section 003)
+Instructor: DE ST GERMAIN, H. James 'Jim'
+Time: Tu 09:40AM-10:30AM
+Description: Intro Comp Programming DE ST GERMAIN, H. James 'Jim'
+------------------------------------------------------------
+CS 1400 - Intro Comp Programming (Section 004)
+Instructor: DE ST GERMAIN, H. James 'Jim'
+Time: Tu 10:45AM-11:35AM
+Description: Intro Comp Programming DE ST GERMAIN, H. James 'Jim'
+------------------------------------------------------------
+CS 1400 - Intro Comp Programming (Section 005)
+Instructor: DE ST GERMAIN, H. James 'Jim'
+Time: Tu 11:50AM-12:40PM
+Description: Intro Comp Programming DE ST GERMAIN, H. James 'Jim'
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 001)
+Instructor: PARKER, ERIN
+Time: MoWe 03:00PM-04:20PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 003)
+Instructor: PARKER, ERIN
+Time: Th 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 004)
+Instructor: PARKER, ERIN
+Time: Th 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 005)
+Instructor: PARKER, ERIN
+Time: Th 11:50AM-12:40PM
+Description: N/A
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 006)
+Instructor: PARKER, ERIN
+Time: Th 12:55PM-01:45PM
+Description: N/A
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 007)
+Instructor: PARKER, ERIN
+Time: Th 02:00PM-02:50PM
+Description: N/A
+------------------------------------------------------------
+CS 1410 - Object-Oriented Prog (Section 008)
+Instructor: PARKER, ERIN
+Time: Th 03:05PM-03:55PM
+Description: N/A
+------------------------------------------------------------
+CS 1420 - Accel Obj-Orient Prog (Section 001)
+Instructor: JONES, BEN
+Time: MoWe 03:00PM-04:20PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section. CS 1400 is the common and recommended first CS course. Students with prior experience may choose the accelerated and advanced alternative CS 1420. For advice on choosing your first CS course, see https://utah.sjc1.qualtrics.com/jfe/form/SV_4Iz3s5lM7eLYncO
+------------------------------------------------------------
+CS 1420 - Accel Obj-Orient Prog (Section 004)
+Instructor: JONES, BEN
+Time: Tu 10:45AM-11:35AM
+Description: Accel Obj-Orient Prog
+------------------------------------------------------------
+CS 1420 - Accel Obj-Orient Prog (Section 005)
+Instructor: JONES, BEN
+Time: Tu 11:50AM-12:40PM
+Description: Accel Obj-Orient Prog
+------------------------------------------------------------
+CS 1420 - Accel Obj-Orient Prog (Section 006)
+Instructor: JONES, BEN
+Time: Tu 12:55PM-01:45PM
+Description: Accel Obj-Orient Prog
+------------------------------------------------------------
+CS 1810 - Intro to Comp Systems (Section 001)
+Instructor: JONES, BEN
+Time: MoWe 11:50AM-12:40PM
+Description: Intro to Comp Systems
+------------------------------------------------------------
+CS 1810 - Intro to Comp Systems (Section 003)
+Instructor: JONES, BEN
+Time: Fr 11:50AM-12:40PM
+Description: Intro to Comp Systems
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 001)
+Instructor: N/A
+Time: TuTh 09:10AM-10:30AM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 003)
+Instructor: N/A
+Time: Fr 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 004)
+Instructor: N/A
+Time: Fr 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 020)
+Instructor: N/A
+Time: MoWe 08:05AM-09:25AM
+Description: N/A
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 022)
+Instructor: N/A
+Time: Fr 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 2100 - Discrete Structures (Section 023)
+Instructor: N/A
+Time: Fr 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 001)
+Instructor: N/A
+Time: MoWe 08:05AM-09:25AM
+Description: This course requires registration for a lab section. Students will be automatically registered for this lecture section when registering for the pertinent lab section.
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 003)
+Instructor: N/A
+Time: Fr 09:40AM-10:30AM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 004)
+Instructor: N/A
+Time: Fr 10:45AM-11:35AM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 005)
+Instructor: N/A
+Time: Fr 11:50AM-12:40PM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 006)
+Instructor: N/A
+Time: Fr 12:55PM-01:45PM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 020)
+Instructor: N/A
+Time: TuTh 09:10AM-10:30AM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 022)
+Instructor: N/A
+Time: Fr 09:40AM-10:30AM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 023)
+Instructor: N/A
+Time: Fr 10:45AM-11:35AM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 024)
+Instructor: N/A
+Time: Fr 11:50AM-12:40PM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 2420 - Intro Alg & Data Struct (Section 025)
+Instructor: N/A
+Time: Fr 12:55PM-01:45PM
+Description: Intro Alg & Data Struct
+------------------------------------------------------------
+CS 3090 - Ethics in Computing (Section 001)
+Instructor: MARTIN, TRAVIS
+Time: TuTh 03:40PM-05:00PM
+Description: N/A
+------------------------------------------------------------
+CS 3100 - Models Of Computation (Section 001)
+Instructor: HENDERSON, THOMAS
+Time: MoWe 04:35PM-05:55PM
+Description: The course fee covers digital course materials through the Instant Access program. Students may request to opt out here: https://portal.verba.io/utah/login
+------------------------------------------------------------
+CS 3130 - Eng Prob Stats (Section 001)
+Instructor: BHASKARA, ADITYA
+Time: TuTh 09:10AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 3190 - Found. of Data Analysis (Section 001)
+Instructor: PHILLIPS, JEFF
+Time: MoWe 03:00PM-04:20PM
+Description: Found. of Data Analysis
+------------------------------------------------------------
+CS 3200 - Intro Sci Comp (Section 001)
+Instructor: SHANKAR, VARUN
+Time: MoWe 03:00PM-04:20PM
+Description: N/A
+------------------------------------------------------------
+CS 3350 - Intro to Practical ML (Section 001)
+Instructor: TAO, GUANHONG
+Time: TuTh 03:40PM-05:00PM
+Description: Intro to Practical ML
+------------------------------------------------------------
+CS 3390 - Ethics in Data Science (Section 001)
+Instructor: KIRBY, ROBERT
+Time: MoWe 01:25PM-02:45PM
+Description: Ethics in Data Science
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 001)
+Instructor: N/A
+Time: TuTh 12:25PM-01:45PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 003)
+Instructor: N/A
+Time: We 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 004)
+Instructor: N/A
+Time: We 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 005)
+Instructor: N/A
+Time: We 12:55PM-01:45PM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 020)
+Instructor: N/A
+Time: TuTh 02:00PM-03:20PM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 025)
+Instructor: N/A
+Time: We 02:00PM-02:50PM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 026)
+Instructor: N/A
+Time: We 03:05PM-03:55PM
+Description: N/A
+------------------------------------------------------------
+CS 3500 - Software Practice (Section 027)
+Instructor: N/A
+Time: We 04:10PM-05:00PM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 001)
+Instructor: HEISLER, ERIC
+Time: TuTh 12:25PM-01:45PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 002)
+Instructor: HEISLER, ERIC
+Time: We 08:35AM-09:25AM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 003)
+Instructor: HEISLER, ERIC
+Time: We 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 004)
+Instructor: HEISLER, ERIC
+Time: We 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 006)
+Instructor: HEISLER, ERIC
+Time: We 12:55PM-01:45PM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 007)
+Instructor: HEISLER, ERIC
+Time: We 02:00PM-02:50PM
+Description: N/A
+------------------------------------------------------------
+CS 3505 - Software Practice II (Section 008)
+Instructor: HEISLER, ERIC
+Time: We 03:05PM-03:55PM
+Description: N/A
+------------------------------------------------------------
+CS 3540 - Design Human Center Sys (Section 001)
+Instructor: WIESE, ELIANE
+Time: TuTh 10:45AM-12:05PM
+Description: Design Human Center Sys
+------------------------------------------------------------
+CS 3550 - Web Software Dev I (Section 001)
+Instructor: JOHNSON, DAVID
+Time: MoWe 11:50AM-01:10PM
+Description: N/A
+------------------------------------------------------------
+CS 3700 - Digital System Design (Section 001)
+Instructor: GARCIA, LUIS
+Time: TuTh 02:00PM-03:20PM
+Description: Section 2 belongs to this lecture. This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section. The course fee covers digital course materials through the Instant Access program. Students may request to opt out here: https://portal.verba.io/utah/login
+------------------------------------------------------------
+CS 3700 - Digital System Design (Section 002)
+Instructor: GARCIA, LUIS
+Time: N/A
+Description: This class meets in MEB 3133.
+------------------------------------------------------------
+CS 3810 - Computer Organization (Section 001)
+Instructor: BALASUBRAMONIAN, RAJEEV
+Time: TuTh 10:45AM-12:05PM
+Description: Computer Organization BALASUBRAMONIAN, RAJEEV
+------------------------------------------------------------
+CS 3960 - Human-Centered Data Management (Section 001)
+Instructor: FARIHA, ANNA
+Time: MoWe 04:35PM-05:55PM
+Description: This course will cover recent trends and practices in data management with a particular focus on human-centered aspects. We will emphasizes the central role of humans in data management. The course will cover: spreadsheet systems, data cleaning and transformation systems, notebook-centric analysis tools, explanation and provenance systems, data discovery systems, approximate query processing systems, speech and natural language querying systems, text and video analysis systems, semi-structured data systems. The emphasis will be on a mix of human-centric concerns, interface ideas, and scalable data processing ideas with a focus towards the end user. Topics will include NoSQL and other structured data systems, data systems usability and accessibility tools such as visual query languages, speech-based query languages, query by example, etc. The course will cover best practices for user interface (UI) design for data-management systems, user interactions, user modeling, and user experience (UX). The course will also cover recent tools and techniques for enhancing data quality such data cleaning, wrangling, transformation, meta-data management, and tools and techniques for data discovery, exploration, visualization, debugging, and data provenance. The course will have an emphasis on building usable tools for data analysis tasks and how data systems should be designed to assist their users in computation and analysis. The pre-requisite is CS 3500.
+------------------------------------------------------------
+CS 3960 - Vibe Coding (Section 003)
+Instructor: PANCHEKHA, PAVEL
+Time: MoWe 03:00PM-04:20PM
+Description: Prerequisites: CS 3505 and Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing). LLMs can now one-shot simple algorithms and homework assignments. How will they affect real-world software development? It turns out LLMs can help you code much faster—but only if you create an environment for the LLM to succeed. You’re no longer spending time writing code. But you must still define the problems to be solved, design and maintain a coherent software architecture, specify what correctness and performance means, and test the resulting code. The LLM handles the code, but you must handle the context. This class is not about how LLMs work—it’s about how to fit LLM-driven development into a bigger software engineering picture. Students will work in groups using LLMs to build a substantial software project and will be responsible for the correctness, usability, and maintainability of the resulting system. Students will share best practices for using LLMs, while lectures will cover the foundations of LLM coding agents, context engineering and its pitfalls, and LLM-specific software engineering practices.
+------------------------------------------------------------
+CS 3992 - Pre-Thesis/Clinic/Proj (Section 001)
+Instructor: Fayazi, Morteza
+Time: TuTh 03:40PM-05:00PM
+Description: Pre-Thesis/Clinic/Proj
+------------------------------------------------------------
+CS 4000 - Senior Capstone Design (Section 001)
+Instructor: DE ST GERMAIN, JOHN
+Time: MoWeFr 09:40AM-10:30AM
+Description: Senior Capstone Design GOPALAKRISHNAN, GANESH
+------------------------------------------------------------
+CS 4150 - Algorithms (Section 001)
+Instructor: WANG, HAITAO
+Time: MoWe 11:50AM-01:10PM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 001)
+Instructor: Basu Roy, Rohan
+Time: MoWe 01:25PM-02:45PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 003)
+Instructor: Basu Roy, Rohan
+Time: Th 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 004)
+Instructor: Basu Roy, Rohan
+Time: Th 10:45AM-11:35AM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 005)
+Instructor: Basu Roy, Rohan
+Time: Th 12:55PM-01:45PM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 006)
+Instructor: Basu Roy, Rohan
+Time: Th 02:00PM-02:50PM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 007)
+Instructor: Basu Roy, Rohan
+Time: Th 03:05PM-03:55PM
+Description: N/A
+------------------------------------------------------------
+CS 4400 - Computer Systems (Section 009)
+Instructor: Basu Roy, Rohan
+Time: Th 11:50AM-12:40PM
+Description: N/A
+------------------------------------------------------------
+CS 4500 - Senior Capstone Project (Section 001)
+Instructor: ALSALEEM, AHMAD
+Time: MoWeFr 09:40AM-10:30AM
+Description: Senior Capstone Project DE ST GERMAIN, H. James 'Jim' Van Der Merwe, Jacobus
+------------------------------------------------------------
+CS 4530 - Mobile App Programming (Section 001)
+Instructor: MAKAREM, NABIL
+Time: TuTh 12:25PM-01:45PM
+Description: Mobile App Programming
+------------------------------------------------------------
+CS 4550 - Web Software Dev II (Section 001)
+Instructor: WOOD, AARON
+Time: MoWe 03:00PM-04:20PM
+Description: N/A
+------------------------------------------------------------
+CS 4961 - AI for HCC (Section 001)
+Instructor: JIANG, YUE
+Time: TuTh 02:00PM-03:20PM
+Description: Prerequisites: 'C-' or higher in CS 3350 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing. This course is designed for students interested in learning how artificial intelligence can improve human-computer interaction. We will explore how AI techniques can support better user experiences by modeling users, predicting behaviors, and adapting interfaces. Students will engage with paper readings, participate in class discussions, and complete hands-on projects. By the end of the course, students will be able to identify interaction challenges and apply AI-based methods such as analysis, simulation, and optimization to address them. Topics include adaptive interface design, personalization, and multimodal interaction (e.g., gaze, voice, and gesture).
+------------------------------------------------------------
+CS 4964 - Manage Data for & with ML (Section 001)
+Instructor: REZIG, EL KINDI
+Time: TuTh 12:25PM-01:45PM
+Description: This course provides a broad exploration of the practical skills essential for handling, preparing, ingesting, indexing, and analyzing large datasets for machine learning applications. Students will explore various topics, including relational databases, optimizing dataset storage, data cleansing techniques, and large-scale data processing systems (e.g., Spark). The class also covers learned indexes and large-scale data visualization. This hands-on course aims to equip participants with the knowledge and proficiency to effectively manage and analyze vast datasets for machine learning applications. The prerequisite is CS 3500.
+------------------------------------------------------------
+CS 4992 - CE Senior Thesis II (Section 001)
+Instructor: KALLA, PRIYANK
+Time: N/A
+Description: N/A
+------------------------------------------------------------
+CS 5110 - Software Verification (Section 001)
+Instructor: GREENMAN, BENJAMIN
+Time: TuTh 02:00PM-03:20PM
+Description: Software Verification
+------------------------------------------------------------
+CS 5460 - Operating Systems (Section 001)
+Instructor: BURTSEV, ANTON
+Time: TuTh 09:10AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 5493 - Applied S/W Secur Test (Section 001)
+Instructor: NAGY, STEFAN
+Time: MoWe 01:25PM-02:45PM
+Description: Applied S/W Secur Test
+------------------------------------------------------------
+CS 5530 - Database Systems (Section 090)
+Instructor: KOPTA, DANIEL
+Time: N/A
+Description: This is an online course, which does not have a specific meeting time or location throughout the semester. For additional information, please visit https://online.utah.edu/about-online-learning/
+------------------------------------------------------------
+CS 5610 - Interactive Comp Graph (Section 001)
+Instructor: Lin, Jenny
+Time: TuTh 03:40PM-05:00PM
+Description: Interactive Comp Graph
+------------------------------------------------------------
+CS 5635 - Vis for Scientific Data (Section 001)
+Instructor: JOHNSON, CHRISTOPHER
+Time: MoWe 01:25PM-02:45PM
+Description: Vis for Scientific Data
+------------------------------------------------------------
+CS 5740 - CAD of Digital Circuits (Section 001)
+Instructor: KALLA, PRIYANK
+Time: MoWeFr 10:45AM-11:35AM
+Description: CAD of Digital Circuits
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 001)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: TuTh 12:25PM-01:45PM
+Description: This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 002)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: We 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 003)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: We 03:05PM-06:05PM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 004)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: Fr 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 005)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: Mo 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 5780 - Embedded Sys Design (Section 006)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: Tu 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 5955 - Adv Artificial Intelligence (Section 001)
+Instructor: BROWN, DANIEL
+Time: MoWe 11:50AM-01:10PM
+Description: Prerequisites: CS 4300 OR CS 5350 OR CS 5353 and Full Major Status in Computer Science OR Software Development OR Data Science. This course focuses on advanced algorithms for intelligent sequential decision making with a focus on deep learning-based methods and human-AI interaction. The class will cover both the theory and practical details of the algorithms behind recent breakthroughs in many types of AI decision making, including game playing, robotics, recommendation systems, and large language models. Topics include bandit algorithms, Markov decision processes, reinforcement learning, imitation learning, inverse reinforcement learning, reinforcement learning from human feedback, and AI safety and alignment.
+------------------------------------------------------------
+CS 5962 - Auto Speech Recog & Accent (Section 001)
+Instructor: PATWARI, NEAL
+Time: TuTh 02:00PM-03:20PM
+Description: This course provides a cross-disciplinary view of speech transcription services, known as automatic speech recognition (ASR) services. Students will read research papers that describe ASR services’ performance as a function of the accent of the speaker. The course covers the context of historical and current cultural attitudes about accent and spoken language as relevant to ASR. Students will build ASR models and evaluate them using available datasets. Students will read, critically evaluate, and discuss current published research on the topics of ASR and accent, and research suggesting or testing methods to improve ASR performance by accent.
+------------------------------------------------------------
+CS 5965 - Social Computing (Section 001)
+Instructor: KOGAN, MARINA
+Time: MoWe 01:25PM-02:45PM
+Description: N/A
+------------------------------------------------------------
+CS 5966 -  (Section 001)
+Instructor: MARASOVIC, ANA
+Time: TuTh 10:45AM-12:05PM
+Description: Prerequisites: 'C-' or higher in CS 3960 OR CS 5340 OR CS 5353 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE). Cracking the interpretability of large language models (LLMs) could be as transformative for AI as the decoding of the genome was for biology. Once a distant aspiration, this grand scientific challenge is now edging toward possibility. In this course, we will explore a spectrum of interpretability methods, ranging from earlier techniques such as highlighting salient inputs and tracing influential training examples, to two advanced directions. First, mechanistic interpretability that seeks to decompose LLMs into interpretable units and trace how their interactions give rise to model behavior. Second, reasoning in natural language, which is both a frontier in interpretability and a core mechanism underlying agentic AI systems. We will focus not only on how these methods work, but also on how to evaluate them rigorously.
+------------------------------------------------------------
+CS 5967 - Critical HCI and Visualization (Section 001)
+Instructor: MCNUTT, ANDREW
+Time: TuTh 02:00PM-03:20PM
+Description: Prerequisites CS 3540 or DS 4630 OR CS 5630 OR other experience in HCI or Visualization AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing. This course aims to equip students with skills for critically analyzing data and data related systems in the context of human-computer interaction (HCI) and visualization research, as well as in computer science more broadly. Via readings, projects, and discussions students will develop conceptual tools for evaluating, interpreting, and critiquing data, interfaces, and systems—critical thinking in data writ large. Relevant questions include: what is data? How do we evaluate the quality and relevance of systems for interacting with data? What biases might be inherent in these designs? To serve this goal we will explore perspectives from critical theory, science and technology studies, and HCI/VIS research (such as Data Feminism). Students will gain experience in reading, understanding, and applying ideas from other fields to problems in familiar data domains.
+------------------------------------------------------------
+CS 6013 - MSD: Computer Systems (Section 001)
+Instructor: DE ST GERMAIN, JOHN
+Time: MoWeFr 10:50AM-11:40AM
+Description: MSD: Computer Systems
+------------------------------------------------------------
+CS 6013 - MSD: Computer Systems (Section 002)
+Instructor: DE ST GERMAIN, JOHN
+Time: Mo 11:50AM-12:40PM
+Description: MSD: Computer Systems
+------------------------------------------------------------
+CS 6014 - MSD: Netwrks & Security (Section 001)
+Instructor: Flatt, Matthew
+Time: MoWeFr 09:00AM-09:50AM
+Description: MSD: Netwrks & Security
+------------------------------------------------------------
+CS 6014 - MSD: Netwrks & Security (Section 002)
+Instructor: Flatt, Matthew
+Time: We 11:00AM-12:00PM
+Description: MSD: Netwrks & Security
+------------------------------------------------------------
+CS 6015 - MSD: Software Engineer (Section 001)
+Instructor: MAKAREM, NABIL
+Time: TuTh 09:00AM-09:50AM
+Description: MSD: Software Engineer
+------------------------------------------------------------
+CS 6015 - MSD: Software Engineer (Section 002)
+Instructor: MAKAREM, NABIL
+Time: Th 10:00AM-10:50AM
+Description: MSD: Software Engineer
+------------------------------------------------------------
+CS 6019 - MSD Project (Section 001)
+Instructor: Flatt, Matthew
+Time: Tu-Th 09:00AM-11:00AM
+Description: N/A
+------------------------------------------------------------
+CS 6020 - Early-Career Research (Section 001)
+Instructor: PHILLIPS, BEI WANG
+Time: N/A
+Description: Early-Career Research
+------------------------------------------------------------
+CS 6110 - Software Verification (Section 001)
+Instructor: GREENMAN, BENJAMIN
+Time: TuTh 02:00PM-03:20PM
+Description: Software Verification
+------------------------------------------------------------
+CS 6170 - Computational Topology (Section 001)
+Instructor: PHILLIPS, BEI WANG
+Time: TuTh 03:40PM-05:00PM
+Description: Computational Topology
+------------------------------------------------------------
+CS 6330 - Robotics II: Control (Section 001)
+Instructor: MASCARO, STEPHEN
+Time: MoWe 01:25PM-02:45PM
+Description: N/A
+------------------------------------------------------------
+CS 6370 - Motion Planning (Section 001)
+Instructor: Hermans, Tucker
+Time: MoWe 03:00PM-04:20PM
+Description: N/A
+------------------------------------------------------------
+CS 6460 - Operating Systems (Section 001)
+Instructor: BURTSEV, ANTON
+Time: TuTh 09:10AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 6491 - Software & Sys Security (Section 001)
+Instructor: ZHANG, MU
+Time: MoWe 03:00PM-04:20PM
+Description: Software & Sys Security
+------------------------------------------------------------
+CS 6493 - Applied S/W Secur Test (Section 001)
+Instructor: NAGY, STEFAN
+Time: MoWe 01:25PM-02:45PM
+Description: Applied S/W Secur Test
+------------------------------------------------------------
+CS 6545 - HCI Origin&Perspectives (Section 001)
+Instructor: Wiese, Jason
+Time: MoWe 03:00PM-04:20PM
+Description: HCI Origin&Perspectives
+------------------------------------------------------------
+CS 6610 - Interactive Comp Graph (Section 001)
+Instructor: Lin, Jenny
+Time: TuTh 03:40PM-05:00PM
+Description: Interactive Comp Graph
+------------------------------------------------------------
+CS 6635 - Vis for Scientific Data (Section 001)
+Instructor: JOHNSON, CHRISTOPHER
+Time: MoWe 01:25PM-02:45PM
+Description: Vis for Scientific Data
+------------------------------------------------------------
+CS 6740 - CAD of Digital Circuits (Section 001)
+Instructor: KALLA, PRIYANK
+Time: MoWeFr 10:45AM-11:35AM
+Description: CAD of Digital Circuits
+------------------------------------------------------------
+CS 6780 - Embed Sys Design (Section 001)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: TuTh 12:25PM-01:45PM
+Description: Sections 2-4 belong to this lecture. This course requires registration for a lab and/or discussion section. Students will be automatically registered for this lecture section when registering for the pertinent lab and/or discussion section.
+------------------------------------------------------------
+CS 6780 - Embed Sys Design (Section 002)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: We 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 6780 - Embed Sys Design (Section 004)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: Fr 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 6780 - Embed Sys Design (Section 005)
+Instructor: GAILLARDON, PIERRE-EMMANUEL
+Time: Mo 07:30AM-10:30AM
+Description: GAILLARDON, PIERRE-EMMANUEL
+------------------------------------------------------------
+CS 6800 - MSD Capstone Internship (Section 001)
+Instructor: ALSALEEM, AHMAD
+Time: N/A
+Description: MSD Capstone Internship
+------------------------------------------------------------
+CS 6953 - Deep Learning Capstone (Section 001)
+Instructor: AL HALAH, ZIAD
+Time: Tu 01:00PM-03:00PM
+Description: Deep Learning Capstone
+------------------------------------------------------------
+CS 6955 - Adv Artificial Intelligence (Section 001)
+Instructor: BROWN, DANIEL
+Time: MoWe 11:50AM-01:10PM
+Description: This course focuses on advanced algorithms for intelligent sequential decision making with a focus on deep learning-based methods and human-AI interaction. The class will cover both the theory and practical details of the algorithms behind recent breakthroughs in many types of AI decision making, including game playing, robotics, recommendation systems, and large language models. Topics include bandit algorithms, Markov decision processes, reinforcement learning, imitation learning, inverse reinforcement learning, reinforcement learning from human feedback, and AI safety and alignment.
+------------------------------------------------------------
+CS 6958 - Advanced Computer Vision (Section 001)
+Instructor: AL HALAH, ZIAD
+Time: MoWe 04:35PM-05:55PM
+Description: This course will cover the recent advances in computer vision, with focus on understanding state-of-the-art methods, analyzing their strengths and weaknesses, and identifying future research opportunities. Example topics covered in this course: object and action recognition, video understanding, self-supervised representation learning, zero- and few-shot learning, transfer learning, language and vision, audio and vision, vision for robotics, image generation, image manipulation, and egocentric perception. This is an advanced vision course for graduate students, previous knowledge of machine learning or deep learning (e.g., CS 5350/6350 or CS 5353/6353) is recommended.
+------------------------------------------------------------
+CS 6959 - Human-Centered Data Management (Section 001)
+Instructor: FARIHA, ANNA
+Time: MoWe 04:35PM-05:55PM
+Description: Human-Centered Data Management
+------------------------------------------------------------
+CS 6960 - Multimodal LLM Agents (Section 001)
+Instructor: Marino, Kenneth
+Time: TuTh 03:40PM-05:00PM
+Description: This course will explore the rapidly developing area of Multimodal Large Language Models in embodied settings. Students will learn the foundations of Reinforcement Learning and Large Language Models to understand how large-scale models can be deployed to multimodal environments. Topics will include control flow and scaffolding for agents such as ReAct, Tool use LLMs, coding agents, game-playing agents, computer use and robotics. As part of the course, students will complete programming assignments, read recent papers in the field and complete a significant project. While there are no formal prerequisites, students are expected to be familiar with Machine Learning and the basics of Natural Language Processing (CS 5340) before taking the course.
+------------------------------------------------------------
+CS 6961 - AI for HCC (Section 001)
+Instructor: JIANG, YUE
+Time: TuTh 02:00PM-03:20PM
+Description: This course is designed for students interested in learning how artificial intelligence can improve human-computer interaction. We will explore how AI techniques can support better user experiences by modeling users, predicting behaviors, and adapting interfaces. Students will engage with paper readings, participate in class discussions, and complete hands-on projects. By the end of the course, students will be able to identify interaction challenges and apply AI-based methods such as analysis, simulation, and optimization to address them. Topics include adaptive interface design, personalization, and multimodal interaction (e.g., gaze, voice, and gesture).
+------------------------------------------------------------
+CS 6962 - Auto Speech Recog & Accent (Section 001)
+Instructor: PATWARI, NEAL
+Time: TuTh 02:00PM-03:20PM
+Description: This course provides a cross-disciplinary view of speech transcription services, known as automatic speech recognition (ASR) services. Students will read research papers that describe ASR services’ performance as a function of the accent of the speaker. The course covers the context of historical and current cultural attitudes about accent and spoken language as relevant to ASR. Students will build ASR models and evaluate them using available datasets. Students will read, critically evaluate, and discuss current published research on the topics of ASR and accent, and research suggesting or testing methods to improve ASR performance by accent.
+------------------------------------------------------------
+CS 6964 - Manage Data for & with ML (Section 001)
+Instructor: REZIG, EL KINDI
+Time: TuTh 12:25PM-01:45PM
+Description: This course provides a broad exploration of the practical skills essential for handling, preparing, ingesting, indexing, and analyzing large datasets for machine learning applications. Students will explore various topics, including relational databases, optimizing dataset storage, data cleansing techniques, and large-scale data processing systems (e.g., Spark). The class also covers learned indexes and large-scale data visualization. This hands-on course aims to equip participants with the knowledge and proficiency to effectively manage and analyze vast datasets for machine learning applications.
+------------------------------------------------------------
+CS 6965 - Social Computing (Section 001)
+Instructor: KOGAN, MARINA
+Time: MoWe 01:25PM-02:45PM
+Description: N/A
+------------------------------------------------------------
+CS 6966 -  (Section 001)
+Instructor: MARASOVIC, ANA
+Time: TuTh 10:45AM-12:05PM
+Description: Prerequisites: CS 6340 Natural Language Processing or CS 6353 Deep Learning Can be substituted with a qualifying exam. Cracking the interpretability of large language models (LLMs) could be as transformative for AI as the decoding of the genome was for biology. Once a distant aspiration, this grand scientific challenge is now edging toward possibility. In this course, we will explore a spectrum of interpretability methods, ranging from earlier techniques such as highlighting salient inputs and tracing influential training examples, to two advanced directions. First, mechanistic interpretability that seeks to decompose LLMs into interpretable units and trace how their interactions give rise to model behavior. Second, reasoning in natural language, which is both a frontier in interpretability and a core mechanism underlying agentic AI systems. We will focus not only on how these methods work, but also on how to evaluate them rigorously.
+------------------------------------------------------------
+CS 6967 - Critical HCI and Visualization (Section 001)
+Instructor: MCNUTT, ANDREW
+Time: TuTh 02:00PM-03:20PM
+Description: This course aims to equip students with skills for critically analyzing data and data related systems in the context of human-computer interaction (HCI) and visualization research, as well as in computer science more broadly. Via readings, projects, and discussions students will develop conceptual tools for evaluating, interpreting, and critiquing data, interfaces, and systems—critical thinking in data writ large. Relevant questions include: what is data? How do we evaluate the quality and relevance of systems for interacting with data? What biases might be inherent in these designs? To serve this goal we will explore perspectives from critical theory, science and technology studies, and HCI/VIS research (such as Data Feminism). Students will gain experience in reading, understanding, and applying ideas from other fields to problems in familiar data domains.
+------------------------------------------------------------
+CS 6969 - Fast and Verified GPU Code (Section 001)
+Instructor: GOPALAKRISHNAN, GANESH
+Time: MoWe 01:25PM-02:45PM
+Description: Modern ML and HPC systems depend on carefully crafted computational primitives (GPU kernels, functions) for performance, yet these components often contain subtle functional and performance bugs despite extensive testing. This project-centered course examines the numeric and scheduling abstractions needed to build correct, fast primitives while introducing systematic design tools like data-flow languages and MLIR. Co-taught with a visiting systems expert, students will design primitives using program semantics, verification methods, and performance measurement, then evaluate them in realistic ML/HPC frameworks. Students will produce research papers and software artifacts based on their work.
+------------------------------------------------------------
+CS 7520 - Program Lang Semantics (Section 001)
+Instructor: Flatt, Matthew
+Time: MoWe 03:00PM-04:20PM
+Description: Program Lang Semantics
+------------------------------------------------------------
+CS 7640 - Adv Image Processing (Section 001)
+Instructor: Elhabian, Shireen
+Time: TuTh 03:40PM-05:00PM
+Description: Artificial intelligence is rapidly transforming image analysis across domains like biomedical imaging, robotics, and industrial automation. This advanced graduate course explores emerging paradigms at the intersection of artificial intelligence and image analysis, emphasizing methods beyond traditional deep learning. Topics rotate to reflect current research trends and may include foundation models, generative AI, self- and weakly-supervised learning, AI for 3D/4D imaging, explainable and trustworthy AI, privacy-preserving learning, human-AI collaboration, and real-time edge AI applications. Designed for students in CS, ECE, BME, and related fields, the course balances lectures, paper discussions, and a research project. Topics may vary each semester to reflect the evolving landscape of AI for image analysis.
+------------------------------------------------------------
+CS 7810 - Adv Computer Arch (Section 001)
+Instructor: NAGARAJAN, VIJAYANAND
+Time: TuTh 03:40PM-05:00PM
+Description: NAGARAJAN, VIJAYANAND
+------------------------------------------------------------
+CS 7932 - Human Centered Comp Seminar (Section 001)
+Instructor: N/A
+Time: We 10:00AM-11:00AM
+Description: Human Centered Comp Seminar
+------------------------------------------------------------
+CS 7933 - Graphics Seminar (Section 001)
+Instructor: Lin, Jenny
+Time: Tu 12:15PM-01:45PM
+Description: N/A
+------------------------------------------------------------
+CS 7934 - Computer Systems Seminar (Section 001)
+Instructor: EIDE, ERIC N
+Time: Fr 02:00PM-03:30PM
+Description: Computer Systems Seminar
+------------------------------------------------------------
+CS 7936 - Type Theory Foundations (Section 001)
+Instructor: GREENMAN, BENJAMIN
+Time: Mo 01:25PM-02:45PM
+Description: Type Theory Foundations
+------------------------------------------------------------
+CS 7937 - Arch/VLSI (Section 001)
+Instructor: NAGARAJAN, VIJAYANAND
+Time: Fr 09:30AM-11:00AM
+Description: Meets in MEB 2170
+------------------------------------------------------------
+CS 7939 - Robotics Seminar (Section 001)
+Instructor: N/A
+Time: We 09:40AM-10:30AM
+Description: N/A
+------------------------------------------------------------
+CS 7941 - Data Science Seminar (Section 001)
+Instructor: PHILLIPS, JEFF
+Time: Fr 01:25PM-02:45PM
+Description: N/A
+------------------------------------------------------------
+CS 7942 - Visualization Seminar (Section 001)
+Instructor: MCNUTT, ANDREW
+Time: We 12:00PM-01:00PM
+Description: Visualization Seminar
+------------------------------------------------------------
