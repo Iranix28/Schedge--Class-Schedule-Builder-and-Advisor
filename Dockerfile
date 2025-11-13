@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set working directory inside the container
-WORKDIR /app
+WORKDIR /backend/app
 
 # Prevent Python from creating .pyc files and buffer issues
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -18,5 +18,3 @@ COPY . .
 # Expose port 8000 for FastAPI
 EXPOSE 8000
 
-# Command to start FastAPI with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app/app"]
