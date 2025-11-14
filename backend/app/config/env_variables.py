@@ -3,3 +3,5 @@
 OLLAMA_URL = "http://localhost:11434/v1/chat/completions"
 API_KEY = "local"          # whatever you use nowW
 MODEL = "llama3.2:1b"      # this can change whenever, just a test
+
+DATABASE_URL = "postgresql+psycopg://postgres:postgres@host.docker.internal:5432/schedge_db"
