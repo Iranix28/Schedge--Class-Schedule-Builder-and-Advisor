@@ -1,5 +1,5 @@
 from app.database.base import Base
-from app.models import db_models  
+from schedge.backend.app.database import schema  
 from app.config.env_variables import DATABASE_URL
 
 

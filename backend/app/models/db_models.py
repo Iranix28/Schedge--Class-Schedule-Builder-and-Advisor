@@ -1,115 +1,126 @@
-from datetime import datetime, time
+from datetime import time
 from typing import List, Optional
 
-from sqlalchemy import (
-    Integer,
-    String,
-    Time,
-    ForeignKey,
-)
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from pydantic import BaseModel, ConfigDict
 
-from app.database.base import Base
 
-class Department(Base):
-    """
-    Department table (majors)
-    """
+#DEPARTMENT db_ models----------------------------------------
+class DepartmentBase(BaseModel):
+    name: str
+    subject: str
 
-    __tablename__ = "departments"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-    subject: Mapped[str] = mapped_column(String(16), nullable=False, unique=True)
+class DepartmentCreate(DepartmentBase):
+    pass
 
-    # One department → many courses
-    courses: Mapped[List["Course"]] = relationship(
-        back_populates="department"
-    )
 
-class Course(Base):
-    """
-    Catalog-level course, e.g. CS 3500 Software Practice.
-    """
+class DepartmentUpdate(BaseModel):
+    name: Optional[str] = None
+    subject: Optional[str] = None
 
-    __tablename__ = "courses"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    department_id: Mapped[int] = mapped_column(
-        ForeignKey("departments.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    number: Mapped[str] = mapped_column(String(16), nullable=False)   # "3500"
-    name: Mapped[str] = mapped_column(String(255), nullable=False)    # "Software Practice"
+#COURSE db modelsss--------------------------------------------
 
-    # Relationships
-    department: Mapped["Department"] = relationship(
-        back_populates="courses"
-    )
+class CourseBase(BaseModel):
+    department_id: int
+    number: str  # 3500
+    name: str    # Software Practice
 
-    class_sections: Mapped[List["ClassSection"]] = relationship(
-        back_populates="course"
-    )
 
-    prerequisites: Mapped[List["CoursePrerequisite"]] = relationship(
-        back_populates="course",
-        foreign_keys="CoursePrerequisite.course_id",
-    )
+class CourseCreate(CourseBase):
+    pass
 
-    prereq_for: Mapped[List["CoursePrerequisite"]] = relationship(
-        back_populates="prerequisite_course",
-        foreign_keys="CoursePrerequisite.prerequisite_course_id",
-    )
 
-class ClassSection(Base):
-    """
-    A class within a course
-    """
+class CourseUpdate(BaseModel):
+    department_id: Optional[int] = None
+    number: Optional[str] = None
+    name: Optional[str] = None
 
-    __tablename__ = "class_sections"
+#CLASS SECTION db models------------------------------------------
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    course_id: Mapped[int] = mapped_column(
-        ForeignKey("courses.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+class ClassSectionBase(BaseModel):
+    course_id: int
+    term_season: str       # Fall
+    term_year: int         # 2025
+    section_code: str      
 
-    term_season: Mapped[str] = mapped_column(String(16), nullable=False)  # "Fall", "Spring"
-    term_year: Mapped[int] = mapped_column(Integer, nullable=False)       # 2025
-    section_code: Mapped[str] = mapped_column(String(16), nullable=False) # "001", "002"
+    location: Optional[str] = None
+    days: Optional[str] = None      # MWF, TuTh
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
 
-    location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MWF", "TuTh"
-    start_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
-    end_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
 
-    course: Mapped["Course"] = relationship(
-        back_populates="class_sections"
-    )
+class ClassSectionCreate(ClassSectionBase):
+    pass
 
-class CoursePrerequisite(Base):
-    """
-    prereqs
-    """
 
-    __tablename__ = "course_prerequisites"
+class ClassSectionUpdate(BaseModel):
+    """For partial updates"""
+    course_id: Optional[int] = None
+    term_season: Optional[str] = None
+    term_year: Optional[int] = None
+    section_code: Optional[str] = None
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    location: Optional[str] = None
+    days: Optional[str] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
 
-    course_id: Mapped[int] = mapped_column(
-        ForeignKey("courses.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    prerequisite_course_id: Mapped[int] = mapped_column(
-        ForeignKey("courses.id", ondelete="CASCADE"),
-        nullable=False,
-    )
 
-    course: Mapped["Course"] = relationship(
-        back_populates="prerequisites",
-        foreign_keys=[course_id],
-    )
-    prerequisite_course: Mapped["Course"] = relationship(
-        back_populates="prereq_for",
-        foreign_keys=[prerequisite_course_id],
-    )
+#COURSE PREREQUISITE db models------------------------------------------
+
+class CoursePrerequisiteBase(BaseModel):
+    course_id: int
+    prerequisite_course_id: int
+
+
+class CoursePrerequisiteCreate(CoursePrerequisiteBase):
+    pass
+
+
+class CoursePrerequisiteUpdate(BaseModel):
+
+    course_id: Optional[int] = None
+    prerequisite_course_id: Optional[int] = None
+
+
+
+########## returns models
+
+class CourseRead(BaseModel):
+    id: int
+    department_id: int
+    number: str
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class ClassSectionRead(BaseModel):
+    id: int
+    course_id: int
+    term_season: str
+    term_year: int
+    section_code: str
+
+    location: Optional[str] = None
+    days: Optional[str] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CoursePrerequisiteRead(BaseModel):
+    id: int
+    course_id: int
+    prerequisite_course_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class DepartmentRead(BaseModel):
+    id: int
+    name: str
+    subject: str
+
+    courses: List[CourseRead] = []
+
+    model_config = ConfigDict(from_attributes=True)
