@@ -1,0 +1,50 @@
+Requirement: Computer Science ElectivesComplete 7 or more CS electives for at least 21 credits.
+    FA24 CS   3190 3.0 A Found. of Data Analysis
+
+    SP25 CS   3550 3.0 A Web Software Dev I
+
+    FA25 CS   4300 3.0 IP Artificial Intelligence
+
+    FA25 CS   5150 3.0 IP Advanced Algorithms
+
+    Not From: CS   3011, 3020, 3100, 3130, 3200, 3500, 3505, 3810, 3991, 3992, 4000, 4011, 4150, 4400, 4500, CS   4940, 4970, 5040, 3390, 3090, 
+
+    Select From: CS   3000, 5999, 
+
+  (Optional) Only one Ethics course may be used as aCS Elective:
+
+  Needs: 1
+
+    Not From: 
+
+    Select From: CS   3390, 3090, 
+
+  (Optional) Complete at least 3 credits from thefollowing:
+
+    Not From: 
+
+    Select From: CS   3011, 3020, 4011, 
+
+------------------------------------------------------------
+
+Requirement: Capstone RequirementComplete one of the following:
+  Project
+
+    FA25 CS   4000 3.0 IP Senior Capstone Design
+
+  Needs: 1
+
+    Not From: 
+
+    Select From: CS   4500, 
+
+  Research/Thesis
+
+  Needs: 2
+
+    Not From: 
+
+    Select From: CS   4940, 4970, 
+
+------------------------------------------------------------
+
