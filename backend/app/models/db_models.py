@@ -25,6 +25,8 @@ class CourseBase(BaseModel):
     department_id: int
     number: str  # 3500
     name: str    # Software Practice
+    units: int  
+    description: Optional[str] = None
 
 
 class CourseCreate(CourseBase):
@@ -35,6 +37,18 @@ class CourseUpdate(BaseModel):
     department_id: Optional[int] = None
     number: Optional[str] = None
     name: Optional[str] = None
+    units: Optional[int] = None
+    description: Optional[str] = None
+
+class CourseRead(BaseModel):
+    id: int
+    department_id: int
+    number: str
+    name: str
+    units: int
+    description: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 #CLASS SECTION db models------------------------------------------
 
@@ -48,6 +62,7 @@ class ClassSectionBase(BaseModel):
     days: Optional[str] = None      # MWF, TuTh
     start_time: Optional[time] = None
     end_time: Optional[time] = None
+    professor_name: Optional[str] = None
 
 
 class ClassSectionCreate(ClassSectionBase):
@@ -65,6 +80,7 @@ class ClassSectionUpdate(BaseModel):
     days: Optional[str] = None
     start_time: Optional[time] = None
     end_time: Optional[time] = None
+    professor_name: Optional[str] = None
 
 
 #COURSE PREREQUISITE db models------------------------------------------

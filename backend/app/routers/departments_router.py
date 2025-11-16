@@ -8,6 +8,8 @@ from app.models.db_models import DepartmentCreate, DepartmentRead, DepartmentUpd
 
 from app.database.query_routers.departments_query import create_department, list_departments, get_department
 
+from backend.exceptions import EntityNotFound
+
 router = APIRouter(prefix="/departments", tags=["departments"])
 
 
@@ -17,7 +19,7 @@ def create_department_endpoint(dept_in: DepartmentCreate, db: DBSession):
     return dept
 
 
-@router.get("/", response_model=List[DepartmentRead])
+@router.get("/", response_model=List[DepartmentRead])           ##add statys codess
 def list_departments_endpoint(db: DBSession):
     return list_departments(db)
 
@@ -26,6 +28,5 @@ def list_departments_endpoint(db: DBSession):
 def get_department_endpoint(dept_id: int, db: DBSession):
     dept = get_department(db, dept_id)
     if not dept:
-        raise HTTPException(status_code=404, detail="Department not found")
+        raise EntityNotFound(entity_name="Department", entity_id=dept_id)
     return dept
-

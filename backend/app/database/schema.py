@@ -37,6 +37,9 @@ class Course(Base):
     number: Mapped[str] = mapped_column(String(16), nullable=False)   # "3500"
     name: Mapped[str] = mapped_column(String(255), nullable=False)    # "Software Practice"
 
+    units: Mapped[Optional[int]] = mapped_column(Integer, nullable=False)  
+    description: Mapped[Optional[str]] = mapped_column(String(5000), nullable=True)
+
     # Relationships
     department: Mapped["Department"] = relationship(
         back_populates="courses"
@@ -77,6 +80,8 @@ class ClassSection(Base):
     days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MWF", "TuTh"
     start_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
     end_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
+
+    professor_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     course: Mapped["Course"] = relationship(
         back_populates="class_sections"
