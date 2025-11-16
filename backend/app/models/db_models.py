@@ -82,6 +82,21 @@ class ClassSectionUpdate(BaseModel):
     end_time: Optional[time] = None
     professor_name: Optional[str] = None
 
+class ClassSectionRead(BaseModel):
+    id: int
+    course_id: int
+    term_season: str
+    term_year: int
+    section_code: str
+
+    location: Optional[str] = None
+    days: Optional[str] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+    professor_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 #COURSE PREREQUISITE db models------------------------------------------
 
