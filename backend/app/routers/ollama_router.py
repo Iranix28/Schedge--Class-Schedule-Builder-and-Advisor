@@ -7,7 +7,7 @@ from app.config.env_variables import OLLAMA_URL, API_KEY, MODEL
 
 router = APIRouter(prefix="/ollama", tags=["Ollama"])
 
-@router.get("/chat", response_model=ChatResponse)
+@router.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
     try:
         payload = {
