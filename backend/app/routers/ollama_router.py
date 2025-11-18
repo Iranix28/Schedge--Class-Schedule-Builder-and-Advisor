@@ -22,8 +22,8 @@ def chat(req: ChatRequest):
         payload = {
             "model": MODEL,
             "stream": False,  # keep it simple for now
-            "system": preprompt,
             "messages": [
+                {"role": "system", "content": preprompt},
                 {"role": "user", "content": req.message}
             ],
         }
