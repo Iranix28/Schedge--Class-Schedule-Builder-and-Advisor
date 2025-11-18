@@ -32,7 +32,7 @@ def read_root():
 def chat(req: ChatRequest):
     print("-----------")
     try:
-        print("hello world")
+        print("User: " + req.message)
         payload = {
             "model": MODEL,
             "stream": False,  # keep it simple for now
@@ -52,6 +52,7 @@ def chat(req: ChatRequest):
 
         # standard OpenAI style response
         reply = data["choices"][0]["message"]["content"]
+        print("AI: " + reply)
         return ChatResponse(reply=reply)
 
     except Exception as e:
