@@ -1,7 +1,7 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
-const BASE_URL = "http://localhost:8000/ollama"; // FastAPI, not Ollama
+const BASE_URL = "https://unjudicial-sherilyn-ruly.ngrok-free.dev/ollama"; // FastAPI, not Ollama
 // const API_KEY = "local"; // not needed for FastAPI unless you want it
 
 async function sendMessageLLM(userText, onToken) {
