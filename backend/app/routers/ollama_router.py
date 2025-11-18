@@ -19,26 +19,17 @@ preprompt = " Your role is a class schedule and class advising at The University
 @router.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
     try:
-        payload = {
-            "model": MODEL,
-            "stream": False,  # keep it simple for now
-            "messages": [
-                {"role": "system", "content": preprompt},
-                {"role": "user", "content": req.message}
-            ],
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {API_KEY}",
-        }
-
-        r = requests.post(OLLAMA_URL, json=payload, headers=headers, timeout=60)
+        r = requests.post(
+            f"{OLLAMA_URL}/chat",
+            json=req.dict(),
+            headers={"Content-Type": "application/json"},
+            timeout=60
+        )
         r.raise_for_status()
         data = r.json()
+        reply = data["reply"]
 
-        # standard OpenAI style response
-        reply = data["choices"][0]["message"]["content"]
         return ChatResponse(reply=reply)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))             #TODO: make detailed exception later 
+        raise HTTPException(status_code=500, detail=str(e)) #TODO: update excception
