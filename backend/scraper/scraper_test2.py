@@ -4,15 +4,16 @@ from urllib.parse import urljoin
 import time
 import re
 from pathlib import Path
-from backend.app.database.query_routers.departments_query import *
-from backend.app.database.query_routers.courses_query import *
-from backend.app.database.query_routers.course_prerequisites_query import *
-from backend.app.database.query_routers.class_sections_query import *
-from backend.app.database.session import DBSession
+from app.database.query_routers.departments_query import *
+from app.database.query_routers.courses_query import *
+from app.database.query_routers.course_prerequisites_query import *
+from app.database.query_routers.class_sections_query import *
+from app.database.session import SessionLocal
 
 # create the CS department
-cs_dept = DepartmentCreate(name="Computer Science", subject="CS")
-cs_department = create_department(DBSession, cs_dept)
+db = SessionLocal()
+# cs_dept = DepartmentCreate(name="Computer Science", subject="CS")
+# cs_department = create_department(db, cs_dept)
 
 # === CONFIG ===
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
@@ -138,6 +139,7 @@ print(f"Found {len(course_cards)} courses")
 
 courses = []
 
+
 for idx, card in enumerate(course_cards, start=1):
     header = card.find("h3")
     if not header:
@@ -177,6 +179,8 @@ for idx, card in enumerate(course_cards, start=1):
         text = li.get_text(" ", strip=True)
         if "Units:" in text:
             units = text.split(":", 1)[-1].strip()
+            if units == "--":
+                units = 0
         elif "Component:" in text:
             components = text.split(":", 1)[-1].strip()
 
@@ -236,15 +240,20 @@ for idx, card in enumerate(course_cards, start=1):
         "description": full_desc
     })
 
+
     # add this course to the database
-    new_course = create_course(
-        db=DBSession,
-        department_id=cs_department.id,  # link to CS department
-        number=course_code,
-        name=title,
-        units=units,
-        description=full_desc
-    )
+    # new_course = CourseCreate(
+    #     department_id=1,  # link to CS department
+    #     number=course_code,
+    #     name=title,
+    #     units=units,
+    #     description=full_desc
+    # )
+
+    # cs_class = create_course(db, new_course)
+
+
+db.close()
 
 # save to file
 with OUTPUT_FILE.open("w", encoding="utf-8") as f:
@@ -261,3 +270,4 @@ with OUTPUT_FILE.open("w", encoding="utf-8") as f:
         f.write("-" * 70 + "\n")
 
 print(f"\nSaved detailed info for {len(courses)} courses to {OUTPUT_FILE.resolve()}")
+

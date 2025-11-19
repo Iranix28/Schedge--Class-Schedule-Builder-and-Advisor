@@ -1,16 +1,22 @@
 from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.database.schema import Course
 from app.models.db_models import CourseCreate, CourseUpdate
 
 def create_course(db: Session, course_in: CourseCreate) -> Course:
     course = Course(**course_in.model_dump())
-    db.add(course)
-    db.commit()
-    db.refresh(course)
-    return course
+    try:
+        db.add(course)
+        db.commit()
+        db.refresh(course)
+        return course
+
+    except IntegrityError:
+        db.rollback()
+        return None
 
 
 def list_courses(db: Session) -> List[Course]:
