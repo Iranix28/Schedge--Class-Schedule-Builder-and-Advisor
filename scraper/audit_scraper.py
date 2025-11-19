@@ -1,82 +1,184 @@
 from bs4 import BeautifulSoup
 
-file_path = r"My Audit.html"
+def extractCourseInfo(element):
+    """
+    Extracts department, number, and name from a list of (completed) courses in the audit
+    """
 
-# 1. Load your HTML file
-with open(file_path, "r", encoding="utf-8") as f:
-    soup = BeautifulSoup(f, "html.parser")
+    course_td = element.find("td", class_="course")
+    if course_td:
+        # Normalize spacing inside the code
+        code = " ".join(course_td.get_text(strip=True).split())
+    else:
+        code = None
 
-# 2. Find all requirements
-requirements = soup.find_all("div", class_="requirement")
+    # Get the course name lives
+    desc_td = element.select_one("td.description td.descLine")
+    if desc_td:
+        name = desc_td.get_text(strip=True)
+    else:
+        name = None
 
-# 3. Write extracted data to a text file
-with open("degree_extracted.txt", "w", encoding="utf-8") as out:
-    i = 0
+    return code, name
 
-    for req in requirements:
-        # Don't look at unecessary items
-        if i < 8:
-            i += 1
+def scrapeDegreeAudit(html_file):
+    """
+    Takes an uploaded HTML file and returns a list that
+    contains the requirements that must still be completed
+
+    Return list has the format
+    [
+        {
+            "title": "...",
+            "subrequirements": [
+                {
+                    title": "...",
+                    "completedCourses": { "CS 3190": "Found. of Data Analysis", ... },
+                    "needsCount": "...",
+                    "notFrom": ["CS 3011", "CS 3020", ...],
+                    "selectFrom": ["CS 3000", "CS 5999", ...]
+                }
+            ]
+        }
+    ]
+
+    """
+
+    # Read file contents
+    if hasattr(html_file, "read"):  
+        contents = html_file.read()
+        try:
+            contents = contents.decode("utf-8")
+        except AttributeError:
+            pass
+    else:
+        # Assume it's a file path
+        with open(html_file, "r", encoding="utf-8") as f:
+            contents = f.read()
+
+    soup = BeautifulSoup(contents, "html.parser")
+    requirements = soup.find_all("div", class_="requirement")
+
+    parsedRequirements = []
+
+    # Skip first 8 irrelevant requirements
+    for idx, req in enumerate(requirements):
+        if idx < 8:
             continue
 
-        # --- Requirement title and status ---
-        title_tag = req.find("div", class_="reqTitle")
-        status_tag = req.find("div", class_="status")
+        titleTag = req.find("div", class_="reqTitle")
+        statusTag = req.find("div", class_="status")
 
-        title = title_tag.get_text(strip=True)
-        status = status_tag.get_text(strip=True)
+        if not titleTag or not statusTag:
+            continue
 
-        # If the requirement is not met, get information about it
-        if "Unfulfilled" in status:
+        title = titleTag.get_text(strip=True)
+        status = statusTag.get_text(strip=True)
 
-            out.write(f"Requirement: {title}")
+        requirement_obj = {
+            "title": title,
+            "subrequirements": []
+        }
 
-            # --- Subrequirements ---
-            subreqs = req.find_all("div", class_="subrequirement")
-            for sub in subreqs:
-                # sub_title_tag = sub.find("span", class_="subreqTitle")
-                # sub_status_tag = sub.find("span", class_="status")
-                # sub_title = sub_title_tag.get_text(strip=True) if sub_title_tag else "(No Subreq Title)"
-                # sub_status = sub_status_tag.get_text(strip=True) if sub_status_tag else "(No Status)"
-                # out.write(f"    Subrequirement: {sub_title}\n")
-                # out.write(f"    Status: {sub_status}\n")
+        # Only get unfulfilled reqquirements
+        if "Unfulfilled" not in status:
+            continue  
 
-                # Title of subreq
-                subTitle = sub.select_one(".subreqTitle")
-                if subTitle:
-                    subTitleText = subTitle.get_text(strip=True)
-                    out.write(f"\n  {subTitleText}\n")
+        subreqs = req.find_all("div", class_="subrequirement")
 
-                # Completed courses inside the not fully completed requirement
-                completedCourses = sub.select(".completedCourses tr.takenCourse")
-                for course in completedCourses:
-                    course_text = " ".join(course.stripped_strings)
-                    out.write(f"\n    {course_text}\n")
+        for sub in subreqs:
 
-                # Needs this number of courses to meet the requirement
-                needsCount = sub.select_one(".subreqNeeds .count")
-                if needsCount:
-                    needsCountText = needsCount.get_text(strip=True)
-                    out.write(f"\n  Needs: {needsCountText}\n")
+            # Get subrequirement title
+            subTitleTag = sub.select_one(".subreqTitle")
+            subTitle = None
 
-                # Don't select from these courses
-                notCourses = sub.select(".notcourses .course")
-                out.write("\n")
-                out.write("    Not From: ")
-                for course in notCourses:
-                    course_text = " ".join(course.stripped_strings)
-                    out.write(f"{course_text}, ")
-                out.write("\n")
+            if subTitleTag:
+                subTitle = subTitleTag.get_text(strip=True)
 
-                # Select from these courses
-                selectFromCourses = sub.select(".selectcourses .course")
-                out.write("\n")
-                out.write("    Select From: ")
-                for course in selectFromCourses:
-                    course_text = " ".join(course.stripped_strings)
-                    out.write(f"{course_text}, ")
-                out.write("\n")
+            # Completed courses inside the not fully completed requirement
+            completedCourses = {}
+            completedTag = sub.select(".completedCourses tr.takenCourse")
 
-            out.write("\n" + "-" * 60 + "\n\n")
+            for course in completedTag:
+                code, name = extractCourseInfo(course)
 
-print("✅ Extraction complete! Check 'degree_audit_extracted.txt'")
+                if code:
+                    completedCourses[code] = name
+
+            # Number of courses to take to meet this requirement
+            needsTag = sub.select_one(".subreqNeeds .count")
+            needsCount = None
+
+            if needsTag:
+                needsCount = needsTag.get_text(strip=True)
+
+            # Do not select from these courses
+            notFromList = []
+            notCoursesTag = sub.select(".notcourses .course")
+
+            dept = ""
+            for course in notCoursesTag:
+                text = course.get_text(strip=True)
+
+                # Checks if the course number is actually a department since HTML is not consistent
+                if text and text[0].isalpha():
+                    # Find first digit in the string
+                    splitIndex = 0
+                    for i in range(len(text)):
+                        if text[i].isdigit():
+                            splitIndex = i
+                            break
+
+                    # Get the department from the string
+                    dept = text[:splitIndex].strip()
+
+                    # Get the course number from the string
+                    num  = text[splitIndex:].strip()        
+
+                    notFromList.append(f"{dept} {num}")
+                    continue
+
+                # If the text if just the course number, add it with the saved department
+                notFromList.append(f"{dept} {text}")
+
+            # Select from these courses
+            selectCoursesTag = sub.select(".selectcourses .course")
+            selectFromList = []
+
+            dept = ""
+            for course in selectCoursesTag:
+                text = course.get_text(strip=True)
+
+                # Checks if the course number is actually a department since HTML is not consistent
+                if text and text[0].isalpha():
+                    # Find first digit in the string
+                    splitIndex = 0
+                    for i in range(len(text)):
+                        if text[i].isdigit():
+                            splitIndex = i
+                            break
+
+                    # Get the department from the string
+                    dept = text[:splitIndex].strip()
+
+                    # Get the course number from the string
+                    num  = text[splitIndex:].strip()        
+
+                    selectFromList.append(f"{dept} {num}")
+                    continue
+
+                # If the text if just the course number, add it with the saved department
+                selectFromList.append(f"{dept} {text}")
+
+            # Add subrequirement object
+            requirement_obj["subrequirements"].append({
+                "title": subTitle,
+                "completedCourses": completedCourses,
+                "needsCount": needsCount,
+                "notFrom": notFromList,
+                "selectFrom": selectFromList
+            })
+
+        parsedRequirements.append(requirement_obj)
+
+    return parsedRequirements
