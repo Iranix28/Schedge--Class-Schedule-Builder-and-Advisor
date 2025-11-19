@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.models.models import ChatRequest, ChatResponse
 import requests
+from pathlib import Path
 
 from app.config.env_variables import OLLAMA_URL, API_KEY, MODEL
 
@@ -17,6 +18,7 @@ preprompt = " Your role is a class schedule and class advising at The University
 
 @router.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
+    print("in ollama router")
     try:
         payload = {
             "model": MODEL,

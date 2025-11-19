@@ -73,6 +73,7 @@ function ChatUI() {
 		}
 	};
 
+	//we can make this dynamically created aswell as the class day and start times.
 	const generateSampleSchedule = () => {
 		return [
 			{

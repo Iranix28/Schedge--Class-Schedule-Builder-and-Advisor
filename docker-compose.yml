@@ -1,9 +1,29 @@
 version: "3.9"
+
 services:
   backend:
     build: .
     ports:
       - "8000:8000"
     volumes:
-      - .:/app # ← live-mount your local code
+      - .:/app # live-mount your local code
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/schedge_db
+
+  db:
+    image: pgvector/pgvector:pg16 #16 probably at some point
+    container_name: schedge_db
+    environment:
+      POSTGRES_DB: schedge_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
