@@ -240,9 +240,6 @@ function ChatUI() {
 
 						{isLoading && (
 							<div className="flex gap-2 justify-start">
-								<div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-700 flex items-center justify-center shadow-sm text-white text-xs font-bold">
-									AI
-								</div>
 								<div className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
 									<div className="flex gap-1">
 										<div
