@@ -14,6 +14,7 @@ ENV PYTHONPATH=/app/backend
 # Copy requirements file and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install requests beautifulsoup4 lxml
 
 # Copy your app code
 COPY . .
