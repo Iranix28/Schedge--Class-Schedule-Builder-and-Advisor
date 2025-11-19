@@ -2,7 +2,7 @@ import asyncio
 import json
 import websockets
 import subprocess
-# (to run client)
+#py client.py (to run client)
 
 SERVER_URL = "ws://A_PUBLIC_IP:8080/worker"
 MODEL = "deepseek-r1:8b"  # <--- Your Ollama model name

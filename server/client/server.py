@@ -2,7 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import JSONResponse
 import uuid
 import asyncio
-#uvicorn person_a_server:app --host 0.0.0.0 --port 8080 (to run server)
+#uvicorn server:app --host 0.0.0.0 --port 8080 (to run server)
 
 app = FastAPI()
 
