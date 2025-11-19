@@ -31,4 +31,5 @@ def chat(req: ChatRequest):
         return ChatResponse(reply=reply)
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))             #TODO: make detailed exception later 
