@@ -1,39 +1,48 @@
 import asyncio
 import json
 import websockets
-import subprocess
-#py client.py (to run client)
+import requests  # Use requests to call the Docker LLM server
 
+# WebSocket URL to Person A
 SERVER_URL = "ws://136.59.160.8:8000/worker"
-MODEL = "deepseek-r1:8b"  # <--- Your Ollama model name
-
-def run_llm(prompt: str):
-    # DeepSeek R1 typically returns streaming tokens.
-    # We just capture the normal output.
-    result = subprocess.run(
-        ["ollama", "run", MODEL, prompt],
-        capture_output=True,
-        text=True
-    )
-    return result.stdout.strip()
+# Local Docker LLM endpoint
+LOCAL_LLM_URL = "http://127.0.0.1:5000/chat"
 
 async def main():
-    async with websockets.connect(SERVER_URL) as ws:
-        print("Connected to Person A")
+    while True:
+        try:
+            async with websockets.connect(SERVER_URL) as ws:
+                print("Connected to Person A")
 
-        while True:
-            message = await ws.recv()
-            data = json.loads(message)
+                while True:
+                    # Receive a job from Person A
+                    message = await ws.recv()
+                    data = json.loads(message)
+                    job_id = data["job_id"]
+                    prompt = data["prompt"]
+                    print(f"Received job: {job_id}")
 
-            job_id = data["job_id"]
-            prompt = data["prompt"]
-            print(f"Received job: {job_id}")
+                    # Send prompt to local Docker LLM
+                    try:
+                        response = requests.post(
+                            LOCAL_LLM_URL,
+                            json={"prompt": prompt},
+                            timeout=60
+                        )
+                        response.raise_for_status()
+                        llm_result = response.json().get("response", "")
+                    except Exception as e:
+                        llm_result = f"Error contacting local LLM: {e}"
 
-            response = run_llm(prompt)
+                    # Send the result back to Person A
+                    await ws.send(json.dumps({
+                        "job_id": job_id,
+                        "result": llm_result
+                    }))
 
-            await ws.send(json.dumps({
-                "job_id": job_id,
-                "result": response
-            }))
+        except Exception as e:
+            print("Connection failed, retrying in 5s...", e)
+            await asyncio.sleep(5)
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
