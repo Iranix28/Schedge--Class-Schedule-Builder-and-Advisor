@@ -4,7 +4,7 @@ import websockets
 import subprocess
 #py client.py (to run client)
 
-SERVER_URL = "ws://A_PUBLIC_IP:8080/worker"
+SERVER_URL = "ws://136.59.160.8:8000/worker"
 MODEL = "deepseek-r1:8b"  # <--- Your Ollama model name
 
 def run_llm(prompt: str):
