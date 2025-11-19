@@ -4,6 +4,15 @@ from urllib.parse import urljoin
 import time
 import re
 from pathlib import Path
+from backend.app.database.query_routers.departments_query import *
+from backend.app.database.query_routers.courses_query import *
+from backend.app.database.query_routers.course_prerequisites_query import *
+from backend.app.database.query_routers.class_sections_query import *
+from backend.app.database.session import DBSession
+
+# create the CS department
+cs_dept = DepartmentCreate(name="Computer Science", subject="CS")
+cs_department = create_department(DBSession, cs_dept)
 
 # === CONFIG ===
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
@@ -191,7 +200,7 @@ for idx, card in enumerate(course_cards, start=1):
             prereqs_raw = extract_label_value(d_soup, r"Pre-?requisites:?")
             coreqs_raw = extract_label_value(d_soup, r"Co-?requisites:?")
 
-            # parse structured prereq list
+            # parse structured prereq list (this isnt quiet working yet)
             prereq_list = parse_requirements(prereqs_raw, coreqs_raw)
 
             # description
@@ -227,6 +236,15 @@ for idx, card in enumerate(course_cards, start=1):
         "description": full_desc
     })
 
+    # add this course to the database
+    new_course = create_course(
+        db=DBSession,
+        department_id=cs_department.id,  # link to CS department
+        number=course_code,
+        name=title,
+        units=units,
+        description=full_desc
+    )
 
 # save to file
 with OUTPUT_FILE.open("w", encoding="utf-8") as f:
