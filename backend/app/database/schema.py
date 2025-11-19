@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import Integer, String, Time, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+from pgvector.sqlalchemy import Vector
 
 from app.database.base import Base
 
@@ -39,6 +40,11 @@ class Course(Base):
 
     units: Mapped[Optional[int]] = mapped_column(Integer, nullable=False)  
     description: Mapped[Optional[str]] = mapped_column(String(5000), nullable=True)
+
+    embedding: Mapped[Optional[List[float]]] = mapped_column(           
+        Vector(1024),                                                 # change based embedding model
+        nullable=True,
+    )
 
     # Relationships
     department: Mapped["Department"] = relationship(
