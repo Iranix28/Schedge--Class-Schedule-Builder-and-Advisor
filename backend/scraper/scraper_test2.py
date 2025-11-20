@@ -51,7 +51,7 @@ def parse_requirements(raw_pre, raw_co):
                 tokens.append(f"{dept}{num}")
                 continue
 
-            # Standalone number → infer dept
+            # Standalone number - infer dept
             if re.match(r"^[0-9]{3,4}$", tok):
                 if tokens:
                     prev = tokens[-1]
@@ -106,7 +106,7 @@ def extract_course_codes(prereq_string):
 
     matches = re.findall(pattern, prereq_string)
 
-    # Recombine them cleanly: [('CS', '3500')] → ["CS 3500"]
+    # Recombine them cleanly: [('CS', '3500')] - ["CS 3500"]
     return [f"{dept} {num}" for dept, num in matches]
 
 def extract_label_value(soup, label_pattern):
