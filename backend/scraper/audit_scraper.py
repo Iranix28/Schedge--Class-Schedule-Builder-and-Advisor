@@ -1,5 +1,57 @@
 from bs4 import BeautifulSoup
 
+def outputRequirements(requirements, filename="parsed_audit.txt"):
+    """
+    Takes in a list of all the requirements and outputs it
+    a readable friendly way to a text file.
+    Useful for testing
+
+    """
+     
+    lines = []
+
+    for req in requirements:
+        lines.append("=" * 60)
+        lines.append(f"Requirement: {req['title']}")
+        lines.append("=" * 60)
+
+        for sub in req["subrequirements"]:
+            lines.append(f"  Subrequirement: {sub['title'] or '[No Title]'}")
+
+            # Completed courses
+            if sub["completedCourses"]:
+                lines.append("    Completed Courses:")
+                for code, name in sub["completedCourses"].items():
+                    lines.append(f"      - {code}: {name}")
+            else:
+                lines.append("    Completed Courses: None")
+
+            # Needs count
+            lines.append(f"    Needs Count: {sub['needsCount'] or 'N/A'}")
+
+            # Not from courses
+            if sub["notFrom"]:
+                not_from_str = ", ".join(sub["notFrom"])
+                lines.append(f"    Not From: {not_from_str}")
+            else:
+                lines.append("    Not From: None")
+
+            # Select from courses
+            if sub["selectFrom"]:
+                select_from_str = ", ".join(sub["selectFrom"])
+                lines.append(f"    Select From: {select_from_str}")
+            else:
+                lines.append("    Select From: None")
+
+            # blank line between subrequirements
+            lines.append("")
+
+        lines.append("\n")
+
+    # Write file
+    with open("parsed_audit.txt", "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
 def extractCourseInfo(element):
     """
     Extracts department, number, and name from a list of (completed) courses in the audit
