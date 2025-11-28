@@ -1,8 +1,9 @@
 from typing import List, Optional
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import Session
 
-from app.database.schema import CoursePrerequisite
+from app.database.schema import CoursePrerequisite, Course, Department
 from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteUpdate
 
 def create_course_prerequisite(db: Session, course_prerequisite_in: CoursePrerequisiteCreate) -> CoursePrerequisite:
@@ -25,6 +26,20 @@ def get_course_prerequisite(db: Session, cp_id: int) -> Optional[CoursePrerequis
     stmt = select(CoursePrerequisite).where(CoursePrerequisite.id == cp_id)
     result = db.execute(stmt)
     return result.scalars().first()
+
+def get_course_prerequisite_by_subject(db: Session, department_subject: str, course_number: str) -> Optional[CoursePrerequisite]:
+    stmt = (
+        select(Course)
+        .join(Department)
+        .where(Department.subject == department_subject)
+        .where(Course.number == course_number)
+        .options(joinedload(Course.prerequisites))
+    )
+    course = db.execute(stmt).scalars().first()
+    if course:
+        prerequisites = [prereq.prerequisite_course for prereq in course.prerequisites]
+        return prerequisites
+    return None
 
 # def update_class_section(db: Session, class_section_id: int, class_section_in: ClassSectionUpdate) -> Optional[ClassSection]:
 #     class_section = get_class_section(db, class_section_id)

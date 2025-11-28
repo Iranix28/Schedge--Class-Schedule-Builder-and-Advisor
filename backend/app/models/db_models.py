@@ -147,6 +147,13 @@ class CoursePrerequisiteRead(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class CoursePrerequisiteResponse(BaseModel):
+    id: int
+    name: str
+    number: str
+
+    model_config = ConfigDict(from_attributes=True)
+
 class DepartmentRead(BaseModel):
     id: int
     name: str
