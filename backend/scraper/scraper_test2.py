@@ -131,6 +131,93 @@ def extract_label_value(soup, label_pattern):
                 return parts[1].strip()
     return "N/A"
 
+
+
+# --- assume your existing extract_label_value(soup, label_pattern) is present --- #
+# It should return the string following the label or "N/A".
+
+def get_enrollment_blob(soup):
+    """
+    Use the existing extractor to pull the Enrollment text blob.
+    Fallbacks to trying to pull any <p> that contains prerequisite/corequisite words.
+    Returns a normalized string or "N/A".
+    """
+    # Prefer the explicit Enrollment label via your extractor
+    blob = extract_label_value(soup, r"Enrollment\s+Information[:\s]*")
+    if blob and blob != "N/A":
+        return re.sub(r"\s+", " ", blob).strip()
+
+    # Fallback: try to find a <p> that contains the target words and return its text
+    p = soup.find("p", string=re.compile(r"(Prerequisite|Corequisite|Enrollment)", re.I))
+    if p:
+        return re.sub(r"\s+", " ", p.get_text(" ", strip=True)).strip()
+
+    # Final fallback: search anywhere on page for those words and return surrounding text
+    any_str = soup.find(string=re.compile(r"(Prerequisite|Corequisite|Enrollment)", re.I))
+    if any_str:
+        return re.sub(r"\s+", " ", any_str.strip()).strip()
+
+    return "N/A"
+
+
+def split_prereq_core_from_enrollment_blob(blob):
+    """
+    Given a text blob (string) containing Enrollment / Prerequisites / Corequisites,
+    return (prereq_raw, coreq_raw).
+    Rules:
+      - prereq_raw is the text after the Prerequisites: label up to the next '*requisites:' label.
+      - coreq_raw is the text after the Corequisites: label to end.
+      - If no labels, treat entire blob as prereq_raw.
+      - Tolerant: matches 'Corerequisites', 'Corequisites', etc. by looking for words containing 'requisite'.
+    """
+    prereq_raw = "N/A"
+    coreq_raw = "N/A"
+
+    if not blob or blob == "N/A":
+        return prereq_raw, coreq_raw
+
+    text = re.sub(r"\s+", " ", blob).strip()
+
+    # Find all labels of forms: "<something>requisites:" or "enrollment requirements:"
+    label_iter = list(re.finditer(r"(?i)\b(\w*requisite\w*|enrollment\s+requirements?)\s*:", text))
+    if not label_iter:
+        # no explicit labels: everything is prereqs
+        return text, coreq_raw
+
+    # Build slices: each slice is (label_text, content_after_label_up_to_next_label)
+    slices = []
+    for i, m in enumerate(label_iter):
+        label = m.group(1)
+        start = m.end()
+        end = label_iter[i + 1].start() if i + 1 < len(label_iter) else len(text)
+        content = text[start:end].strip()
+        slices.append((label, content))
+
+    found_pre = False
+    found_co = False
+
+    for label, content in slices:
+        low = label.lower()
+        if "pre" in low or "prerequisite" in low:
+            found_pre = True
+            prereq_raw = content or "N/A"
+        elif "core" in low or "corerequisite" in low:
+            found_co = True
+            coreq_raw = content or "N/A"
+        elif "enrollment" in low:
+            # If there's no explicit prereq slice already, treat enrollment as prereqs.
+            if not found_pre:
+                found_pre = True
+                prereq_raw = content or "N/A"
+            # otherwise ignore or keep separate (we chose to ignore extra enrollment if prereqs present)
+
+    # If we found only one label and it was a 'requisite' that is ambiguous, try to guess:
+    # e.g. single "*requisites:" that contains both "Prerequisites: ... Corequisites: ..." (rare),
+    # but above we already split by label occurrences so we should be safe.
+
+    return prereq_raw, coreq_raw
+
+
 # load course list
 if not LOCAL_HTML.exists():
     raise FileNotFoundError("'course_page.html' not found. Download it first.")
@@ -203,8 +290,11 @@ for idx, card in enumerate(course_cards, start=1):
             d_soup = BeautifulSoup(resp.text, "lxml")
 
             # get pre + co separately
-            prereqs_raw = extract_label_value(d_soup, r"Pre[\s-]*requisites?[:\s]*")
-            coreqs_raw = extract_label_value(d_soup, r"Co[\s-]*requisites?[:\s]*")
+            # prereqs_raw = extract_label_value(d_soup, r"Pre[\s-]*requisites?[:\s]*")
+            # coreqs_raw = extract_label_value(d_soup, r"Co[\s-]*requisites?[:\s]*")
+
+            enrollment_blob = get_enrollment_blob(d_soup)                 
+            prereqs_raw, coreqs_raw = split_prereq_core_from_enrollment_blob(enrollment_blob)
 
             # parse structured prereq list (this isnt quiet working yet)
             prereq_list = parse_requirements_to_list(prereqs_raw, coreqs_raw)

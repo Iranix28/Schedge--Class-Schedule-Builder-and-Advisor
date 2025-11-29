@@ -5,9 +5,8 @@ Units: 4.0
 Components: Lecture
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
-Corerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Corequisites Raw: N/A
-Prerequisite list: ['or pre C MATH1050', 'or pre C MATH1060', 'or pre C MATH1080', 'or pre C MATH1210', 'or pre C MATH1215', 'or pre C MATH1250', 'or pre C MATH1310', 'or pre C MATH1311']
+Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
+Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 003)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -16,9 +15,8 @@ Units: 0
 Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
-Corerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Corequisites Raw: N/A
-Prerequisite list: ['or pre C MATH1050', 'or pre C MATH1060', 'or pre C MATH1080', 'or pre C MATH1210', 'or pre C MATH1215', 'or pre C MATH1250', 'or pre C MATH1310', 'or pre C MATH1311']
+Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
+Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 004)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -27,9 +25,8 @@ Units: 0
 Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
-Corerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Corequisites Raw: N/A
-Prerequisite list: ['or pre C MATH1050', 'or pre C MATH1060', 'or pre C MATH1080', 'or pre C MATH1210', 'or pre C MATH1215', 'or pre C MATH1250', 'or pre C MATH1310', 'or pre C MATH1311']
+Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
+Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 005)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -38,9 +35,8 @@ Units: 0
 Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
-Corerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Corequisites Raw: N/A
-Prerequisite list: ['or pre C MATH1050', 'or pre C MATH1060', 'or pre C MATH1080', 'or pre C MATH1210', 'or pre C MATH1215', 'or pre C MATH1250', 'or pre C MATH1310', 'or pre C MATH1311']
+Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
+Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 001)
 Instructor: PARKER, ERIN
@@ -49,10 +45,8 @@ Units: 4.0
 Components: Lecture
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 003)
 Instructor: PARKER, ERIN
@@ -61,10 +55,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 004)
 Instructor: PARKER, ERIN
@@ -73,10 +65,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 005)
 Instructor: PARKER, ERIN
@@ -85,10 +75,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 006)
 Instructor: PARKER, ERIN
@@ -97,10 +85,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 007)
 Instructor: PARKER, ERIN
@@ -109,10 +95,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 008)
 Instructor: PARKER, ERIN
@@ -121,10 +105,8 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Corequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
-Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'or pre C- MATH1060', 'or pre C- MATH1080', 'or pre C- MATH1210', 'or pre C- MATH1215', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311', 'or co C- CS1400', 'or co C- MATH1060', 'or co C- MATH1080', 'or co C- MATH1210', 'or co C- MATH1215', 'or co C- MATH1220', 'or co C- MATH1250', 'or co C- MATH1310', 'or co C- MATH1311']
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 001)
 Instructor: JONES, BEN
@@ -362,9 +344,9 @@ Schedule: MoWe 04:35PM-05:55PM
 Units: 3.0
 Components: Lecture
 Description: This course covers different models of computation and how they relate to the understanding and better design of real-world computer programs. As examples, we will study Turing machines that help define the fundamental limits of computing, Push-down Automata that help build language parsers, and Finite Automata that help build string pattern matchers. This course also covers the basics of designing correctly functioning programs, and introduces the use of mathematical logic through Boolean satisfiability methods. The course will involve the use of hands-on programming exercises written at a sufficiently high level of abstraction that the connections between theory and practice are apparent.
-Prerequisites Raw: N/A
+Prerequisites Raw: 'C-' or better in (CS2100 OR MATH2200) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200']
 ----------------------------------------------------------------------
 CS 3130 - Eng Prob Stats (Section 001)
 Instructor: BHASKARA, ADITYA
@@ -372,7 +354,7 @@ Schedule: TuTh 09:10AM-10:30AM
 Units: 3.0
 Components: Lecture
 Description: An introduction to probability theory and statistics, with an emphasis on solving problems in electrical and computer engineering.  Topics in probability include discrete and continuous random variables, probability distributions, sums and functions of random variables, the law of large numbers, and the central limit theorem. Topics in statistics include sample mean and variance, estimating distributions, correlation, regression, and hypothesis testing.  Engineering applications include failure analysis, process control, communication systems, and speech recognition.
-Prerequisites Raw: 'C-' or better in (MATH 1220 OR 1320 OR 1321 OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in (MATH 1220 OR 1320 OR 1321 OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- MATH1220', 'or pre C- MATH1320', 'or pre C- MATH1321']
 ----------------------------------------------------------------------
@@ -383,10 +365,8 @@ Units: 3.0
 Components: Lecture
 Description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
 Prerequisites Raw: 'C-' or better in(CS2100 OR MATH 2200)& (MATH2270 OR 2271)& Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
-Corequisites:'C-' or better in (MATH3070 OR CS3130 OR ECE3530)
-Corequisites Raw: 'C-' or better in(CS2100 OR MATH 2200)& (MATH2270 OR 2271)& Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
-Corequisites:'C-' or better in (MATH3070 OR CS3130 OR ECE3530)
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'pre C- MATH2270', 'or pre C- MATH2271', 'or pre C- MATH3070', 'or pre C- CS3130', 'or pre C- ECE3530', 'or co C- CS2100', 'or co C- MATH2200', 'co C- MATH2270', 'or co C- MATH2271', 'or co C- MATH3070', 'or co C- CS3130', 'or co C- ECE3530']
+Corequisites Raw: 'C-' or better in (MATH3070 OR CS3130 OR ECE3530)
+Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'pre C- MATH2270', 'or pre C- MATH2271', 'or co C- MATH3070', 'or co C- CS3130', 'or co C- ECE3530']
 ----------------------------------------------------------------------
 CS 3200 - Intro Sci Comp (Section 001)
 Instructor: SHANKAR, VARUN
@@ -594,7 +574,7 @@ Schedule: TuTh 02:00PM-03:20PM
 Units: 4.0
 Components: Lecture
 Description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
-Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- PHYS2220', 'or pre C- ECE1240', 'and pre C- ECE1245', 'and pre C- ECE1050']
 ----------------------------------------------------------------------
@@ -604,7 +584,7 @@ Schedule: N/A
 Units: 0
 Components: Laboratory
 Description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
-Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- PHYS2220', 'or pre C- ECE1240', 'and pre C- ECE1245', 'and pre C- ECE1050']
 ----------------------------------------------------------------------
@@ -614,7 +594,7 @@ Schedule: TuTh 10:45AM-12:05PM
 Units: 3.0
 Components: Lecture
 Description: An in-depth study of computer architecture and design, including topics such as RISC and CISC instruction set architectures, CPU organizations, pipelining, memory systems, input/output, and parallel machines.  Emphasis is placed on performance measures and compilation issues.
-Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing)
+Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: []
 ----------------------------------------------------------------------
@@ -645,10 +625,8 @@ Units: 3.0
 Components: Seminar
 Description: This is the first course in a 2 or 3 semester series.  The purpose of this course is to form teams and propose either a self-selected senior project to be completed in CS/ECE 4710, or an ECE clinic which will be completed in the subsequent 2 semesters.  The individual option is to find a thesis advisor, and write a thesis proposal.  The thesis work will be in CS/ECE 4991 and 4992.  During the first half of the course while teams are being formed and while project ideas are being selected the instructor will lecture on the, fundamentals of project planning: scoping, group selection, risk assessment, scheduling, backup planning, strategy, etc.  The second half of the course involves student presentations and critique of the written proposals that are in progress. The final result of the course will be an approved project, clinic, or thesis proposal.
 Prerequisites Raw: "C-" or better in (ECE 3710 OR CS 3710) AND (CS 3991 OR ECE 3991) AND Full Major status in Computer Engineering.
-Corequisites: "C-" or better in CS 5780
-Corequisites Raw: "C-" or better in (ECE 3710 OR CS 3710) AND (CS 3991 OR ECE 3991) AND Full Major status in Computer Engineering.
-Corequisites: "C-" or better in CS 5780
-Prerequisite list: ['or pre C- ECE3710', 'or pre C- CS3710', 'and pre C- CS3991', 'or pre C- ECE3991', 'or pre C- CS5780', 'or co C- ECE3710', 'or co C- CS3710', 'and co C- CS3991', 'or co C- ECE3991', 'or co C- CS5780']
+Corequisites Raw: "C-" or better in CS 5780
+Prerequisite list: ['or pre C- ECE3710', 'or pre C- CS3710', 'and pre C- CS3991', 'or pre C- ECE3991', 'or co C- CS5780']
 ----------------------------------------------------------------------
 CS 4000 - Senior Capstone Design (Section 001)
 Instructor: DE ST GERMAIN, JOHN
@@ -666,7 +644,7 @@ Schedule: MoWe 11:50AM-01:10PM
 Units: 3.0
 Components: Lecture
 Description: Study of algorithms, data structures, and complexity analysis beyond the introductory treatment from CS 2420. Balanced trees, heaps, hash tables, string matching, graph algorithms, external sorting and searching. Dynamic programming, exhaustive search. Space and time complexity, derivation and solution of recurrence relations, complexity hierarchies, reducibility, NP completeness. Laboratory practice.
-Prerequisites Raw: 'C-' or better in (CS 2100 OR MATH 2200) AND CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in (CS 2100 OR MATH 2200) AND CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'and pre C- CS3500']
 ----------------------------------------------------------------------
@@ -676,7 +654,7 @@ Schedule: MoWe 01:25PM-02:45PM
 Units: 3.0
 Components: Lecture
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -686,7 +664,7 @@ Schedule: Th 09:40AM-10:30AM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -696,7 +674,7 @@ Schedule: Th 10:45AM-11:35AM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -706,7 +684,7 @@ Schedule: Th 12:55PM-01:45PM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -716,7 +694,7 @@ Schedule: Th 02:00PM-02:50PM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -726,7 +704,7 @@ Schedule: Th 03:05PM-03:55PM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -736,7 +714,7 @@ Schedule: Th 11:50AM-12:40PM
 Units: 0
 Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
-Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3810']
 ----------------------------------------------------------------------
@@ -838,7 +816,7 @@ Schedule: N/A
 Units: 3.0
 Components: Lecture
 Description: Representing information about real world enterprises using important data models including the entity-relationship, relational, and object-oriented approaches. Database design criteria, including normalization and integrity constraints. Implementation techniques using commercial database management system software and database connector APIs. Selected advanced topics such as query and transaction processing and index data structures.
-Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
+Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: ['or pre C- CS3500']
 ----------------------------------------------------------------------
@@ -878,9 +856,9 @@ Schedule: TuTh 12:25PM-01:45PM
 Units: 4.0
 Components: Lecture
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 002)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -888,9 +866,9 @@ Schedule: We 07:30AM-10:30AM
 Units: 0
 Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 003)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -898,9 +876,9 @@ Schedule: We 03:05PM-06:05PM
 Units: 0
 Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 004)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -908,9 +886,9 @@ Schedule: Fr 07:30AM-10:30AM
 Units: 0
 Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 005)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -918,9 +896,9 @@ Schedule: Mo 07:30AM-10:30AM
 Units: 0
 Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 006)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -928,9 +906,9 @@ Schedule: Tu 07:30AM-10:30AM
 Units: 0
 Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
-Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Corequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/corequisite: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'and pre C- CS4400', 'or co C- CS3810', 'or co C- ECE3810', 'and co C- CS4400']
+Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
+Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
+Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
 ----------------------------------------------------------------------
 CS 5955 - Adv Artificial Intelligence (Section 001)
 Instructor: BROWN, DANIEL
