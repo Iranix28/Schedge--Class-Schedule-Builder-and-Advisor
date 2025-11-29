@@ -19,81 +19,83 @@ db = SessionLocal()
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
 LOCAL_HTML = Path("course_page.html")
 OUTPUT_FILE = Path("cs_courses_detailed.txt")
-COURSE_PATTERN = r"\b([A-Z]{2,4})\s*([0-9]{3,4})\b"
 
-# parse the course pre and co reqs
-def parse_requirements(raw_pre, raw_co):
-    def tokenize(text):
-        if not text or text == "N/A":
+
+SUBJECT_PATTERN = re.compile(r"^[A-Z]{2,4}$")
+NUMBER_PATTERN = re.compile(r"^\d{3,4}$")
+FULL_COURSE_PATTERN = re.compile(r"^([A-Z]{2,4})(\d{3,4})$")
+
+# FIXED: capture C- correctly
+GRADE_PATTERN = re.compile(
+    r"(?<![A-Z0-9])"
+    r"(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|E)"
+    r"(?![A-Z0-9])",
+    re.IGNORECASE
+)
+
+FORBIDDEN_SUBJECTS = {"AP", "SCORE", "OF", "HIGHER", "CALC", "AB", "BC"}
+
+
+def parse_requirements_to_list(raw_pre, raw_co):
+
+    def parse_line(text, kind):
+        if not text or text.strip() in ("N/A", ""):
             return []
 
-        t = text.upper()
-        t = t.replace("AND", "&").replace(")", " ) ").replace("(", " ( ")
-        t = re.sub(r"\s+", " ", t)
+        text = text.replace("(", " ").replace(")", " ")
+        tokens = text.replace(",", " ").replace(";", " ").split()
 
-        tokens = []
-        parts = t.split()
+        results = []
+        last_subject = None
+        pending_op = None  # "and", "or", or None
 
-        for tok in parts:
+        # FIX: extract full grade including hyphens
+        m = GRADE_PATTERN.search(text)
+        last_grade = m.group(1).upper() if m else None
 
-            if tok == "OR":
-                tokens.append("OR")
+        for token in tokens:
+            up = token.upper()
+
+            if up == "OR":
+                pending_op = "or"
+                continue
+            if up == "AND":
+                pending_op = "and"
                 continue
 
-            if tok in ("&", "AND"):
-                tokens.append("&")
+            if up in FORBIDDEN_SUBJECTS:
                 continue
 
-            # Course code (e.g. CS 3500)
-            m = re.match(COURSE_PATTERN, tok)
-            if m:
-                dept, num = m.groups()
-                tokens.append(f"{dept}{num}")
+            m_full = FULL_COURSE_PATTERN.match(up)
+            if m_full:
+                subj, num = m_full.groups()
+                last_subject = subj
+                course = subj + num
+            elif SUBJECT_PATTERN.match(up) and not NUMBER_PATTERN.match(up):
+                last_subject = up
+                continue
+            elif NUMBER_PATTERN.match(up):
+                if not last_subject:
+                    continue
+                course = last_subject + up
+            else:
                 continue
 
-            # Standalone number - infer dept
-            if re.match(r"^[0-9]{3,4}$", tok):
-                if tokens:
-                    prev = tokens[-1]
-                    dept = re.match(r"([A-Z]{2,4})([0-9]{3,4})$", prev)
-                    if dept:
-                        tokens.append(f"{dept.group(1)}{tok}")
-                        continue
+            prefix = f"{pending_op} " if pending_op else ""
+            pending_op = None
 
-            # ignore everything else
-        return tokens
+            grade = f"{last_grade} " if last_grade else ""
 
-    def attach_or(tokens):
-        out = []
-        skip = False
-        for i, tok in enumerate(tokens):
-            if skip:
-                skip = False
-                continue
+            results.append(f"{prefix}{kind} {grade}{course}")
 
-            if tok == "OR":
-                if i + 1 < len(tokens):
-                    out.append("OR" + tokens[i+1])
-                    skip = True
-                continue
-
-            out.append(tok)
-        return out
-
-    pre_tokens = attach_or(tokenize(raw_pre))
-    co_tokens = attach_or(tokenize(raw_co))
+        return results
 
     final = []
-
-    if pre_tokens:
-        final.append("pre")
-        final.extend(pre_tokens)
-
-    if co_tokens:
-        final.append("co")
-        final.extend(co_tokens)
-
+    final.extend(parse_line(raw_pre, "pre"))
+    final.extend(parse_line(raw_co, "co"))
     return final
+
+
 
 
 # regex to extract course codes from the preq/coreq description
@@ -201,11 +203,11 @@ for idx, card in enumerate(course_cards, start=1):
             d_soup = BeautifulSoup(resp.text, "lxml")
 
             # get pre + co separately
-            prereqs_raw = extract_label_value(d_soup, r"Pre-?requisites:?")
-            coreqs_raw = extract_label_value(d_soup, r"Co-?requisites:?")
+            prereqs_raw = extract_label_value(d_soup, r"Pre[\s-]*requisites?[:\s]*")
+            coreqs_raw = extract_label_value(d_soup, r"Co[\s-]*requisites?[:\s]*")
 
             # parse structured prereq list (this isnt quiet working yet)
-            prereq_list = parse_requirements(prereqs_raw, coreqs_raw)
+            prereq_list = parse_requirements_to_list(prereqs_raw, coreqs_raw)
 
             # description
             desc = extract_label_value(d_soup, r"Description")
@@ -266,7 +268,7 @@ with OUTPUT_FILE.open("w", encoding="utf-8") as f:
         f.write(f"Description: {c['description']}\n")
         f.write(f"Prerequisites Raw: {c['prerequisites_raw']}\n")
         f.write(f"Corequisites Raw: {c['corequisites_raw']}\n")
-        f.write(f"Structured Requirements: {c['prereq_list']}\n")
+        f.write(f"Prerequisite list: {c['prereq_list']}\n")
         f.write("-" * 70 + "\n")
 
 print(f"\nSaved detailed info for {len(courses)} courses to {OUTPUT_FILE.resolve()}")
