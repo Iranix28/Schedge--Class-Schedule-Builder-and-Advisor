@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database.schema import ClassSection, Department, Course, ClassSection
 from app.models.db_models import ClassSectionCreate, ClassSectionUpdate, ClassSectionCreateByCourseCode
-from backend.exceptions import EntityNotFound
+from exceptions import EntityNotFound
 
 def create_class_section(db: Session, class_section_in: ClassSectionCreate) -> ClassSection:
     class_section = ClassSection(**class_section_in.model_dump())
