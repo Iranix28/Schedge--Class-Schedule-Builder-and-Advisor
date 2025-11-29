@@ -69,7 +69,7 @@ function ChatUI() {
 					type: "schedule",
 					data: generateSampleSchedule(),
 				});
-			}, 1000);
+			}, 2000);
 		}
 	};
 
