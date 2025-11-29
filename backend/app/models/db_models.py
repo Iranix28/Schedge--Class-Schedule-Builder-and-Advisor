@@ -128,6 +128,12 @@ class CoursePrerequisiteUpdate(BaseModel):
     course_id: Optional[int] = None
     prerequisite_course_id: Optional[int] = None
 
+class CoursePrerequisiteCreateByCode(BaseModel):
+    department_subject: str  
+    course_number: str       
+    prerequisite_department_subject: str  
+    prerequisite_course_number: str
+
 
 
 ########## returns models

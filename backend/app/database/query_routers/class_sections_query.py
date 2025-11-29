@@ -42,6 +42,7 @@ def create_class_section_by_course_code(
         Course.department_id == department.id,
         Course.number == data.course_number,
     )
+
     course = db.execute(stmt_course).scalar_one_or_none()
     if course is None:
         raise EntityNotFound(
