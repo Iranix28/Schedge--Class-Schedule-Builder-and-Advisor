@@ -1,7 +1,7 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
-const BASE_URL = "http://136.59.160.8:8000"; // FastAPI, not Ollama
+const BASE_URL = "http://136.59.166.184:8000"; // FastAPI, not Ollama
 // const API_KEY = "local"; // not needed for FastAPI unless you want it
 
 async function sendMessageLLM(userText, onToken) {
@@ -69,7 +69,7 @@ function ChatUI() {
 					type: "schedule",
 					data: generateSampleSchedule(),
 				});
-			}, 1000);
+			}, 2000);
 		}
 	};
 
@@ -80,49 +80,49 @@ function ChatUI() {
 				day: "Monday",
 				startTime: "9:00 AM",
 				endTime: "10:30 AM",
-				class: "Mathematics",
+				class: "CS 3500",
 				room: "Room 101",
 			},
 			{
 				day: "Monday",
 				startTime: "11:00 AM",
 				endTime: "12:30 PM",
-				class: "Physics",
+				class: "CS 3810",
 				room: "Lab 203",
 			},
 			{
 				day: "Tuesday",
 				startTime: "10:00 AM",
-				endTime: "11:30 AM",
-				class: "Chemistry",
+				endTime: "12:30 PM",
+				class: "CS 3130",
 				room: "Lab 105",
 			},
 			{
 				day: "Tuesday",
 				startTime: "2:00 PM",
 				endTime: "3:30 PM",
-				class: "English",
+				class: "CS 3500 Lab",
 				room: "Room 304",
 			},
 			{
 				day: "Wednesday",
 				startTime: "9:00 AM",
 				endTime: "10:30 AM",
-				class: "History",
-				room: "Room 201",
+				class: "CS 3500",
+				room: "Room 101",
 			},
 			{
 				day: "Thursday",
-				startTime: "1:00 PM",
-				endTime: "2:30 PM",
-				class: "Biology",
-				room: "Lab 108",
+				startTime: "10:00 AM",
+				endTime: "12:30 PM",
+				class: "CS 3130",
+				room: "Lab 105",
 			},
 			{
 				day: "Friday",
 				startTime: "10:00 AM",
 				endTime: "11:30 AM",
-				class: "Computer Science",
+				class: "CS 3090",
 				room: "Lab 401",
 			},
 		];
