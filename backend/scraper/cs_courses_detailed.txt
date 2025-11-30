@@ -1063,7 +1063,7 @@ Components: Lecture
 Description: This course provides a gentle introduction to topology-based techniques for the analysis and visualization of geometric models. Students will learn about fundamental topological invariants (connectedness, Euler characteristic, orientability, etc...) and constructs (Reed graphs, Morse-Smale complexes, etc...). Special emphasis will be given to the analysis of their computation algorithms with respect to: (i) asymptotic complexity, (ii) robustness, and (iii) data structures and implementation issues. Successful completion of the course will enable the students to pursue new research directions in this field and/or apply the most recent topological techniques to related areas such as computer graphics, geometric modeling, mesh generation, data analysis, and scientific visualization.
 Prerequisites Raw: "C-" or better in CS 4150.
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['or pre C- CS4150']
 ----------------------------------------------------------------------
 CS 6330 - Robotics II: Control (Section 001)
 Instructor: MASCARO, STEPHEN
@@ -1073,7 +1073,7 @@ Components: Lecture
 Description: Control of serial robot manipulators is examined.  Topics include control system fundamentals, sensors and actuators, joint level control, centralized control, operational space control, and force control.  Projects provide hands on experience controlling a serial link manipulator.
 Prerequisites Raw: CS 6130 AND ME EN 6200.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6130']
+Prerequisite list: ['pre CS6130', 'and pre EN6200']
 ----------------------------------------------------------------------
 CS 6370 - Motion Planning (Section 001)
 Instructor: Hermans, Tucker
@@ -1083,7 +1083,7 @@ Components: Lecture
 Description: Motion planning stands as a central pillar in robotics and a powerful tool in a number of other fields. Motion planning enables robots and autonomous agents to move themselves and other parts of the world to a desired goal by choosing a sequence of appropriate actions. This course will cover the theoretical and algorithmic underpinnings of motion planning as well as practical issues in applying algorithms to real world problems. Applications will be examined across robotics ranging from obstacle avoidance in autonomous cars to rearrangement of furniture by humanoid robots. Examples from fields beyond robotics may also be examined such as bioinformatics, video games, or computer-aided design.
 Prerequisites Raw: MATH 2250.
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['pre MATH2250']
 ----------------------------------------------------------------------
 CS 6460 - Operating Systems (Section 001)
 Instructor: BURTSEV, ANTON
@@ -1093,7 +1093,7 @@ Components: Lecture
 Description: Characteristics, objectives, and issues concerning computer operating systems. Hardware-software interactions, process management, memory management, protection, synchronization, resource allocation, file systems, security, and distributed systems. Extensive systems programming.
 Prerequisites Raw: CS 4400.
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['pre CS4400']
 ----------------------------------------------------------------------
 CS 6491 - Software & Sys Security (Section 001)
 Instructor: ZHANG, MU
@@ -1123,7 +1123,7 @@ Components: Lecture
 Description: Human-Computer Interaction (HCI) is a unique multidisciplinary field that emerged from multiple academic contexts: social science, cognitive science, Design, and computer science. Each of these disciplines continues to train experts within HCI research and practice. However, an expert in human-computer interaction needs to maintain expertise in one and sometimes several of these different fields, and to be knowledgeable across all of these areas. This course is designed for graduate students to develop skills for doing rigorous work in the field of HCI, with a goal of applying these skills in either an industry or academic context. While there are important differences between working in academia and working in industry, the core skills developed in this course are essential in both contexts.
 Prerequisites Raw: CS 3540 OR CS 6540.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS3540']
+Prerequisite list: ['pre CS3540', 'or pre CS6540']
 ----------------------------------------------------------------------
 CS 6610 - Interactive Comp Graph (Section 001)
 Instructor: Lin, Jenny
@@ -1153,7 +1153,7 @@ Components: Lecture
 Description: Graduate students only. Extra work required.
 Prerequisites Raw: ECE 3700 OR CS 3700.
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3700']
+Prerequisite list: ['pre ECE3700', 'or pre CS3700']
 ----------------------------------------------------------------------
 CS 6780 - Embed Sys Design (Section 001)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -1344,7 +1344,7 @@ Components: Lecture
 Description: Examination of the formal and pragmatic ideas behind programming language design. Imperative, functional, logic, object-oriented, and multi-paradigm languages. Lambda calculus, fixpoints, type systems, and predicate logic. Denotational semantics and models of concurrency.
 Prerequisites Raw: CS 3100 AND CS 5510.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS3100']
+Prerequisite list: ['pre CS3100', 'and pre CS5510']
 ----------------------------------------------------------------------
 CS 7640 - Adv Image Processing (Section 001)
 Instructor: Elhabian, Shireen
@@ -1354,7 +1354,7 @@ Components: Lecture
 Description: In-depth study of advanced methods and research topics of current interest in image processing and analysis. Covers PDEs, shape representations, deformable models (snakes, level sets), statistical shape analysis, scale-space and registration. Focus and list of topics might change from semester to semester.
 Prerequisites Raw: CS 6640.
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['pre CS6640']
 ----------------------------------------------------------------------
 CS 7810 - Adv Computer Arch (Section 001)
 Instructor: NAGARAJAN, VIJAYANAND
@@ -1364,7 +1364,7 @@ Components: Lecture
 Description: Investigation of issues in the design of modern microprocessors, with an in-depth treatment of current research topics in the field.  The course is driven by the discussion of seminal papers in the fields.
 Prerequisites Raw: CS 6810 OR ECE 6810.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6810']
+Prerequisite list: ['pre CS6810', 'or pre ECE6810']
 ----------------------------------------------------------------------
 CS 7932 - Human Centered Comp Seminar (Section 001)
 Instructor: N/A

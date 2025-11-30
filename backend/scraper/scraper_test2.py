@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import time
 import re
+import pdb
 from pathlib import Path
 from app.database.query_routers.departments_query import *
 from app.database.query_routers.courses_query import *
@@ -42,7 +43,7 @@ def parse_requirements_to_list(raw_pre, raw_co):
         if not text or text.strip() in ("N/A", ""):
             return []
 
-        text = text.replace("(", " ").replace(")", " ")
+        text = text.replace("(", " ").replace(")", " ").replace(".", "")
         tokens = text.replace(",", " ").replace(";", " ").split()
 
         results = []
@@ -87,7 +88,7 @@ def parse_requirements_to_list(raw_pre, raw_co):
             grade = f"{last_grade} " if last_grade else ""
 
             results.append(f"{prefix}{kind} {grade}{course}")
-
+        
         return results
 
     final = []
@@ -214,7 +215,6 @@ def split_prereq_core_from_enrollment_blob(blob):
     # If we found only one label and it was a 'requisite' that is ambiguous, try to guess:
     # e.g. single "*requisites:" that contains both "Prerequisites: ... Corequisites: ..." (rare),
     # but above we already split by label occurrences so we should be safe.
-
     return prereq_raw, coreq_raw
 
 
@@ -236,6 +236,8 @@ for idx, card in enumerate(course_cards, start=1):
 
     code_tag = header.find("a")
     course_code = code_tag.get_text(strip=True) if code_tag else ""
+    # if course_code != "CS 6170": # debug a specific course
+    #     continue
     spans = header.find_all("span")
     section = spans[0].get_text(strip=True) if len(spans) > 0 else ""
     title = spans[1].get_text(strip=True) if len(spans) > 1 else ""

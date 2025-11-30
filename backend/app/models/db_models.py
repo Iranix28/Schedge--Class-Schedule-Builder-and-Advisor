@@ -98,6 +98,20 @@ class ClassSectionRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ClassSectionCreateByCourseCode(BaseModel):
+    department_subject: str  
+    course_number: str       
+
+    term_season: str         
+    term_year: int           
+    section_code: str        
+
+    location: Optional[str] = None
+    days: Optional[str] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+    professor_name: Optional[str] = None
+
 #COURSE PREREQUISITE db models------------------------------------------
 
 class CoursePrerequisiteBase(BaseModel):
