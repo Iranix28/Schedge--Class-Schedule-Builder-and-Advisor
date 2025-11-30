@@ -17,6 +17,7 @@ role = " Your role is a class schedule and class advising at The University of U
             " You can only suggest other classes ONLY if the user asks." \
             " Keep your responses no longer than 2 sentences unless its about classes the user is asking about"
 
+
 @router.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest, db: DBSession):
     print("in ollama router")
@@ -38,21 +39,15 @@ def chat(req: ChatRequest, db: DBSession):
     return chat
 
 def build_rag_prompt(system_prompt: str, retrieved_classes: List[dict], user_message: str):
-    """
-    retrieved_classes = [
-        {"course_id": "CS 3500", "description": "Software Practice I"},
-        {"course_id": "CS 2420", "description": "Algorithms and Data Structures"},
-    ]
-    """
-
+    
     context_block = "\n\n".join(
-        f"{c['course_id']}: {c['description']}"
+        f"{c['number']}: {c['description']}"
         for c in retrieved_classes
     )
 
     return [
         {"role": "system", "content": system_prompt},
-        {"role": "system", "content": f"Relevant University of Utah classes:\n{context_block}"},
+        {"role": "system", "content": f"Here are some relevant courses from The University of Utah based on the student's query, only pick from these classes: \n{context_block}"},
         {"role": "user", "content": user_message}
     ]
 
@@ -112,7 +107,7 @@ def embedding_model(text: str) -> list[float]:
     # OpenAI-style: { "data": [ { "embedding": [...] } ] }
     return embedding
 
-def retrieve_classes_from_db(query_embedding: List[float], db: DBSession, limit: int = 2) -> List[dict]:
+def retrieve_classes_from_db(query_embedding: List[float], db: DBSession, limit: int = 3) -> List[dict]:
     try:
         query_embedding_str = "[" + ",".join(map(str, query_embedding)) + "]"
 
