@@ -19,6 +19,8 @@ db = SessionLocal()
 # cs_department = create_department(db, cs_dept)
 
 seen_course_codes = set()
+seen_departments = set()
+seen_departments.add("CS")
 
 # === CONFIG ===
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
@@ -384,6 +386,26 @@ for idx, card in enumerate(course_cards, start=1):
 
 
     # cs_class = create_class_section_by_course_code(db, new_class)
+
+    for requisite in prereq_list:
+        if "pre" in requisite.split(): 
+            match = re.search(r"([A-Z]{2,4})(\d{3,4})", requisite)
+            if match:
+                subject = match.group(1)
+                number = match.group(2)
+
+            if subject not in seen_departments:
+                dept = DepartmentCreate(name=subject, subject=subject)
+                department = create_department(db, dept)
+
+            new_prereq = CoursePrerequisiteCreateByCode(
+                department_subject=course_code.split()[0],
+                course_number=course_code.split()[1],  
+                prerequisite_department_subject=subject,  
+                prerequisite_course_number=number,
+            )
+
+            cs_requisite = create_course_prerequisite_by_codes(db, new_prereq)
 
 
 db.close()

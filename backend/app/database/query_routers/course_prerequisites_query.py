@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.database.schema import CoursePrerequisite, Course, Department
 from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteUpdate, CoursePrerequisiteCreateByCode
-from backend.exceptions import EntityNotFound
+from exceptions import EntityNotFound
 
 def create_course_prerequisite(db: Session, course_prerequisite_in: CoursePrerequisiteCreate) -> CoursePrerequisite:
     cp = CoursePrerequisite(**course_prerequisite_in.model_dump())
