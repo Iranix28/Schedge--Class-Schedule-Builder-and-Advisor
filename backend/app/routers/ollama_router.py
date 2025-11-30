@@ -4,6 +4,8 @@ import requests
 from pathlib import Path
 from typing import List
 from app.config.env_variables import OLLAMA_URL, OLLAMA_EMBEDDED_URL, API_KEY, CHAT_MODEL, EMBEDDING_MODEL
+from app.database.session import DBSession
+from sqlalchemy import text
 
 router = APIRouter(prefix="/ollama", tags=["Ollama"])
 
@@ -16,14 +18,15 @@ role = " Your role is a class schedule and class advising at The University of U
             " Keep your responses no longer than 2 sentences unless its about classes the user is asking about"
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, db: DBSession):
     print("in ollama router")
 
     #1. turn user message into embedding
     embedded_prompt = embedding_model(req.message)
 
     #2. retrieve relevant classes from db using embedded prompt
-    retrieved_classes = retrieve_classes_from_db(embedded_prompt)
+    retrieved_classes = retrieve_classes_from_db(embedded_prompt, db)
+    print(f"Retrieved classes: {retrieved_classes}")
 
     # 3. Build preprompt with retrieved classes, user message, and role
     preprompt = build_rag_prompt(role, retrieved_classes, req.message)
@@ -109,19 +112,37 @@ def embedding_model(text: str) -> list[float]:
     # OpenAI-style: { "data": [ { "embedding": [...] } ] }
     return embedding
 
-def retrieve_classes_from_db(query_embedding) -> List[dict]:
-    """
-    once connected with database, we can query like this:
-    results = db.query(
-        "SELECT course_id, description FROM classes ORDER BY embedding <-> :query_embedding LIMIT 5",
-        {"query_embedding": query_embedding}
-    )
+def retrieve_classes_from_db(query_embedding: List[float], db: DBSession, limit: int = 2) -> List[dict]:
+    try:
+        query_embedding_str = "[" + ",".join(map(str, query_embedding)) + "]"
 
-    return [{"course_id": r.course_id, "description": r.description} for r in results]
-    """
+        result = db.execute(
+            text("""
+                SELECT id, number, name, units, description
+                FROM courses
+                WHERE embedding IS NOT NULL
+                ORDER BY embedding <-> (:query_embedding)::vector
+                LIMIT :limit;
+            """),
+            {
+                "query_embedding": query_embedding_str,
+                "limit": limit
+            }
+        )
 
-    #just a placeholder for now once db is connected
-    return [
-        {"course_id": "CS 3500", "description": "its about making toys with your friends!"},
-        {"course_id": "CS 2420", "description": "its about selling candy to strangers"}
-    ]
+        rows = result.fetchall()
+
+        return [
+            {
+                "course_id": r.id,
+                "number": r.number,
+                "name": r.name,
+                "units": r.units,
+                "description": r.description
+            }
+            for r in rows
+        ]
+
+    except Exception as e:
+        print("Error retrieving classes from DB:", e)
+        return []

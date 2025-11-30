@@ -3,7 +3,7 @@ import json
 import websockets
 import requests
 
-SERVER_URL = "ws://136.59.160.8:8000/worker"  # server websocket
+SERVER_URL = "ws://136.59.166.184:8000/worker"  # server websocket
 LOCAL_LLM_URL = "http://localhost:8000/ollama/chat"  # Docker/FastAPI LLM endpoint
 
 async def main():
