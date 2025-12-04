@@ -15,12 +15,12 @@ from datetime import datetime
 
 # create the CS department
 db = SessionLocal()
-# cs_dept = DepartmentCreate(name="Computer Science", subject="CS")
+# cs_dept = DepartmentCreate(name="Mathematis", subject="MATH")
 # cs_department = create_department(db, cs_dept)
 
 seen_course_codes = set()
 seen_departments = set()
-seen_departments.add("CS")
+seen_departments.add("MATH")
 
 # === CONFIG ===
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
@@ -59,6 +59,7 @@ def parse_requirements_to_list(raw_pre, raw_co):
         # FIX: extract full grade including hyphens
         m = GRADE_PATTERN.search(text)
         last_grade = m.group(1).upper() if m else None
+        # print(tokens)
 
         for token in tokens:
             up = token.upper()
@@ -242,7 +243,7 @@ for idx, card in enumerate(course_cards, start=1):
 
     code_tag = header.find("a")
     course_code = code_tag.get_text(strip=True) if code_tag else ""
-    # if course_code != "CS 3700": # debug a specific course
+    # if course_code != "MATH 6960": # debug a specific course
     #     continue
     spans = header.find_all("span")
     section = spans[0].get_text(strip=True) if len(spans) > 0 else ""
@@ -278,6 +279,8 @@ for idx, card in enumerate(course_cards, start=1):
             units = text.split(":", 1)[-1].strip()
             if units == "--":
                 units = 0
+            elif "-" in units:
+                units = units.replace(" - ", " ").split(" ")[0] # if there is a unit range
         elif "Component:" in text:
             components = text.split(":", 1)[-1].strip()
 
@@ -343,69 +346,70 @@ for idx, card in enumerate(course_cards, start=1):
 
     # add this course to the database
 
-    # if course_code not in seen_course_codes:
-    #     new_course = CourseCreate(
-    #         department_id=1,  # link to CS department
-    #         number=course_code.split()[1],
-    #         name=title,
-    #         units=units,
-    #         description=full_desc
-    #     )
+    if course_code not in seen_course_codes:
+        new_course = CourseCreate(
+            department_id=1,  # link to CS department
+            number=course_code.split()[1],
+            name=title,
+            units=units,
+            description=full_desc
+        )
 
-    #     cs_course = create_course(db, new_course)
+        cs_course = create_course(db, new_course)
 
-    #     seen_course_codes.add(course_code)
+        seen_course_codes.add(course_code)
 
     
-    # if schedule != "N/A":
+    if schedule != "N/A":
 
-    #     new_class = ClassSectionCreateByCourseCode(
-    #         department_subject=course_code.split()[0],  
-    #         course_number=course_code.split()[1],         
-    #         term_season="Spring",         
-    #         term_year="2026",           
-    #         section_code=section,        
-    #         # location: Optional[str] = None
-    #         days=schedule.split()[0],
-    #         start_time=datetime.strptime(schedule.split()[1].split("-")[0], "%I:%M%p").time(),
-    #         end_time=datetime.strptime(schedule.split()[1].split("-")[1], "%I:%M%p").time(),
-    #         professor_name=instructor
-    #     )
+        new_class = ClassSectionCreateByCourseCode(
+            department_subject=course_code.split()[0],  
+            course_number=course_code.split()[1],         
+            term_season="Spring",         
+            term_year="2026",           
+            section_code=section,        
+            # location: Optional[str] = None
+            days=schedule.split()[0],
+            start_time=datetime.strptime(schedule.split()[1].split("-")[0], "%I:%M%p").time(),
+            end_time=datetime.strptime(schedule.split()[1].split("-")[1], "%I:%M%p").time(),
+            professor_name=instructor
+        )
     
-    # else:
-    #     new_class = ClassSectionCreateByCourseCode(
-    #     department_subject=course_code.split()[0],  
-    #     course_number=course_code.split()[1],         
-    #     term_season="Spring",         
-    #     term_year="2026",           
-    #     section_code=section,        
-    #     # location: Optional[str] = None
-    #     days=schedule.split()[0],
-    #     professor_name=instructor
-    #     )
+    else:
+        new_class = ClassSectionCreateByCourseCode(
+        department_subject=course_code.split()[0],  
+        course_number=course_code.split()[1],         
+        term_season="Spring",         
+        term_year="2026",           
+        section_code=section,        
+        # location: Optional[str] = None
+        days=schedule.split()[0],
+        professor_name=instructor
+        )
 
 
     # cs_class = create_class_section_by_course_code(db, new_class)
 
-    for requisite in prereq_list:
-        if "pre" in requisite.split(): 
-            match = re.search(r"([A-Z]{2,4})(\d{3,4})", requisite)
-            if match:
-                subject = match.group(1)
-                number = match.group(2)
+    # add prereq classes
+    # for requisite in prereq_list:
+    #     if "pre" in requisite.split(): 
+    #         match = re.search(r"([A-Z]{2,4})(\d{3,4})", requisite)
+    #         if match:
+    #             subject = match.group(1)
+    #             number = match.group(2)
 
-            if subject not in seen_departments:
-                dept = DepartmentCreate(name=subject, subject=subject)
-                department = create_department(db, dept)
+    #         if subject not in seen_departments:
+    #             dept = DepartmentCreate(name=subject, subject=subject)
+    #             department = create_department(db, dept)
 
-            new_prereq = CoursePrerequisiteCreateByCode(
-                department_subject=course_code.split()[0],
-                course_number=course_code.split()[1],  
-                prerequisite_department_subject=subject,  
-                prerequisite_course_number=number,
-            )
+    #         new_prereq = CoursePrerequisiteCreateByCode(
+    #             department_subject=course_code.split()[0],
+    #             course_number=course_code.split()[1],  
+    #             prerequisite_department_subject=subject,  
+    #             prerequisite_course_number=number,
+    #         )
 
-            cs_requisite = create_course_prerequisite_by_codes(db, new_prereq)
+    #         cs_requisite = create_course_prerequisite_by_codes(db, new_prereq)
 
 
 db.close()
