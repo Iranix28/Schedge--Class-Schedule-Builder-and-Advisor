@@ -1,3 +1,12 @@
+from app.database.query_routers.departments_query import *
+from app.database.query_routers.courses_query import *
+from app.database.query_routers.course_prerequisites_query import *
+from app.database.query_routers.class_sections_query import *
+from app.database.session import SessionLocal
+from datetime import datetime
+
+db = SessionLocal()
+
 # Startup display
 def display_menu():
     print("1. Add a class")
@@ -6,30 +15,60 @@ def display_menu():
 
 # get the class details
 def add_class(schedule):
-    name = input("Enter class name: ").strip()
-    days = input("Enter day (Mon/Wed/Fri): ").strip()
-    time = input("Enter time (1000-1300): ").strip()
+    # class_id = map(int, input("Enter classId (i.e <469>): ").split())
+    class_id = int(input("Enter course id (i.e 469) "))
+    # name = input("Enter class name: ").strip()
+    # days = input("Enter day (Mon/Wed/Fri): ").strip()
+    # time = input("Enter time (1000-1300): ").strip()
 
-    split_days = days.split("/")
-    start, end = time.split("-")
+    # split_days = days.split("/")
+    # start, end = time.split("-")
+
+    # get the class from the database
+    section = get_class_section(db, class_id)
+    course = get_course(db, int(section.course_id))
+    department = get_department(db, int(course.department_id))
+    name = department.subject + " " + str(course.number)
+    days = section.days
+    time = f"{section.start_time.strftime('%H:%M')} {section.end_time.strftime('%H:%M')}"
+
 
     # Check for conflicts
-    for course in schedule:
-        d = course["days"]
-        t = course["time"]
+    def parse_time(t_str):
+        # Convert "15:00" → datetime.time(15, 0)
+        return datetime.strptime(t_str, "%H:%M").time()
 
-        d_split = d.split("/")
-        t_split = t.split("-")
+    for course in schedule:
+        d = course["days"]              # e.g. "MoWe"
+        t = course["time"]              # e.g. "15:00 16:20"
+        
+        # Split day string into 2-letter parts
+        d_split = [d[i:i+2] for i in range(0, len(d), 2)]
+
+        split_days = [days[i:i+2] for i in range(0, len(days), 2)]
+        
+        # Split time string into start/end
+        t_split = t.split(" ")
+        time_start = parse_time(t_split[0])
+        time_end   = parse_time(t_split[1])
+        
+        # Convert the new course's times too
+        new_t_split = time.split(" ")
+        new_start = parse_time(new_t_split[0])
+        new_end = parse_time(new_t_split[1])
+
 
         for day in d_split:
-            time_start = t_split[0]
-            time_end = t_split[1]
-            if day in split_days and ((time_start >= start and time_start <= end) or (time_end >= start and time_end <= end)):
-                print(f"\nConflict with day/time between {name} and {course['name']}")
-                return
+            if day in split_days:  # same day
+                # PROPER overlap check:
+                if new_start < time_end and time_start < new_end:
+                    print(f"\nConflict with day/time between {name} on {time, days} and {course['name']} on {t, d}")
+                    return
+
 
         
     schedule.append({
+        "id": id,
         "name": name,
         "days": days,
         "time": time
