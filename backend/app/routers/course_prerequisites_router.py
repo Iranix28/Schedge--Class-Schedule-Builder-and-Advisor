@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.database.session import DBSession
-from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteRead, CoursePrerequisiteResponse
+from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteRead, CoursePrerequisiteResponse, CoursePrerequisiteCreateByCode
 
-from app.database.query_routers.course_prerequisites_query import create_course_prerequisite, list_course_prerequisites, get_course_prerequisite, get_course_prerequisite_by_subject
+from app.database.query_routers.course_prerequisites_query import create_course_prerequisite, create_course_prerequisite_by_codes, list_course_prerequisites, get_course_prerequisite, get_course_prerequisite_by_subject
 
 from backend.exceptions import EntityNotFound
 
@@ -35,4 +35,9 @@ def get_course_prerequisite_endpoint(course_prerequisite_id: int, db: DBSession)
     cp = get_course_prerequisite(db, course_prerequisite_id)
     if not cp:
         raise EntityNotFound(entity_name="CoursePrerequisite", entity_id=course_prerequisite_id)
+    return cp
+
+@router.post("/by-course-codes", response_model=CoursePrerequisiteRead, status_code=201)
+def create_course_prerequisite_by_codes_endpoint(body: CoursePrerequisiteCreateByCode, db: DBSession):
+    cp = create_course_prerequisite_by_codes(db, body)
     return cp
