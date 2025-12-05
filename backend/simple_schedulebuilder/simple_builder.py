@@ -12,6 +12,7 @@ def display_menu():
     print("1. Add a class")
     print("2. View current schedule")
     print("3. Save & exit")
+    print("4. Remove a class")
 
 # get the class details
 def add_class(schedule):
@@ -68,7 +69,7 @@ def add_class(schedule):
 
         
     schedule.append({
-        "id": id,
+        "id": class_id,
         "name": name,
         "days": days,
         "time": time
@@ -99,6 +100,16 @@ def save_schedule(schedule, filename="schedule.txt"):
 
     print(f"\nSchedule saved to {filename}")
 
+def remove_class(schedule):
+    class_id = int(input("Enter course id (i.e 469) "))
+    for i, c in enumerate(schedule):
+        if c["id"] == class_id:
+            name = c["name"]
+            del schedule[i]
+            print(f"Removed: {name}")
+            return True   # removed successfully
+    return False      
+
 
 def main():
     schedule = []
@@ -114,6 +125,8 @@ def main():
         elif choice == "3":
             save_schedule(schedule)
             break
+        elif choice == "4":
+            remove_class(schedule)
         else:
             print("error")
 
