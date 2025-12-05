@@ -1,17 +1,17 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
-const BASE_URL = "http://136.59.166.184:8000"; // FastAPI, not Ollama
+const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
 // const API_KEY = "local"; // not needed for FastAPI unless you want it
 
 async function sendMessageLLM(userText, onToken) {
-	const res = await fetch(`${BASE_URL}/chat`, {
+	const res = await fetch(`${BASE_URL}/ollama/chat`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 			// no Authorization header needed for the tiny FastAPI example
 		},
-		body: JSON.stringify({ prompt: userText }),
+		body: JSON.stringify({ message: userText }),
 	});
 
 	if (!res.ok) {
@@ -53,80 +53,116 @@ function ChatUI() {
 		}
 	}, [input]);
 
-	const handleFileUpload = (e) => {
-		const files = Array.from(e.target.files);
-		if (files.length > 0) {
-			const newFiles = files.map((file) => ({
-				name: file.name,
-				size: (file.size / 1024).toFixed(2) + " KB",
-				type: file.type,
-			}));
-			setUploadedFiles((prev) => [...prev, ...newFiles]);
+	const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-			// Simulate generating a visualization after file upload
-			setTimeout(() => {
-				setVisualizationData({
-					type: "schedule",
-					data: generateSampleSchedule(),
-				});
-			}, 2000);
-		}
-	};
+    setUploadedFiles(prev => [...prev, {
+        name: file.name,
+        size: (file.size / 1024).toFixed(2) + " KB",
+        type: file.type,
+    }]);
 
-	//we can make this dynamically created aswell as the class day and start times.
-	const generateSampleSchedule = () => {
-		return [
-			{
-				day: "Monday",
-				startTime: "9:00 AM",
-				endTime: "10:30 AM",
-				class: "CS 3500",
-				room: "Room 101",
-			},
-			{
-				day: "Monday",
-				startTime: "11:00 AM",
-				endTime: "12:30 PM",
-				class: "CS 3810",
-				room: "Lab 203",
-			},
-			{
-				day: "Tuesday",
-				startTime: "10:00 AM",
-				endTime: "12:30 PM",
-				class: "CS 3130",
-				room: "Lab 105",
-			},
-			{
-				day: "Tuesday",
-				startTime: "2:00 PM",
-				endTime: "3:30 PM",
-				class: "CS 3500 Lab",
-				room: "Room 304",
-			},
-			{
-				day: "Wednesday",
-				startTime: "9:00 AM",
-				endTime: "10:30 AM",
-				class: "CS 3500",
-				room: "Room 101",
-			},
-			{
-				day: "Thursday",
-				startTime: "10:00 AM",
-				endTime: "12:30 PM",
-				class: "CS 3130",
-				room: "Lab 105",
-			},
-			{
-				day: "Friday",
-				startTime: "10:00 AM",
-				endTime: "11:30 AM",
-				class: "CS 3090",
-				room: "Lab 401",
-			},
-		];
-	};
+    // Build form-data for FastAPI upload
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const res = await fetch(`${BASE_URL}/upload-audit/`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (!res.ok) throw new Error("Schedule fetch failed");
+
+        const schedule = await res.json(); // ← DUMMY_SCHEDULE arrives here
+
+        setVisualizationData({
+            type: "schedule",
+            data: schedule,
+        });
+    } catch (err) {
+        console.error(err);
+        alert("Failed to load schedule from backend");
+    }
+};
+
+	//DIDN'T CHANGE ANYTHING ELSE BIG JUST COMMENTED OUT THIS FUNCTION AND REPLACED IT WITH THE ABOVE 
+	//SMALL CHANGE {classItem.class} to {classItem.class_}
+	// const handleFileUpload = (e) => {
+	// 	const files = Array.from(e.target.files);
+	// 	if (files.length > 0) {
+	// 		const newFiles = files.map((file) => ({
+	// 			name: file.name,
+	// 			size: (file.size / 1024).toFixed(2) + " KB",
+	// 			type: file.type,
+	// 		}));
+	// 		setUploadedFiles((prev) => [...prev, ...newFiles]);
+
+	// 		// Simulate generating a visualization after file upload
+	// 		setTimeout(() => {
+	// 			setVisualizationData({
+	// 				type: "schedule",
+	// 				data: generateSampleSchedule(),
+	// 			});
+	// 		}, 2000);
+	// 	}
+	// };
+
+	// //we can make this dynamically created aswell as the class day and start times.
+	// const generateSampleSchedule = () => {
+	// 	return [
+	// 		{
+	// 			day: "Monday",
+	// 			startTime: "9:00 AM",
+	// 			endTime: "10:30 AM",
+	// 			class: "CS 3500",
+	// 			room: "Room 101",
+	// 		},
+	// 		{
+	// 			day: "Monday",
+	// 			startTime: "11:00 AM",
+	// 			endTime: "12:30 PM",
+	// 			class: "CS 3810",
+	// 			room: "Lab 203",
+	// 		},
+	// 		{
+	// 			day: "Tuesday",
+	// 			startTime: "10:00 AM",
+	// 			endTime: "12:30 PM",
+	// 			class: "CS 3130",
+	// 			room: "Lab 105",
+	// 		},
+	// 		{
+	// 			day: "Tuesday",
+	// 			startTime: "2:00 PM",
+	// 			endTime: "3:30 PM",
+	// 			class: "CS 3500 Lab",
+	// 			room: "Room 304",
+	// 		},
+	// 		{
+	// 			day: "Wednesday",
+	// 			startTime: "9:00 AM",
+	// 			endTime: "10:30 AM",
+	// 			class: "CS 3500",
+	// 			room: "Room 101",
+	// 		},
+	// 		{
+	// 			day: "Thursday",
+	// 			startTime: "10:00 AM",
+	// 			endTime: "12:30 PM",
+	// 			class: "CS 3130",
+	// 			room: "Lab 105",
+	// 		},
+	// 		{
+	// 			day: "Friday",
+	// 			startTime: "10:00 AM",
+	// 			endTime: "11:30 AM",
+	// 			class: "CS 3090",
+	// 			room: "Lab 401",
+	// 		},
+	// 	];
+	// };
 
 	const handleSubmit = async () => {
 		if (!input.trim() || isLoading) return;
@@ -494,7 +530,7 @@ function ChatUI() {
 																		className="font-semibold truncate"
 																		style={{ fontSize: "10px" }}
 																	>
-																		{classItem.class}
+																		{classItem.class_}
 																	</div>
 																	<div
 																		className="truncate"
