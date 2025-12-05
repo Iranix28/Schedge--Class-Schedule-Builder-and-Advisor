@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import os
 
 def outputRequirements(requirements, filename="parsed_audit.txt"):
     """
@@ -48,8 +49,12 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
 
         lines.append("\n")
 
+    # Make output file appear next to this .py file
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_path = os.path.join(script_dir, filename)
+
     # Write file
-    with open("parsed_audit.txt", "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
 def extractCourseInfo(element):
@@ -233,4 +238,5 @@ def scrapeDegreeAudit(html_file):
 
         parsedRequirements.append(requirement_obj)
 
+    outputRequirements(parsedRequirements)
     return parsedRequirements
