@@ -1,44 +1,103 @@
 ============================================================
+Requirement: FINE ARTS IE AREA  (FF)COURSE MUST BE COMPLETED WITH A GRADE OF D- OR BETTER,A CR GRADE IS ALSO ACCEPTED
+============================================================
+  Subrequirement: (FF) Complete two Fine Arts courses
+    Completed Courses:
+      - MUSC 1236 DVFF: Survey Of Jazz
+    Needs Count: 1
+    Not From: None
+    Select From: ARCH 1615, ARCH 2630, ART 1010, ART 1015, ART 1020, ART 1030, ART 1050, ART 1070, ART 1080, ART 2060, ART 2400, ARTH 1010, BALLE 1140, BALLE 2290, DANC 1010, DANC 1013, DANC 1015, DANC 1023, DANC 1310, DES 2615, DES 2630, DESGR 2600, ENGL 2250, ENGL 2510, FILM 1110, FILM 1600, FILM 2110, FILM 2115, HONOR 2010, HONOR 2400, HONOR 2850, HONOR 2870, HONOR 2890, HONOR 3180, HONOR 3418, HONOR 3818, HONOR 3820, HONOR 5240, LEAP 1270, MUSC 1010, MUSC 1015, MUSC 1120, MUSC 1236, MUSC 1250, MUSC 1460, MUSC 2100, THEA 1013, THEA 1033, THEA 1040, THEA 1551, THEA 1713, THEA 1770, THEA 2900
+
+
+
+============================================================
+Requirement: HUMANITIES IE AREA (HF)COURSE MUST BE COMPLETED WITH A GRADE OF D- OR BETTER,A CR GRADE IS ALSO ACCEPTED
+============================================================
+  Subrequirement: (HF) COMPLETE TWO HUMANITIES COURSES
+    Completed Courses: None
+    Needs Count: 2
+    Not From: None
+    Select From: ARTH 2500, CL CV 1550, CL CV 1560, CL CV 1570, COMM 1020, COMM 1270, COMM 1500, COMM 2020, COMM 2040, COMM 2270, ENGL 2085, ENGL 2086, ENGL 2090, ENGL 2095, ENGL 2130, ENGL 2225, ENGL 2230, ENGL 2235, ENGL 2300, ENGL 2330, ENGL 2340, ETHNC 2520, ETHNC 2550, ETHNC 2570, ETHNC 2590, FILM 1110, GLOBL 1600, GLOBL 2230, GNDR 2690, HIST 1100, HIST 1110, HIST 1210, HIST 1500, HIST 1510, HIST 2100, HIST 2210, HONOR 2101, HONOR 2102, HONOR 2103, HONOR 2104, HONOR 2106, HONOR 2108, HONOR 2109, HONOR 2110, HONOR 2113, HONOR 2114, HONOR 2115, HONOR 2810, HONOR 3818, HONOR 4472, HUM 1500, HUM 1550, HUM 1600, LEAP 1100, LEAP 1110, LEAP 1120, LEAP 1150, LEAP 1160, LEAP 1205, LEAP 1215, LEAP 1225, LEAP 1235, LEAP 1245, LEAP 1265, LEAP 1500, LEAP 1510, LING 1069, LING 2470, LING 2600, MGT 1050, MGT 1051, MUSC 2635, PHIL 1000, PHIL 1001, PHIL 1002, PHIL 1003, PHIL 1005, PHIL 2250, PHIL 2640, POLS 2300, QUEST 1130, RELS 2640, THEA 2900, UGS 3400, UGS 3690, WLC 2010, WRTG 2040, WRTG 2050, WRTG 2080, WRTG 2090, WRTG 2705
+
+
+
+============================================================
+Requirement: SOCIAL SCIENCE IE AREA  (BF)COURSE MUST BE COMPLETED WITH A GRADE OF D- OR BETTER,A CR GRADE IS ALSO ACCEPTED
+============================================================
+  Subrequirement: (BF) Complete two Social/Behavioral Science courses
+    Completed Courses: None
+    Needs Count: 2
+    Not From: None
+    Select From: ANTH 1010, ANTH 1030, ANTH 2017, ANTH 2400, CMP 2010, CMP 2500, CRIM 1010, COMM 2110, CSD 1010, ECON 2010, ECON 2020, ECON 2030, ECON 2500, ED PS 1000, ED PS 2030, ED PS 2031, ED PS 2720, ED PS 2723, ED PS 2950, EDU 3720, EDU 3721, ENTP 1010, ENV 2100, ETHNC 2500, ETHNC 2510, ETHNC 2580, FCS 1500, FCS 2100, FCS 2400, GEOG 1300, GEOG 1400, GEOG 2400, GERON 3001, GLOBL 2235, GNDR 1080, GNDR 1100, HONOR 2980, HONOR 3374, HONOR 4474, HSP 1010, KINES 2600, LAW 1010, LEAP 1140, LEAP 1200, LEAP 1210, LEAP 1220, LEAP 1230, LEAP 1240, LEAP 1260, LEAP 1501, LEAP 1801, LEAP 3800, LING 2200, LING 2475, MGT 1050, MGT 1051, NURS 2100, POLS 2100, POLS 2200, POLS 2500, POLS 2700, PRT 1110, PRT 2100, PSY 1010, PSY 1011, PSY 1080, QAMO 2010, QAMO 2011, QUEST 1120, SBS 1080, SOC 1010, SOC 1020, SOC 1111, STRAT 1050, UGS 2001, UGS 2002, UGS 2300, WRTG 2705
+
+
+
+============================================================
+Requirement: INTERNATIONAL REQUIREMENT (IR)COURSE MUST BE COMPLETED WITH A GRADE OF C- OR BETTER,A CR GRADE IS ALSO ACCEPTEDBeginning fall 2013, all students are required to completethis requirement, regardless of entrance date
+============================================================
+  Subrequirement: (IR) Complete one upper-division International course
+    Completed Courses: None
+    Needs Count: N/A
+    Not From: None
+    Select From: ACCTG 5140, ANTH 3110, ANTH 3126, ANTH 3127, ANTH 3140, ANTH 3145, ANTH 3153, ARAB 3010, ARCH 3210, ART 3010, ARTH 3010, ARTH 3430, ATMOS 3100, BIOL 3460, BUS 4815, CHIN 3010, CHIN 3060, COMM 5610, COMM 5620, CVEEN 5500, ECE 1030, ECON 3500, ECON 5420, ED PS 4331, ENGL 3780, ENVST 3364, ETHNC 3790, FCS 3370, FILM 3170, FILM 3250, FILM 3270, FINAN 4550, FRNCH 3040, FRNCH 3010, GEO 1030, GEO 1050, GEOG 3610, GEOG 3640, GEOG 3670, GERM 3010, GERM 3060, GERON 5280, GNDR 3110, GNDR 4765, GNDR 5760, GREEK 3010, H EDU 5060, HIST 2210, HIST 3590, HIST 4080, HIST 4780, HONOR 3255, HONOR 3601, HONOR 3602, HONOR 3950, HONOR 4810, HONOR 4880, IS 5620, ITAL 3010, ITAL 3060, JAPAN 3010, KOREA 3060, LATIN 3010, LEAP 3800, LING 2470, LING 3220, MGT 4900, MKTG 4840, MSE 1030, MUSC 1250, NUIP 3620, NURS 4110, NURS 4510, OSC 5620, PBHLT 4500, PERS 3010, PHIL 2640, PHIL 3730, PHYS 3150, POLS 3410, POLS 3680, POLS 5660, PRT 3610, PRT 5610, PTGSE 3060, QUEST 1110, QUEST 3110, RELS 2640, RUSS 3010, RUSS 3060, SCI 3000, SOC 3436, SOC 3480, SOC 3650, SOC 3741, SPAN 3010, SPAN 3060, SP ED 3020, STRAT 4900, SW 2200, WRTG 4010
+
+
+
+============================================================
 Requirement: Computer Science ElectivesComplete 7 or more CS electives for at least 21 credits.
 ============================================================
   Subrequirement: [No Title]
     Completed Courses:
-      - CS 3190: Found. of Data Analysis
-      - CS 3550: Web Software Dev I
+      - CS 4960: Theory of Machine Learning
       - CS 4300: Artificial Intelligence
       - CS 5150: Advanced Algorithms
+      - CS 5353: Deep Learning
     Needs Count: N/A
     Not From: CS 3011, CS 3020, CS 3100, CS 3130, CS 3200, CS 3500, CS 3505, CS 3810, CS 3991, CS 3992, CS 4000, CS 4011, CS 4150, CS 4400, CS 4500, CS 4940, CS 4970, CS 5040, CS 3390, CS 3090
     Select From: CS 3000, CS 5999
 
   Subrequirement: (Optional) Only one Ethics course may be used as aCS Elective:
-    Completed Courses: None
-    Needs Count: 1
+    Completed Courses:
+      - CS 3390: Ethics in Data Science
+    Needs Count: N/A
     Not From: None
-    Select From: CS 3390, CS 3090
+    Select From: None
 
   Subrequirement: (Optional) Complete at least 3 credits from thefollowing:
     Completed Courses: None
     Needs Count: N/A
     Not From: None
-    Select From: CS 3011, CS 3020, CS 4011
+    Select From: CS 3011, CS 3020, CS 4011, CS 5040
 
 
 
 ============================================================
-Requirement: Capstone RequirementComplete one of the following:
+Requirement: CAPSTONE REQUIREMENT
 ============================================================
-  Subrequirement: Project
+  Subrequirement: [No Title]
     Completed Courses:
       - CS 4000: Senior Capstone Design
     Needs Count: 1
     Not From: None
     Select From: CS 4500
 
-  Subrequirement: Research/Thesis
+  Subrequirement: [No Title]
     Completed Courses: None
     Needs Count: 2
     Not From: None
     Select From: CS 4940, CS 4970
+
+
+
+============================================================
+Requirement: Elective Courses
+============================================================
+  Subrequirement: Select three other Mathematics courses with aprerequisite of at least Calculus II. Please have yourchoices approved by the Undergraduate Advisor.One elective must be either MATH 2200  (recommended) oror  MATH 2270 or MATH 2250 in order to satisfyprerequisites for Foundations of Analysis.
+    Completed Courses:
+      - CS 2100: Discrete Structures
+      - MATH 2270: Linear Algebra
+    Needs Count: 1
+    Not From: None
+    Select From: None
 
 
