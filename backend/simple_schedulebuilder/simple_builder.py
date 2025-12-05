@@ -16,8 +16,7 @@ def display_menu():
 
 # get the class details
 def add_class(schedule):
-    # class_id = map(int, input("Enter classId (i.e <469>): ").split())
-    class_id = int(input("Enter course id (i.e 469) "))
+    course_code = input("Enter course id (i.e 1400) ")
     # name = input("Enter class name: ").strip()
     # days = input("Enter day (Mon/Wed/Fri): ").strip()
     # time = input("Enter time (1000-1300): ").strip()
@@ -26,6 +25,15 @@ def add_class(schedule):
     # start, end = time.split("-")
 
     # get the class from the database
+    list_section = get_class_sections_by_course_number(db, course_code)
+
+    print(f"\nFound {len(list_section)} courses \nPlease pick a section")
+    for class_section in list_section:
+        time = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
+        print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time}")
+    
+    class_id = int(input("Enter course id (i.e 469) "))
+
     section = get_class_section(db, class_id)
     course = get_course(db, int(section.course_id))
     department = get_department(db, int(course.department_id))
@@ -85,7 +93,7 @@ def view_schedule(schedule):
 
     print("\nCurrent Schedule")
     for i, cls in enumerate(schedule, 1):
-        print(f"{i}. {cls['name']} - {cls['days']} - {cls['time']}")
+        print(f"{i}. {cls['id']} - {cls['name']} - {cls['days']} - {cls['time']}")
     
     print("\n")
 
@@ -95,7 +103,7 @@ def save_schedule(schedule, filename="schedule.txt"):
         f.write("Your Schedule:\n")
         f.write("------------------------\n")
         for cls in schedule:
-            f.write(f"{cls['name']} - {cls['days']} - {cls['time']}\n")
+            f.write(f"{cls['id']} - {cls['name']} - {cls['days']} - {cls['time']}\n")
         f.write("------------------------\n")
 
     print(f"\nSchedule saved to {filename}")
