@@ -25,6 +25,19 @@ def get_class_section(db: Session, class_section_id: int) -> Optional[ClassSecti
     result = db.execute(stmt)
     return result.scalars().first()
 
+def get_class_sections_by_course_number(
+    db: Session,
+    course_number: str,
+) -> List[ClassSection]:
+    stmt = (
+        select(ClassSection)
+        .join(ClassSection.course)
+        .where(Course.number == course_number)
+        .order_by(ClassSection.id)
+    )
+    result = db.execute(stmt)
+    return result.scalars().all()
+
 def create_class_section_by_course_code(
     db: Session,
     data: ClassSectionCreateByCourseCode,

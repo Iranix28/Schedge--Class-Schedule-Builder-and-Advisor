@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.session import DBSession
 from app.models.db_models import ClassSectionCreate, ClassSectionRead, ClassSectionUpdate, ClassSectionCreateByCourseCode
 
-from app.database.query_routers.class_sections_query import create_class_section, list_class_sections, get_class_section, create_class_section_by_course_code
+from app.database.query_routers.class_sections_query import create_class_section, list_class_sections, get_class_section, get_class_sections_by_course_number, create_class_section_by_course_code
 
 from backend.exceptions import EntityNotFound
 
@@ -36,3 +36,6 @@ def get_class_section_endpoint(class_section_id: int, db: DBSession):
         raise EntityNotFound(entity_name="ClassSection", entity_id=class_section_id)
     return cs
 
+def get_class_sections_by_course_number_endpoint(course_number: str, db: DBSession):
+    sections = get_class_sections_by_course_number(db, course_number)
+    return sections
