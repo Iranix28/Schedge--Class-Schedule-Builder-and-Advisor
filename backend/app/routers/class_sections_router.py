@@ -36,6 +36,7 @@ def get_class_section_endpoint(class_section_id: int, db: DBSession):
         raise EntityNotFound(entity_name="ClassSection", entity_id=class_section_id)
     return cs
 
+@router.get("/by-course-number/{course_number}", response_model=List[ClassSectionRead])
 def get_class_sections_by_course_number_endpoint(course_number: str, db: DBSession):
     sections = get_class_sections_by_course_number(db, course_number)
     return sections
