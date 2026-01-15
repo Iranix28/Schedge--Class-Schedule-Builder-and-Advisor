@@ -42,6 +42,34 @@ GRADE_PATTERN = re.compile(
 
 FORBIDDEN_SUBJECTS = {"AP", "SCORE", "OF", "HIGHER", "CALC", "AB", "BC"}
 
+VALID_SUBJECTS = {
+    "ACCTG","AEROS","ANAT","ANES","ANTH","ARAB","ARCH","ART","ARTH","ARTX",
+    "ASL","ASTP","ASTR","ATHL","ATMOS","ATSM","BIO C","BIOL","BME","BMI","BUS",
+    "CHEM","CH EN","CERM","CHIN","CMP","COMM","CRIM","CS","CSD","CTLE","CVEEN",
+    "DS","ECON","ECE","EAS","ECS","ED PS","EDU","EHUM","ELP","ENGL","ENTP",
+    "ENV","ENVST","ETHNC","ESSFC","FCS","FILM","FINAN","FP MD","GAMES","GEOG",
+    "GERON","GNDR","H EDU","H EDUC","H GEN","HSP","HONOR","IS","INTMD","IAGE",
+    "JAPAN","KINES","LAWC","MATH","ME EN","MGT","MKTG","MSE","MD LB","MIL S",
+    "NURS","NUIP","OSC","PHYS","PRT","PRTS","PSY","PUBPL","RECTH","SCLPT",
+    "STRAT","THEA","WRTG"
+}
+
+# Normalize subjects for matching
+NORMALIZED_SUBJECTS = {
+    subj.replace(" ", ""): subj for subj in VALID_SUBJECTS
+}
+
+# Longest first so "MEEN" beats "ME"
+SORTED_SUBJECT_KEYS = sorted(
+    NORMALIZED_SUBJECTS.keys(),
+    key=len,
+    reverse=True
+)
+
+COURSE_REGEX = re.compile(
+    rf"\b({'|'.join(map(re.escape, SORTED_SUBJECT_KEYS))})\s*(\d{{3,4}})\b"
+)
+
 
 def parse_requirements_to_list(raw_pre, raw_co):
 
@@ -49,45 +77,37 @@ def parse_requirements_to_list(raw_pre, raw_co):
         if not text or text.strip() in ("N/A", ""):
             return []
 
-        text = text.replace("(", " ").replace(")", " ").replace(".", "")
-        tokens = text.replace(",", " ").replace(";", " ").split()
+        clean = (
+            text.upper()
+            .replace("(", " ")
+            .replace(")", " ")
+            .replace(".", "")
+        )
 
         results = []
-        last_subject = None
-        pending_op = None  # "and", "or", or None
 
-        # FIX: extract full grade including hyphens
-        m = GRADE_PATTERN.search(text)
+        # extract grade once
+        m = GRADE_PATTERN.search(clean)
         last_grade = m.group(1).upper() if m else None
-        # print(tokens)
 
-        for token in tokens:
-            up = token.upper()
+        # token stream: operators + courses, in order
+        token_pattern = re.compile(
+            rf"\b(AND|OR)\b|{COURSE_REGEX.pattern}"
+        )
 
-            if up == "OR":
-                pending_op = "or"
-                continue
-            if up == "AND":
-                pending_op = "and"
-                continue
+        pending_op = None
 
-            if up in FORBIDDEN_SUBJECTS:
+        for match in token_pattern.finditer(clean):
+            if match.group(1):  # AND / OR
+                pending_op = match.group(1).lower()
                 continue
 
-            m_full = FULL_COURSE_PATTERN.match(up)
-            if m_full:
-                subj, num = m_full.groups()
-                last_subject = subj
-                course = subj + num
-            elif SUBJECT_PATTERN.match(up) and not NUMBER_PATTERN.match(up):
-                last_subject = up
-                continue
-            elif NUMBER_PATTERN.match(up):
-                if not last_subject:
-                    continue
-                course = last_subject + up
-            else:
-                continue
+            # course match
+            subj_key = match.group(2)
+            num = match.group(3)
+
+            subject = NORMALIZED_SUBJECTS[subj_key]
+            course = subject.replace(" ", "") + num
 
             prefix = f"{pending_op} " if pending_op else ""
             pending_op = None
@@ -95,13 +115,15 @@ def parse_requirements_to_list(raw_pre, raw_co):
             grade = f"{last_grade} " if last_grade else ""
 
             results.append(f"{prefix}{kind} {grade}{course}")
-        
+
         return results
+
 
     final = []
     final.extend(parse_line(raw_pre, "pre"))
     final.extend(parse_line(raw_co, "co"))
     return final
+
 
 
 

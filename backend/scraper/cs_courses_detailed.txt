@@ -6,7 +6,7 @@ Components: Lecture
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1050']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 003)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -16,7 +16,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1050']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 004)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -26,7 +26,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1050']
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 005)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -36,7 +36,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050', 'or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1050']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 001)
 Instructor: PARKER, ERIN
@@ -46,7 +46,7 @@ Components: Lecture
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 003)
 Instructor: PARKER, ERIN
@@ -56,7 +56,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 004)
 Instructor: PARKER, ERIN
@@ -66,7 +66,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 005)
 Instructor: PARKER, ERIN
@@ -76,7 +76,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 006)
 Instructor: PARKER, ERIN
@@ -86,7 +86,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 007)
 Instructor: PARKER, ERIN
@@ -96,7 +96,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 008)
 Instructor: PARKER, ERIN
@@ -106,7 +106,7 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
+Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 001)
 Instructor: JONES, BEN
@@ -116,7 +116,7 @@ Components: Lecture
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1060']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 004)
 Instructor: JONES, BEN
@@ -126,7 +126,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1060']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 005)
 Instructor: JONES, BEN
@@ -136,7 +136,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1060']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 006)
 Instructor: JONES, BEN
@@ -146,7 +146,7 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060', 'or co C MATH1080', 'or co C MATH1210', 'or co C MATH1215', 'or co C MATH1250', 'or co C MATH1310', 'or co C MATH1311']
+Prerequisite list: ['or co C MATH1060']
 ----------------------------------------------------------------------
 CS 1810 - Intro to Comp Systems (Section 001)
 Instructor: JONES, BEN
@@ -356,7 +356,7 @@ Components: Lecture
 Description: An introduction to probability theory and statistics, with an emphasis on solving problems in electrical and computer engineering.  Topics in probability include discrete and continuous random variables, probability distributions, sums and functions of random variables, the law of large numbers, and the central limit theorem. Topics in statistics include sample mean and variance, estimating distributions, correlation, regression, and hypothesis testing.  Engineering applications include failure analysis, process control, communication systems, and speech recognition.
 Prerequisites Raw: 'C-' or better in (MATH 1220 OR 1320 OR 1321 OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- MATH1220', 'or pre C- MATH1320', 'or pre C- MATH1321']
+Prerequisite list: ['or pre C- MATH1220']
 ----------------------------------------------------------------------
 CS 3190 - Found. of Data Analysis (Section 001)
 Instructor: PHILLIPS, JEFF
@@ -366,7 +366,7 @@ Components: Lecture
 Description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
 Prerequisites Raw: 'C-' or better in(CS2100 OR MATH 2200)& (MATH2270 OR 2271)& Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: 'C-' or better in (MATH3070 OR CS3130 OR ECE3530)
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'pre C- MATH2270', 'or pre C- MATH2271', 'or co C- MATH3070', 'or co C- CS3130', 'or co C- ECE3530']
+Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'pre C- MATH2270', 'or co C- MATH3070', 'or co C- CS3130', 'or co C- ECE3530']
 ----------------------------------------------------------------------
 CS 3200 - Intro Sci Comp (Section 001)
 Instructor: SHANKAR, VARUN
@@ -384,9 +384,9 @@ Schedule: TuTh 03:40PM-05:00PM
 Units: 3.0
 Components: Lecture
 Description: This course is designed to provide a groundwork for both machine learning and deep learning early on in undergraduate studies.  Each lecture covers fundamental topics in Machine Learning interleaved with their practical application in code, using machine learning libraries such as PyTorch to implement and experiment with the discussed concepts. Topics include training paradigms, loss functions, optimization, evaluation, hyperparameter tuning, generalization, simple neural networks, CNNs and Transformers, backpropagation, featurization, and more. This course also applies concepts from probability and linear algebra to these topics. By the end of the course, students will be prepared to take more advanced courses to deepen their theoretical and applied knowledge of machine learning and deep learning.
-Prerequisites Raw: N/A
+Prerequisites Raw: 'C-' or better in (CS 2100 OR MATH 2200) AND (MATH 2250 OR MATH 2270 OR MATH 2271) AND Foundational Courses completed
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'and pre C- MATH2250', 'or pre C- MATH2270', 'or pre C- MATH2271']
 ----------------------------------------------------------------------
 CS 3390 - Ethics in Data Science (Section 001)
 Instructor: KIRBY, ROBERT
@@ -636,7 +636,7 @@ Components: Lecture
 Description: During their last two semesters, senior Computer Science students form teams to develop significant software projects. This class is the first semester in the sequence. Seniors will work on team formation, project identification, project planning (including UI design, software architecture, testing methods, scheduling, etc.), and completion of a system prototype. This course will provide teams with time and guidance to effectively plan their projects, as well as emphasizing the written and oral communications necessary to succeed in industry. Projects formed in this course must be completed during the following semester in CS 4500. Students should have four or less CS electives/required courses left when signing up for this course and should be graduating during the following semester.
 Prerequisites Raw: 'C-' or better in CS3505 & (WRTG3014 OR 3015 OR HONOR3200) & at least 9 credits in CS Electives AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3505', 'pre C- WRTG3014', 'or pre C- WRTG3015']
+Prerequisite list: ['or pre C- CS3505', 'pre C- WRTG3014', 'or pre C- HONOR3200']
 ----------------------------------------------------------------------
 CS 4150 - Algorithms (Section 001)
 Instructor: WANG, HAITAO
@@ -806,9 +806,9 @@ Schedule: MoWe 01:25PM-02:45PM
 Units: 3.0
 Components: Lecture
 Description: This course dives into today’s state-of-the-art techniques for uncovering hidden logical bugs and security vulnerabilities in software. Introductory fuzzing exercises provide hands-on experience with industry-popular security tools for testing and diagnosing software errors, culminating in a final project where you’ll work to hunt down, analyze, and report bugs in a real-world application of your choice. This class is open to graduate students and upper-level undergraduates. It is recommended you have a solid grasp over topics like software security, systems programming, and C/C++.
-Prerequisites Raw: N/A
+Prerequisites Raw: 'C-' or better in CS 3505 AND CS 4400 AND Foundational Courses completed
 Corequisites Raw: N/A
-Prerequisite list: []
+Prerequisite list: ['or pre C- CS3505', 'and pre C- CS4400']
 ----------------------------------------------------------------------
 CS 5530 - Database Systems (Section 090)
 Instructor: KOPTA, DANIEL
@@ -828,7 +828,7 @@ Components: Lecture
 Description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
 Prerequisites Raw: 'C-' or better in CS 3500 AND (MATH 2250 OR 2270) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500', 'and pre C- MATH2250', 'or pre C- MATH2270']
+Prerequisite list: ['or pre C- CS3500', 'and pre C- MATH2250']
 ----------------------------------------------------------------------
 CS 5635 - Vis for Scientific Data (Section 001)
 Instructor: JOHNSON, CHRISTOPHER
@@ -838,7 +838,7 @@ Components: Lecture
 Description: Introduction to the principles, methods, and techniques for effective visual analysis of scientific data. Students will explore many aspects of visualization, including techniques for scalar, vector, and tensor field data; surface and volume geometry representations and scientific animation. Students will acquire hands-on experience using visualization software to study applications including but not limited to those that arise in science, engineering, and medicine. A complementary course - CS 5630/6630 Visualization for Data Science - that focuses on visualization related to tabular data (e.g., graphs, text, and maps), will be taught each Fall Semester.
 Prerequisites Raw: 'C' or better in CS 3500 AND ((MATH 1210 AND 1220) OR (MATH 1310 AND 1320) OR (MATH 1311 AND 1321) OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C CS3500', 'and pre C MATH1210', 'and pre C MATH1220', 'or pre C MATH1310', 'and pre C MATH1320', 'or pre C MATH1311', 'and pre C MATH1321']
+Prerequisite list: ['or pre C CS3500', 'and pre C MATH1210', 'or pre C MATH1310', 'or pre C MATH1311']
 ----------------------------------------------------------------------
 CS 5740 - CAD of Digital Circuits (Section 001)
 Instructor: KALLA, PRIYANK
@@ -1073,7 +1073,7 @@ Components: Lecture
 Description: Control of serial robot manipulators is examined.  Topics include control system fundamentals, sensors and actuators, joint level control, centralized control, operational space control, and force control.  Projects provide hands on experience controlling a serial link manipulator.
 Prerequisites Raw: CS 6130 AND ME EN 6200.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6130', 'and pre EN6200']
+Prerequisite list: ['pre CS6130']
 ----------------------------------------------------------------------
 CS 6370 - Motion Planning (Section 001)
 Instructor: Hermans, Tucker
@@ -1299,7 +1299,7 @@ Units: 3.0
 Components: Special Topics
 Description: © The University of Utah Nondiscrimination &
                         Accessibility / Disclaimer / Privacy University Support Services 102 S 200 E, Ste. 100 Salt Lake City, UT 84111
-Prerequisites Raw: Full Major status in the School of Computing.
+Prerequisites Raw: Full Major status in the Kahlert School of Computing
 Corequisites Raw: N/A
 Prerequisite list: []
 ----------------------------------------------------------------------
@@ -1373,7 +1373,7 @@ Units: 1.0
 Components: Seminar
 Description: © The University of Utah Nondiscrimination &
                         Accessibility / Disclaimer / Privacy University Support Services 102 S 200 E, Ste. 100 Salt Lake City, UT 84111
-Prerequisites Raw: Full Major status in the School of Computing.
+Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
 ----------------------------------------------------------------------
