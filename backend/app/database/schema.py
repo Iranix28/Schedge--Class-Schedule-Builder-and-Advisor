@@ -1,7 +1,7 @@
-from datetime import datetime, time
+from datetime import datetime, timezone, time
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, Time, ForeignKey
+from sqlalchemy import Integer, String, Time, ForeignKey, UniqueConstraint, Index, DateTime, Text
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from pgvector.sqlalchemy import Vector
 
@@ -119,3 +119,120 @@ class CoursePrerequisite(Base):
         back_populates="prereq_for",
         foreign_keys=[prerequisite_course_id],
     )
+
+    #============================================== DEGREE AUDIT TABLES ===============================================#
+
+#What if course does not exist in given catalog year. add catalog?
+#Want to change course to number, easier for filtering and matching
+#change min and max to foregin keys
+#very slow parsing for range rules if course nums are not changed to integers
+#Given count, but nore select fomr, subrequirement is vague??? case
+#ONE BIG CLASS CATALOG????q
+
+class UserAudit(Base):
+    __tablename__ = "user_audits"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+
+
+    raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # or raw_json
+
+    requirements: Mapped[List["AuditRequirement"]] = relationship(
+        back_populates="audit",
+        cascade="all, delete-orphan",
+        )
+
+class AuditRequirement(Base):
+    """
+    Stores BOTH 'Requirement:' and 'Subrequirement:' lines.
+    Use parent_id to represent subrequirements.
+    """
+    __tablename__ = "audit_requirements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    audit_id: Mapped[int] = mapped_column(
+        ForeignKey("user_audits.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    parent_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("audit_requirements.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    node_type: Mapped[str] = mapped_column(String(32), nullable=False)  # "REQUIREMENT" | "SUBREQUIREMENT"
+    title: Mapped[str] = mapped_column(String(1024), nullable=False)
+
+    # Common audit fields
+    needs_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    needs_credits: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    min_grade: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    audit: Mapped["UserAudit"] = relationship(back_populates="requirements")
+
+    parent: Mapped[Optional["AuditRequirement"]] = relationship(
+        remote_side="AuditRequirement.id",
+        back_populates="children",
+    )
+    children: Mapped[List["AuditRequirement"]] = relationship(
+        back_populates="parent",
+        cascade="all, delete-orphan",
+    )
+
+    rules: Mapped[List["AuditRequirementRule"]] = relationship(
+        back_populates="requirement",
+        cascade="all, delete-orphan",
+    )
+
+class AuditRequirementRule(Base):
+    """
+    Stores Select From / Not From as rules.
+    Supports single course, ranges (CS 3500 TO CS 3505), etc.
+    """
+    __tablename__ = "audit_requirement_rules"
+    __table_args__ = (
+ 
+        UniqueConstraint(
+            "requirement_id", "rule_group", "kind", "course_id",
+            name="uq_req_rule_course"
+        ),
+
+        Index("ix_req_rule_req_group_kind", "requirement_id", "rule_group", "kind"),
+        Index("ix_req_rule_dept_minmax", "department_id", "number_min", "number_max"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    requirement_id: Mapped[int] = mapped_column(
+        ForeignKey("audit_requirements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    rule_group: Mapped[str] = mapped_column(String(16), nullable=False)  # "ALLOW" | "BLOCK"
+    kind: Mapped[str] = mapped_column(String(32), nullable=False)        # "COURSE" | "RANGE" | "SUBJECT_LEVEL"
+
+    # for COURSE
+    course_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    # for RANGE/SUBJECT_LEVEL
+    department_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("departments.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    number_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True) # "3500"
+    number_max: Mapped[Optional[int]] = mapped_column(Integer, nullable=True) # "3505"
+
+    requirement: Mapped["AuditRequirement"] = relationship(back_populates="rules")
+    course: Mapped[Optional["Course"]] = relationship()        
+    department: Mapped[Optional["Department"]] = relationship() 
