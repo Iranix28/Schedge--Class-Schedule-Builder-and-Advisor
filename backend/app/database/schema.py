@@ -111,6 +111,8 @@ class CoursePrerequisite(Base):
         nullable=False,
     )
 
+    group_num: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+
     course: Mapped["Course"] = relationship(
         back_populates="prerequisites",
         foreign_keys=[course_id],
