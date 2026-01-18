@@ -6,7 +6,8 @@ Components: Lecture
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050']
+Prerequisite list: []
+Corequisite list: [['MATH1050']]
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 003)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -16,7 +17,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050']
+Prerequisite list: []
+Corequisite list: [['MATH1050']]
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 004)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -26,7 +28,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050']
+Prerequisite list: []
+Corequisite list: [['MATH1050']]
 ----------------------------------------------------------------------
 CS 1400 - Intro Comp Programming (Section 005)
 Instructor: DE ST GERMAIN, H. James 'Jim'
@@ -36,7 +39,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 Prerequisites Raw: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR
 Corequisites Raw: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math
-Prerequisite list: ['or co C MATH1050']
+Prerequisite list: []
+Corequisite list: [['MATH1050']]
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 001)
 Instructor: PARKER, ERIN
@@ -46,7 +50,8 @@ Components: Lecture
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 003)
 Instructor: PARKER, ERIN
@@ -56,7 +61,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 004)
 Instructor: PARKER, ERIN
@@ -66,7 +72,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 005)
 Instructor: PARKER, ERIN
@@ -76,7 +83,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 006)
 Instructor: PARKER, ERIN
@@ -86,7 +94,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 007)
 Instructor: PARKER, ERIN
@@ -96,7 +105,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 008)
 Instructor: PARKER, ERIN
@@ -106,7 +116,8 @@ Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400 OR Instructor Consent
 Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
-Prerequisite list: ['or pre C- CS1400', 'co MATH1060']
+Prerequisite list: [['CS1400']]
+Corequisite list: ['MATH1060']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 001)
 Instructor: JONES, BEN
@@ -116,7 +127,8 @@ Components: Lecture
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060']
+Prerequisite list: []
+Corequisite list: [['MATH1060']]
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 004)
 Instructor: JONES, BEN
@@ -126,7 +138,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060']
+Prerequisite list: []
+Corequisite list: [['MATH1060']]
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 005)
 Instructor: JONES, BEN
@@ -136,7 +149,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060']
+Prerequisite list: []
+Corequisite list: [['MATH1060']]
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 006)
 Instructor: JONES, BEN
@@ -146,7 +160,8 @@ Components: Laboratory
 Description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 Prerequisites Raw: N/A
 Corequisites Raw: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+
-Prerequisite list: ['or co C MATH1060']
+Prerequisite list: []
+Corequisite list: [['MATH1060']]
 ----------------------------------------------------------------------
 CS 1810 - Intro to Comp Systems (Section 001)
 Instructor: JONES, BEN
@@ -157,6 +172,7 @@ Description: This course provides an elementary look at the systems and machiner
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 1810 - Intro to Comp Systems (Section 003)
 Instructor: JONES, BEN
@@ -167,6 +183,7 @@ Description: This course provides an elementary look at the systems and machiner
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 001)
 Instructor: N/A
@@ -176,7 +193,8 @@ Components: Lecture
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 003)
 Instructor: N/A
@@ -186,7 +204,8 @@ Components: Discussion
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 004)
 Instructor: N/A
@@ -196,7 +215,8 @@ Components: Discussion
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 020)
 Instructor: N/A
@@ -206,7 +226,8 @@ Components: Lecture
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 022)
 Instructor: N/A
@@ -216,7 +237,8 @@ Components: Discussion
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2100 - Discrete Structures (Section 023)
 Instructor: N/A
@@ -226,7 +248,8 @@ Components: Discussion
 Description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
 Prerequisites Raw: 'C-' or better in (CS 1410 OR CS 1420 OR AP CS-A score of 5) AND (MATH 1210 OR MATH 1220 OR MATH 1250 OR MATH 1310 OR MATH 1311 OR AP Calc AB score of 4+ OR AP Calc BC score of 3+ OR Higher Math)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420', 'and pre C- MATH1210', 'or pre C- MATH1220', 'or pre C- MATH1250', 'or pre C- MATH1310', 'or pre C- MATH1311']
+Prerequisite list: [['CS1410', 'CS1420'], 'MATH1210', ['MATH1220', 'MATH1250', 'MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 001)
 Instructor: N/A
@@ -236,7 +259,8 @@ Components: Lecture
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 003)
 Instructor: N/A
@@ -246,7 +270,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 004)
 Instructor: N/A
@@ -256,7 +281,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 005)
 Instructor: N/A
@@ -266,7 +292,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 006)
 Instructor: N/A
@@ -276,7 +303,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 020)
 Instructor: N/A
@@ -286,7 +314,8 @@ Components: Lecture
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 022)
 Instructor: N/A
@@ -296,7 +325,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 023)
 Instructor: N/A
@@ -306,7 +336,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 024)
 Instructor: N/A
@@ -316,7 +347,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 2420 - Intro Alg & Data Struct (Section 025)
 Instructor: N/A
@@ -326,7 +358,8 @@ Components: Laboratory
 Description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
 Prerequisites Raw: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS1410', 'or pre C- CS1420']
+Prerequisite list: [['CS1410', 'CS1420']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3090 - Ethics in Computing (Section 001)
 Instructor: MARTIN, TRAVIS
@@ -337,6 +370,7 @@ Description: In this course, we will explore the moral, social, and ethical rami
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3100 - Models Of Computation (Section 001)
 Instructor: HENDERSON, THOMAS
@@ -346,7 +380,8 @@ Components: Lecture
 Description: This course covers different models of computation and how they relate to the understanding and better design of real-world computer programs. As examples, we will study Turing machines that help define the fundamental limits of computing, Push-down Automata that help build language parsers, and Finite Automata that help build string pattern matchers. This course also covers the basics of designing correctly functioning programs, and introduces the use of mathematical logic through Boolean satisfiability methods. The course will involve the use of hands-on programming exercises written at a sufficiently high level of abstraction that the connections between theory and practice are apparent.
 Prerequisites Raw: 'C-' or better in (CS2100 OR MATH2200) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200']
+Prerequisite list: [['CS2100', 'MATH2200']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3130 - Eng Prob Stats (Section 001)
 Instructor: BHASKARA, ADITYA
@@ -356,7 +391,8 @@ Components: Lecture
 Description: An introduction to probability theory and statistics, with an emphasis on solving problems in electrical and computer engineering.  Topics in probability include discrete and continuous random variables, probability distributions, sums and functions of random variables, the law of large numbers, and the central limit theorem. Topics in statistics include sample mean and variance, estimating distributions, correlation, regression, and hypothesis testing.  Engineering applications include failure analysis, process control, communication systems, and speech recognition.
 Prerequisites Raw: 'C-' or better in (MATH 1220 OR 1320 OR 1321 OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- MATH1220']
+Prerequisite list: [['MATH1220']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3190 - Found. of Data Analysis (Section 001)
 Instructor: PHILLIPS, JEFF
@@ -366,7 +402,8 @@ Components: Lecture
 Description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
 Prerequisites Raw: 'C-' or better in(CS2100 OR MATH 2200)& (MATH2270 OR 2271)& Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: 'C-' or better in (MATH3070 OR CS3130 OR ECE3530)
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'pre C- MATH2270', 'or co C- MATH3070', 'or co C- CS3130', 'or co C- ECE3530']
+Prerequisite list: [['CS2100', 'MATH2200'], 'MATH2270']
+Corequisite list: [['MATH3070', 'CS3130', 'ECE3530']]
 ----------------------------------------------------------------------
 CS 3200 - Intro Sci Comp (Section 001)
 Instructor: SHANKAR, VARUN
@@ -376,7 +413,8 @@ Components: Lecture
 Description: Scientific and data computation relevant to computational science and engineering, with emphasis on the process of modeling, simulation, visualization and evaluation.This is an introduction to classical and modern computational and data science methods, with a focus on their theoretical and algorithmic development as well as their implementation. Topics may include numerical linear algebra, numerical approximation methods such as interpolation and linear regression, solving and linear and non-linear systems, and optimization. Basic knowledge of programming, matrices, and calculus is assumed. Recommended programming experience at the level of CS 2420 and Mathematical background at the level of integral calculus.
 Prerequisites Raw: 'C-' or better in (MATH 2270 OR MATH 2271) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- MATH2270', 'or pre C- MATH2271']
+Prerequisite list: [['MATH2270', 'MATH2271']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3350 - Intro to Practical ML (Section 001)
 Instructor: TAO, GUANHONG
@@ -386,7 +424,8 @@ Components: Lecture
 Description: This course is designed to provide a groundwork for both machine learning and deep learning early on in undergraduate studies.  Each lecture covers fundamental topics in Machine Learning interleaved with their practical application in code, using machine learning libraries such as PyTorch to implement and experiment with the discussed concepts. Topics include training paradigms, loss functions, optimization, evaluation, hyperparameter tuning, generalization, simple neural networks, CNNs and Transformers, backpropagation, featurization, and more. This course also applies concepts from probability and linear algebra to these topics. By the end of the course, students will be prepared to take more advanced courses to deepen their theoretical and applied knowledge of machine learning and deep learning.
 Prerequisites Raw: 'C-' or better in (CS 2100 OR MATH 2200) AND (MATH 2250 OR MATH 2270 OR MATH 2271) AND Foundational Courses completed
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'and pre C- MATH2250', 'or pre C- MATH2270', 'or pre C- MATH2271']
+Prerequisite list: [['CS2100', 'MATH2200'], 'MATH2250', ['MATH2270', 'MATH2271']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3390 - Ethics in Data Science (Section 001)
 Instructor: KIRBY, ROBERT
@@ -396,7 +435,8 @@ Components: Lecture
 Description: In this course, we will explore the technical, social, and ethical ramifications of the choices we make at the different stages of the data analysis pipeline, from data collection and storage to understanding feedback loops in analysis. Through class discussions, case studies and exercises, students will learn the basics of ethical thinking in science, understand the history of ethical dilemmas in scientific work, and study the distinct challenges associated with ethics in modern data science.
 Prerequisites Raw: 'C-' or better in (CS 2420 OR DS 2500) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Data Science Certificate status)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS2420', 'or pre C- DS2500']
+Prerequisite list: [['CS2420', 'DS2500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 001)
 Instructor: N/A
@@ -407,6 +447,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 003)
 Instructor: N/A
@@ -417,6 +458,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 004)
 Instructor: N/A
@@ -427,6 +469,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 005)
 Instructor: N/A
@@ -437,6 +480,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 020)
 Instructor: N/A
@@ -447,6 +491,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 025)
 Instructor: N/A
@@ -457,6 +502,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 026)
 Instructor: N/A
@@ -467,6 +513,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3500 - Software Practice (Section 027)
 Instructor: N/A
@@ -477,6 +524,7 @@ Description: Practical exposure to the process of creating large software system
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE OR Physics)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 001)
 Instructor: HEISLER, ERIC
@@ -486,7 +534,8 @@ Components: Lecture
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 002)
 Instructor: HEISLER, ERIC
@@ -496,7 +545,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 003)
 Instructor: HEISLER, ERIC
@@ -506,7 +556,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 004)
 Instructor: HEISLER, ERIC
@@ -516,7 +567,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 006)
 Instructor: HEISLER, ERIC
@@ -526,7 +578,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 007)
 Instructor: HEISLER, ERIC
@@ -536,7 +589,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3505 - Software Practice II (Section 008)
 Instructor: HEISLER, ERIC
@@ -546,7 +600,8 @@ Components: Discussion
 Description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3540 - Design Human Center Sys (Section 001)
 Instructor: WIESE, ELIANE
@@ -557,6 +612,7 @@ Description: In this course, students are introduced to the fundamentals of the 
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3550 - Web Software Dev I (Section 001)
 Instructor: JOHNSON, DAVID
@@ -566,7 +622,8 @@ Components: Lecture
 Description: This course provides an introduction to web software development. Students will first learn about the fundamental protocols and systems that make the modern web possible. They will then explore the full stack of web software technology from the back end to the front end, including fundamental web security issues, database integration, and client-side page manipulation. Using modern software architectures, programming models, and languages, students will create a complete web application.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3700 - Digital System Design (Section 001)
 Instructor: GARCIA, LUIS
@@ -576,7 +633,8 @@ Components: Lecture
 Description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
 Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- PHYS2220', 'or pre C- ECE1240', 'and pre C- ECE1245', 'and pre C- ECE1050']
+Prerequisite list: [['PHYS2220', 'ECE1240'], 'ECE1245', 'ECE1050']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3700 - Digital System Design (Section 002)
 Instructor: GARCIA, LUIS
@@ -586,7 +644,8 @@ Components: Laboratory
 Description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
 Prerequisites Raw: "C-" or better in ((PHYS 2220 OR AP Physics E&M score of 4 or better) OR (ECE 1240 AND ECE1245 AND ECE1050)) AND (Major or Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- PHYS2220', 'or pre C- ECE1240', 'and pre C- ECE1245', 'and pre C- ECE1050']
+Prerequisite list: [['PHYS2220', 'ECE1240'], 'ECE1245', 'ECE1050']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3810 - Computer Organization (Section 001)
 Instructor: BALASUBRAMONIAN, RAJEEV
@@ -597,6 +656,7 @@ Description: An in-depth study of computer architecture and design, including to
 Prerequisites Raw: Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3960 - Human-Centered Data Management (Section 001)
 Instructor: FARIHA, ANNA
@@ -607,6 +667,7 @@ Description: Content changes each semester. In-depth exploration of topics of sp
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3960 - Vibe Coding (Section 003)
 Instructor: PANCHEKHA, PAVEL
@@ -617,6 +678,7 @@ Description: Content changes each semester. In-depth exploration of topics of sp
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 3992 - Pre-Thesis/Clinic/Proj (Section 001)
 Instructor: Fayazi, Morteza
@@ -626,7 +688,8 @@ Components: Seminar
 Description: This is the first course in a 2 or 3 semester series.  The purpose of this course is to form teams and propose either a self-selected senior project to be completed in CS/ECE 4710, or an ECE clinic which will be completed in the subsequent 2 semesters.  The individual option is to find a thesis advisor, and write a thesis proposal.  The thesis work will be in CS/ECE 4991 and 4992.  During the first half of the course while teams are being formed and while project ideas are being selected the instructor will lecture on the, fundamentals of project planning: scoping, group selection, risk assessment, scheduling, backup planning, strategy, etc.  The second half of the course involves student presentations and critique of the written proposals that are in progress. The final result of the course will be an approved project, clinic, or thesis proposal.
 Prerequisites Raw: "C-" or better in (ECE 3710 OR CS 3710) AND (CS 3991 OR ECE 3991) AND Full Major status in Computer Engineering.
 Corequisites Raw: "C-" or better in CS 5780
-Prerequisite list: ['or pre C- ECE3710', 'or pre C- CS3710', 'and pre C- CS3991', 'or pre C- ECE3991', 'or co C- CS5780']
+Prerequisite list: [['ECE3710', 'CS3710'], 'CS3991', ['ECE3991']]
+Corequisite list: [['CS5780']]
 ----------------------------------------------------------------------
 CS 4000 - Senior Capstone Design (Section 001)
 Instructor: DE ST GERMAIN, JOHN
@@ -636,7 +699,8 @@ Components: Lecture
 Description: During their last two semesters, senior Computer Science students form teams to develop significant software projects. This class is the first semester in the sequence. Seniors will work on team formation, project identification, project planning (including UI design, software architecture, testing methods, scheduling, etc.), and completion of a system prototype. This course will provide teams with time and guidance to effectively plan their projects, as well as emphasizing the written and oral communications necessary to succeed in industry. Projects formed in this course must be completed during the following semester in CS 4500. Students should have four or less CS electives/required courses left when signing up for this course and should be graduating during the following semester.
 Prerequisites Raw: 'C-' or better in CS3505 & (WRTG3014 OR 3015 OR HONOR3200) & at least 9 credits in CS Electives AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3505', 'pre C- WRTG3014', 'or pre C- HONOR3200']
+Prerequisite list: [['CS3505'], 'WRTG3014', ['HONOR3200']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4150 - Algorithms (Section 001)
 Instructor: WANG, HAITAO
@@ -646,7 +710,8 @@ Components: Lecture
 Description: Study of algorithms, data structures, and complexity analysis beyond the introductory treatment from CS 2420. Balanced trees, heaps, hash tables, string matching, graph algorithms, external sorting and searching. Dynamic programming, exhaustive search. Space and time complexity, derivation and solution of recurrence relations, complexity hierarchies, reducibility, NP completeness. Laboratory practice.
 Prerequisites Raw: 'C-' or better in (CS 2100 OR MATH 2200) AND CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS2100', 'or pre C- MATH2200', 'and pre C- CS3500']
+Prerequisite list: [['CS2100', 'MATH2200'], 'CS3500']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 001)
 Instructor: Basu Roy, Rohan
@@ -656,7 +721,8 @@ Components: Lecture
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 003)
 Instructor: Basu Roy, Rohan
@@ -666,7 +732,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 004)
 Instructor: Basu Roy, Rohan
@@ -676,7 +743,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 005)
 Instructor: Basu Roy, Rohan
@@ -686,7 +754,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 006)
 Instructor: Basu Roy, Rohan
@@ -696,7 +765,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 007)
 Instructor: Basu Roy, Rohan
@@ -706,7 +776,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4400 - Computer Systems (Section 009)
 Instructor: Basu Roy, Rohan
@@ -716,7 +787,8 @@ Components: Laboratory
 Description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
 Prerequisites Raw: 'C-' or better in CS 3810 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3810']
+Prerequisite list: [['CS3810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4500 - Senior Capstone Project (Section 001)
 Instructor: ALSALEEM, AHMAD
@@ -726,7 +798,8 @@ Components: Lecture
 Description: This course is the capstone experience for graduating Computer Science seniors. It involves the development of significant software systems by small, self-selected student teams, with emphasis on applying sound, disciplined software engineering practice. Projects are defined and selected at the beginning of the semester, after which progress is demonstrated through documentation, meetings, and demos. The class culminates in a Demo Day at which students present their projects to faculty, students and project sponsors.
 Prerequisites Raw: 'C-' or better in CS 4000 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS4000']
+Prerequisite list: [['CS4000']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4530 - Mobile App Programming (Section 001)
 Instructor: MAKAREM, NABIL
@@ -736,7 +809,8 @@ Components: Lecture
 Description: An introduction to the theory and practice of application development for mobile phones and tablets, including a focus on general program organizational techniques. Topics include native language foundations, automatic UI layout techniques, custom views and controls, data persistence, data driven user interfaces, application lifecycle, application architectural models like Model-View-Adapter, internet service interaction, RESTful web services, and 2D OpenGL rendering. Students will complete several programming projects during the course to explore these topics. A final project of the student's own design will make up a large part of the class.
 Prerequisites Raw: 'C-' or better in CS 3505 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3505']
+Prerequisite list: [['CS3505']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4550 - Web Software Dev II (Section 001)
 Instructor: WOOD, AARON
@@ -746,7 +820,8 @@ Components: Lecture
 Description: This course explores advanced topics in web software development including REST APIs, testing infrastructure, cloud deployment, certificates, secure sessions, user accounts and permissions, authentication, and ethical considerations in web software. Students will create an advanced web application utilizing these topics.
 Prerequisites Raw: 'C-' or better in CS 3550 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3550']
+Prerequisite list: [['CS3550']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4961 - AI for HCC (Section 001)
 Instructor: JIANG, YUE
@@ -758,6 +833,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4964 - Manage Data for & with ML (Section 001)
 Instructor: REZIG, EL KINDI
@@ -769,6 +845,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 4992 - CE Senior Thesis II (Section 001)
 Instructor: KALLA, PRIYANK
@@ -778,7 +855,8 @@ Components: Special Projects
 Description: Students work on original senior thesis project under the direction of their approved thesis advisor, make an oral presentation at the annual student technical conference, and prepare and submit their senior thesis for approval.  This course along with ECE/CS 4991 substitute for ECE/CS 4710 (Computer Engineering Senior Project) for students who have chosen to do a thesis.
 Prerequisites Raw: "C-" or better in (ECE 4991 OR CS 4991).
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- ECE4991', 'or pre C- CS4991']
+Prerequisite list: [['ECE4991', 'CS4991']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5110 - Software Verification (Section 001)
 Instructor: GREENMAN, BENJAMIN
@@ -788,7 +866,8 @@ Components: Lecture
 Description: The main goal of the course is to teach students how to rigorously verify and analyze (complex) software systems. We will study theoretical foundations underlying this task, and solve exercises and homework assignments based around actually proving example programs correct. We will also explore practical techniques behind popular verification and analysis tools, such as systematic test generation, symbolic execution, and static analysis. Students completing the course will gain a solid understanding of practical design, specification, and verification techniques and the underlying theory. Furthermore, students will leave with significant hands-on experience.
 Prerequisites Raw: 'C-' or better in (CS 3100 AND CS 3500 AND CS 4150) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3100', 'and pre C- CS3500', 'and pre C- CS4150']
+Prerequisite list: [['CS3100'], 'CS3500', 'CS4150']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5460 - Operating Systems (Section 001)
 Instructor: BURTSEV, ANTON
@@ -798,7 +877,8 @@ Components: Lecture
 Description: Characteristics, objectives, and issues concerning computer operating systems. Hardware-software interactions, process management, memory management, protection, synchronization, resource allocation, file systems, security, and distributed systems. Extensive systems programming.
 Prerequisites Raw: 'C-' or better in CS 4400 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS4400']
+Prerequisite list: [['CS4400']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5493 - Applied S/W Secur Test (Section 001)
 Instructor: NAGY, STEFAN
@@ -808,7 +888,8 @@ Components: Lecture
 Description: This course dives into today’s state-of-the-art techniques for uncovering hidden logical bugs and security vulnerabilities in software. Introductory fuzzing exercises provide hands-on experience with industry-popular security tools for testing and diagnosing software errors, culminating in a final project where you’ll work to hunt down, analyze, and report bugs in a real-world application of your choice. This class is open to graduate students and upper-level undergraduates. It is recommended you have a solid grasp over topics like software security, systems programming, and C/C++.
 Prerequisites Raw: 'C-' or better in CS 3505 AND CS 4400 AND Foundational Courses completed
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3505', 'and pre C- CS4400']
+Prerequisite list: [['CS3505'], 'CS4400']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5530 - Database Systems (Section 090)
 Instructor: KOPTA, DANIEL
@@ -818,7 +899,8 @@ Components: Lecture
 Description: Representing information about real world enterprises using important data models including the entity-relationship, relational, and object-oriented approaches. Database design criteria, including normalization and integrity constraints. Implementation techniques using commercial database management system software and database connector APIs. Selected advanced topics such as query and transaction processing and index data structures.
 Prerequisites Raw: 'C-' or better in CS 3500 AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE) Requirement Designation: Methods Requirement: Quantitative Intensive
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500']
+Prerequisite list: [['CS3500']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5610 - Interactive Comp Graph (Section 001)
 Instructor: Lin, Jenny
@@ -828,7 +910,8 @@ Components: Lecture
 Description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
 Prerequisites Raw: 'C-' or better in CS 3500 AND (MATH 2250 OR 2270) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3500', 'and pre C- MATH2250']
+Prerequisite list: [['CS3500'], 'MATH2250']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5635 - Vis for Scientific Data (Section 001)
 Instructor: JOHNSON, CHRISTOPHER
@@ -838,7 +921,8 @@ Components: Lecture
 Description: Introduction to the principles, methods, and techniques for effective visual analysis of scientific data. Students will explore many aspects of visualization, including techniques for scalar, vector, and tensor field data; surface and volume geometry representations and scientific animation. Students will acquire hands-on experience using visualization software to study applications including but not limited to those that arise in science, engineering, and medicine. A complementary course - CS 5630/6630 Visualization for Data Science - that focuses on visualization related to tabular data (e.g., graphs, text, and maps), will be taught each Fall Semester.
 Prerequisites Raw: 'C' or better in CS 3500 AND ((MATH 1210 AND 1220) OR (MATH 1310 AND 1320) OR (MATH 1311 AND 1321) OR AP Calc BC score of 4+) AND Foundational Courses complete AND (Major OR Minor in Kahlert School of Computing OR ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C CS3500', 'and pre C MATH1210', 'or pre C MATH1310', 'or pre C MATH1311']
+Prerequisite list: [['CS3500'], 'MATH1210', ['MATH1310', 'MATH1311']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5740 - CAD of Digital Circuits (Section 001)
 Instructor: KALLA, PRIYANK
@@ -848,7 +932,8 @@ Components: Lecture
 Description: Introduction to theory and algorithms used for computer-aided synthesis of digital integrated circuits. Topics include algorithms and representations for Boolean optimization, hardware modeling, combinational logic optimization, sequential logic optimization, and technology mapping. Undergraduate students only.
 Prerequisites Raw: "C-" or better in (CS 3700 OR ECE 3700) AND (Major or Minor in Kahlert School of Computing or ECE)
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS3700', 'or pre C- ECE3700']
+Prerequisite list: [['CS3700', 'ECE3700']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 001)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -858,7 +943,8 @@ Components: Lecture
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 002)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -868,7 +954,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 003)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -878,7 +965,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 004)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -888,7 +976,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 005)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -898,7 +987,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5780 - Embedded Sys Design (Section 006)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -908,7 +998,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
 Prerequisites Raw: "C-" or better in ((CS 3810 OR ECE 3810) AND (Pre/
 Corequisites Raw: CS 4400)) AND NOT on (ECE or KSoC Monitoring Group) AND (Major or Minor in Kahlert School of Computing or ECE)
-Prerequisite list: ['or pre C- CS3810', 'or pre C- ECE3810', 'co CS4400']
+Prerequisite list: [['CS3810', 'ECE3810']]
+Corequisite list: ['CS4400']
 ----------------------------------------------------------------------
 CS 5955 - Adv Artificial Intelligence (Section 001)
 Instructor: BROWN, DANIEL
@@ -920,6 +1011,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5962 - Auto Speech Recog & Accent (Section 001)
 Instructor: PATWARI, NEAL
@@ -931,6 +1023,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5965 - Social Computing (Section 001)
 Instructor: KOGAN, MARINA
@@ -942,6 +1035,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5966 -  (Section 001)
 Instructor: MARASOVIC, ANA
@@ -953,6 +1047,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 5967 - Critical HCI and Visualization (Section 001)
 Instructor: MCNUTT, ANDREW
@@ -964,6 +1059,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in Computer Science OR Computer Engineering OR Software Development
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6013 - MSD: Computer Systems (Section 001)
 Instructor: DE ST GERMAIN, JOHN
@@ -974,6 +1070,7 @@ Description: This course covers (i) an introduction to modern commodity hardware
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6013 - MSD: Computer Systems (Section 002)
 Instructor: DE ST GERMAIN, JOHN
@@ -984,6 +1081,7 @@ Description: This course covers (i) an introduction to modern commodity hardware
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6014 - MSD: Netwrks & Security (Section 001)
 Instructor: Flatt, Matthew
@@ -994,6 +1092,7 @@ Description: This course covers (i) Internet software and hardware components, p
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6014 - MSD: Netwrks & Security (Section 002)
 Instructor: Flatt, Matthew
@@ -1004,6 +1103,7 @@ Description: This course covers (i) Internet software and hardware components, p
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6015 - MSD: Software Engineer (Section 001)
 Instructor: MAKAREM, NABIL
@@ -1014,6 +1114,7 @@ Description: This course develops skills in developing and maintaining complex a
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6015 - MSD: Software Engineer (Section 002)
 Instructor: MAKAREM, NABIL
@@ -1024,6 +1125,7 @@ Description: This course develops skills in developing and maintaining complex a
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6019 - MSD Project (Section 001)
 Instructor: Flatt, Matthew
@@ -1034,6 +1136,7 @@ Description: Students will apply the knowledge of software development to specif
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6020 - Early-Career Research (Section 001)
 Instructor: PHILLIPS, BEI WANG
@@ -1044,6 +1147,7 @@ Description: This is an independent study offering designed to encourage beginni
 Prerequisites Raw: Graduate Status in Computer Science.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6110 - Software Verification (Section 001)
 Instructor: GREENMAN, BENJAMIN
@@ -1054,6 +1158,7 @@ Description: The main goal of the course is to teach students how to rigorously 
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6170 - Computational Topology (Section 001)
 Instructor: PHILLIPS, BEI WANG
@@ -1063,7 +1168,8 @@ Components: Lecture
 Description: This course provides a gentle introduction to topology-based techniques for the analysis and visualization of geometric models. Students will learn about fundamental topological invariants (connectedness, Euler characteristic, orientability, etc...) and constructs (Reed graphs, Morse-Smale complexes, etc...). Special emphasis will be given to the analysis of their computation algorithms with respect to: (i) asymptotic complexity, (ii) robustness, and (iii) data structures and implementation issues. Successful completion of the course will enable the students to pursue new research directions in this field and/or apply the most recent topological techniques to related areas such as computer graphics, geometric modeling, mesh generation, data analysis, and scientific visualization.
 Prerequisites Raw: "C-" or better in CS 4150.
 Corequisites Raw: N/A
-Prerequisite list: ['or pre C- CS4150']
+Prerequisite list: [['CS4150']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6330 - Robotics II: Control (Section 001)
 Instructor: MASCARO, STEPHEN
@@ -1073,7 +1179,8 @@ Components: Lecture
 Description: Control of serial robot manipulators is examined.  Topics include control system fundamentals, sensors and actuators, joint level control, centralized control, operational space control, and force control.  Projects provide hands on experience controlling a serial link manipulator.
 Prerequisites Raw: CS 6130 AND ME EN 6200.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6130']
+Prerequisite list: ['CS6130']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6370 - Motion Planning (Section 001)
 Instructor: Hermans, Tucker
@@ -1083,7 +1190,8 @@ Components: Lecture
 Description: Motion planning stands as a central pillar in robotics and a powerful tool in a number of other fields. Motion planning enables robots and autonomous agents to move themselves and other parts of the world to a desired goal by choosing a sequence of appropriate actions. This course will cover the theoretical and algorithmic underpinnings of motion planning as well as practical issues in applying algorithms to real world problems. Applications will be examined across robotics ranging from obstacle avoidance in autonomous cars to rearrangement of furniture by humanoid robots. Examples from fields beyond robotics may also be examined such as bioinformatics, video games, or computer-aided design.
 Prerequisites Raw: MATH 2250.
 Corequisites Raw: N/A
-Prerequisite list: ['pre MATH2250']
+Prerequisite list: ['MATH2250']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6460 - Operating Systems (Section 001)
 Instructor: BURTSEV, ANTON
@@ -1093,7 +1201,8 @@ Components: Lecture
 Description: Characteristics, objectives, and issues concerning computer operating systems. Hardware-software interactions, process management, memory management, protection, synchronization, resource allocation, file systems, security, and distributed systems. Extensive systems programming.
 Prerequisites Raw: CS 4400.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS4400']
+Prerequisite list: ['CS4400']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6491 - Software & Sys Security (Section 001)
 Instructor: ZHANG, MU
@@ -1104,6 +1213,7 @@ Description: This is a graduate-level research-oriented course, which covers bot
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6493 - Applied S/W Secur Test (Section 001)
 Instructor: NAGY, STEFAN
@@ -1114,6 +1224,7 @@ Description: This course dives into today’s state-of-the-art techniques for un
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6545 - HCI Origin&Perspectives (Section 001)
 Instructor: Wiese, Jason
@@ -1123,7 +1234,8 @@ Components: Lecture
 Description: Human-Computer Interaction (HCI) is a unique multidisciplinary field that emerged from multiple academic contexts: social science, cognitive science, Design, and computer science. Each of these disciplines continues to train experts within HCI research and practice. However, an expert in human-computer interaction needs to maintain expertise in one and sometimes several of these different fields, and to be knowledgeable across all of these areas. This course is designed for graduate students to develop skills for doing rigorous work in the field of HCI, with a goal of applying these skills in either an industry or academic context. While there are important differences between working in academia and working in industry, the core skills developed in this course are essential in both contexts.
 Prerequisites Raw: CS 3540 OR CS 6540.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS3540', 'or pre CS6540']
+Prerequisite list: ['CS3540', ['CS6540']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6610 - Interactive Comp Graph (Section 001)
 Instructor: Lin, Jenny
@@ -1134,6 +1246,7 @@ Description: This course covers the fundamental concepts of interactive and real
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6635 - Vis for Scientific Data (Section 001)
 Instructor: JOHNSON, CHRISTOPHER
@@ -1144,6 +1257,7 @@ Description: Introduction to the principles, methods, and techniques for effecti
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6740 - CAD of Digital Circuits (Section 001)
 Instructor: KALLA, PRIYANK
@@ -1153,7 +1267,8 @@ Components: Lecture
 Description: Graduate students only. Extra work required.
 Prerequisites Raw: ECE 3700 OR CS 3700.
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3700', 'or pre CS3700']
+Prerequisite list: ['ECE3700', ['CS3700']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6780 - Embed Sys Design (Section 001)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -1163,7 +1278,8 @@ Components: Lecture
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
 Prerequisites Raw: (ECE 3810 OR CS 3810) AND (CS 2000 OR CS 4400).
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3810', 'or pre CS3810', 'and pre CS2000', 'or pre CS4400']
+Prerequisite list: ['ECE3810', ['CS3810'], 'CS2000', ['CS4400']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6780 - Embed Sys Design (Section 002)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -1173,7 +1289,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
 Prerequisites Raw: (ECE 3810 OR CS 3810) AND (CS 2000 OR CS 4400).
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3810', 'or pre CS3810', 'and pre CS2000', 'or pre CS4400']
+Prerequisite list: ['ECE3810', ['CS3810'], 'CS2000', ['CS4400']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6780 - Embed Sys Design (Section 004)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -1183,7 +1300,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
 Prerequisites Raw: (ECE 3810 OR CS 3810) AND (CS 2000 OR CS 4400).
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3810', 'or pre CS3810', 'and pre CS2000', 'or pre CS4400']
+Prerequisite list: ['ECE3810', ['CS3810'], 'CS2000', ['CS4400']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6780 - Embed Sys Design (Section 005)
 Instructor: GAILLARDON, PIERRE-EMMANUEL
@@ -1193,7 +1311,8 @@ Components: Laboratory
 Description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
 Prerequisites Raw: (ECE 3810 OR CS 3810) AND (CS 2000 OR CS 4400).
 Corequisites Raw: N/A
-Prerequisite list: ['pre ECE3810', 'or pre CS3810', 'and pre CS2000', 'or pre CS4400']
+Prerequisite list: ['ECE3810', ['CS3810'], 'CS2000', ['CS4400']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6800 - MSD Capstone Internship (Section 001)
 Instructor: ALSALEEM, AHMAD
@@ -1204,6 +1323,7 @@ Description: Students will apply knowledge of software development to specific a
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6953 - Deep Learning Capstone (Section 001)
 Instructor: AL HALAH, ZIAD
@@ -1214,6 +1334,7 @@ Description: supervised by Deep Learning faculty and involves working on an indu
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6955 - Adv Artificial Intelligence (Section 001)
 Instructor: BROWN, DANIEL
@@ -1225,6 +1346,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6958 - Advanced Computer Vision (Section 001)
 Instructor: AL HALAH, ZIAD
@@ -1236,6 +1358,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6959 - Human-Centered Data Management (Section 001)
 Instructor: FARIHA, ANNA
@@ -1247,6 +1370,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6960 - Multimodal LLM Agents (Section 001)
 Instructor: Marino, Kenneth
@@ -1258,6 +1382,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6961 - AI for HCC (Section 001)
 Instructor: JIANG, YUE
@@ -1269,6 +1394,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6962 - Auto Speech Recog & Accent (Section 001)
 Instructor: PATWARI, NEAL
@@ -1280,6 +1406,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6964 - Manage Data for & with ML (Section 001)
 Instructor: REZIG, EL KINDI
@@ -1291,6 +1418,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6965 - Social Computing (Section 001)
 Instructor: KOGAN, MARINA
@@ -1302,6 +1430,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the Kahlert School of Computing
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6966 -  (Section 001)
 Instructor: MARASOVIC, ANA
@@ -1313,6 +1442,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6967 - Critical HCI and Visualization (Section 001)
 Instructor: MCNUTT, ANDREW
@@ -1324,6 +1454,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 6969 - Fast and Verified GPU Code (Section 001)
 Instructor: GOPALAKRISHNAN, GANESH
@@ -1335,6 +1466,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7520 - Program Lang Semantics (Section 001)
 Instructor: Flatt, Matthew
@@ -1344,7 +1476,8 @@ Components: Lecture
 Description: Examination of the formal and pragmatic ideas behind programming language design. Imperative, functional, logic, object-oriented, and multi-paradigm languages. Lambda calculus, fixpoints, type systems, and predicate logic. Denotational semantics and models of concurrency.
 Prerequisites Raw: CS 3100 AND CS 5510.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS3100', 'and pre CS5510']
+Prerequisite list: ['CS3100', 'CS5510']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7640 - Adv Image Processing (Section 001)
 Instructor: Elhabian, Shireen
@@ -1354,7 +1487,8 @@ Components: Lecture
 Description: In-depth study of advanced methods and research topics of current interest in image processing and analysis. Covers PDEs, shape representations, deformable models (snakes, level sets), statistical shape analysis, scale-space and registration. Focus and list of topics might change from semester to semester.
 Prerequisites Raw: CS 6640.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6640']
+Prerequisite list: ['CS6640']
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7810 - Adv Computer Arch (Section 001)
 Instructor: NAGARAJAN, VIJAYANAND
@@ -1364,7 +1498,8 @@ Components: Lecture
 Description: Investigation of issues in the design of modern microprocessors, with an in-depth treatment of current research topics in the field.  The course is driven by the discussion of seminal papers in the fields.
 Prerequisites Raw: CS 6810 OR ECE 6810.
 Corequisites Raw: N/A
-Prerequisite list: ['pre CS6810', 'or pre ECE6810']
+Prerequisite list: ['CS6810', ['ECE6810']]
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7932 - Human Centered Comp Seminar (Section 001)
 Instructor: N/A
@@ -1376,6 +1511,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: N/A
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7933 - Graphics Seminar (Section 001)
 Instructor: Lin, Jenny
@@ -1387,6 +1523,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7934 - Computer Systems Seminar (Section 001)
 Instructor: EIDE, ERIC N
@@ -1398,6 +1535,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7936 - Type Theory Foundations (Section 001)
 Instructor: GREENMAN, BENJAMIN
@@ -1409,6 +1547,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7937 - Arch/VLSI (Section 001)
 Instructor: NAGARAJAN, VIJAYANAND
@@ -1420,6 +1559,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7939 - Robotics Seminar (Section 001)
 Instructor: N/A
@@ -1431,6 +1571,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7941 - Data Science Seminar (Section 001)
 Instructor: PHILLIPS, JEFF
@@ -1442,6 +1583,7 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
 CS 7942 - Visualization Seminar (Section 001)
 Instructor: MCNUTT, ANDREW
@@ -1453,4 +1595,5 @@ Description: © The University of Utah Nondiscrimination &
 Prerequisites Raw: Full Major status in the School of Computing.
 Corequisites Raw: N/A
 Prerequisite list: []
+Corequisite list: []
 ----------------------------------------------------------------------
