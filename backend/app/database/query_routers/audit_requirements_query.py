@@ -145,6 +145,7 @@ def add_rule_range(
     db.flush()
     return rule.id
 
+# TODO: Credits for requirements should be shown
 def get_audit_tree(db: Session, audit_id: int,) -> UserAuditRead:
     audit_stmt = select(UserAudit).where(UserAudit.id == audit_id)
     audit = db.execute(audit_stmt).scalar_one_or_none()
