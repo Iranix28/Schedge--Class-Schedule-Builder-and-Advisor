@@ -35,7 +35,15 @@ def _next_sort_order(db: Session, audit_id: int, parent_id: Optional[int]) -> in
         return 0
     return int(max_sort) + 1
 
-def add_requirement(db: Session, audit_id: int, title: str, sort_order: Optional[int] = None) -> int:
+def add_requirement(
+    db: Session,
+    audit_id: int,
+    title: str,
+    needs_count: Optional[int] = None,
+    needs_credits: Optional[int] = None,
+    min_grade: Optional[str] = None,
+    sort_order: Optional[int] = None,
+) -> int:
     if sort_order is None:
         sort_order = _next_sort_order(db, audit_id=audit_id, parent_id=None)
 
@@ -44,9 +52,9 @@ def add_requirement(db: Session, audit_id: int, title: str, sort_order: Optional
         parent_id=None,
         node_type="REQUIREMENT",
         title=title,
-        needs_count=None,
-        needs_credits=None,
-        min_grade=None,
+        needs_count=needs_count,
+        needs_credits=needs_credits,
+        min_grade=min_grade,
         sort_order=sort_order,
     )
     db.add(node)
@@ -65,11 +73,7 @@ def add_subrequirement(
     sort_order: Optional[int] = None,
 ) -> int:
     if sort_order is None:
-        sort_order = _next_sort_order(
-            db,
-            audit_id=audit_id,
-            parent_id=parent_requirement_id,
-        )
+        sort_order = _next_sort_order(db, audit_id=audit_id, parent_id=parent_requirement_id)
 
     node = AuditRequirement(
         audit_id=audit_id,
