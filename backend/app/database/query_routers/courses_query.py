@@ -43,7 +43,8 @@ def get_course_id(db: Session, subject: str, number: str) -> int:
     course_id = result.scalar_one_or_none()
 
     if course_id is None:
-        raise ValueError(f"Course not found for code '{subject} {number}'")
+        #raise ValueError(f"Course not found for code '{subject} {number}'")
+        return None
 
     return int(course_id)
 
