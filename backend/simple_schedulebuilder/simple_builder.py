@@ -2,10 +2,12 @@ from app.database.query_routers.departments_query import *
 from app.database.query_routers.courses_query import *
 from app.database.query_routers.course_prerequisites_query import *
 from app.database.query_routers.class_sections_query import *
+from app.models.models import *
 from app.database.session import SessionLocal
 from datetime import datetime
 
 db = SessionLocal()
+frontend_schedule: list[ScheduleItem] = []
 
 # Startup display
 def display_menu():
@@ -28,9 +30,21 @@ def add_class(schedule):
     list_section = get_class_sections_by_course_number(db, course_code)
 
     print(f"\nFound {len(list_section)} courses \nPlease pick a section")
+    frontent_sections: list[ScheduleItem] = []
     for class_section in list_section:
         time = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
         print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time}")
+
+        # add this class to the frontend sections list
+        frontent_sections.append(ScheduleItem(
+            day=class_section.days,
+            startTime=time.split(" ")[0],
+            endTime=time.split(" ")[1],
+            class_=class_section.section_code,
+            room="TBD",
+        ))
+
+
     
     class_id = int(input("Enter course id (i.e 469) "))
 
@@ -75,13 +89,22 @@ def add_class(schedule):
                     return
 
 
-        
+    # add the class to the schedule
     schedule.append({
         "id": class_id,
         "name": name,
         "days": days,
         "time": time
     })
+
+    # make the model for the class and add to the list
+    frontend_schedule.append(ScheduleItem(
+        day=days,
+        startTime=time.split(" ")[0],
+        endTime=time.split(" ")[1],
+        class_=name,
+        room="TBD",
+    ))
 
     print(f"Added: {name} on {days} at {time}")
 
