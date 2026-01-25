@@ -36,15 +36,19 @@ def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
     print(frontend_sections)
     return frontend_sections
 
-@router.get("/", response_model=List[CourseItem])
+@router.get("/get_courses", response_model=List[CourseItem]) 
 def get_courses() -> List[CourseItem]:
-    return [
-        CourseItem(
+    list_courses = list_courses(db)
+    frontend_courses: list[CourseItem] = []
+    print(list_courses)
+    
+    for course in list_courses:
+        # add this class to the frontend sections list
+        frontend_courses.append(CourseItem(
             department=course.department_id,
             course_code=course.number,
             course_name=course.name,
             credits=course.units,
             description=course.description,
-        )
-        for course in db
-    ]
+        ))
+    return frontend_courses
