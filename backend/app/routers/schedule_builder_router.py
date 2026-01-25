@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 from typing import List
-from app.models.models import ScheduleItem, DUMMY_SCHEDULE
+from app.models.models import ScheduleItem, CourseItem, DUMMY_SCHEDULE
 from app.database.session import SessionLocal
 from app.database.query_routers.class_sections_query import *
+from app.database.query_routers.courses_query import *
+
 from datetime import datetime
 
 
@@ -23,7 +25,7 @@ def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
 
         # add this class to the frontend sections list
         frontend_sections.append(ScheduleItem(
-            day='Monday',
+            day=class_section.days,
             startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"),
             endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
             class_= str(class_code)  + " " + str(class_section.section_code),
@@ -33,3 +35,16 @@ def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
     print("\n")
     print(frontend_sections)
     return frontend_sections
+
+@router.get("/", response_model=List[CourseItem])
+def get_courses() -> List[CourseItem]:
+    return [
+        CourseItem(
+            department=course.department_id,
+            course_code=course.number,
+            course_name=course.name,
+            credits=course.units,
+            description=course.description,
+        )
+        for course in db
+    ]
