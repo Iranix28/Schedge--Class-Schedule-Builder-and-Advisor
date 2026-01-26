@@ -5,33 +5,50 @@ from backend.app.database.query_routers.class_sections_query import get_class_se
 from backend.scraper.audit_scraper import splitCourse
 from app.database.session import SessionLocal
 from app.models.models import ScheduleItem
+from datetime import datetime
+
+
 
 def convert_days(days, day_string):
-    if day_string == "MWF":
+    if day_string == "MoWe":
         days.append("Monday")
         days.append("Wednesday")
-        days.append("Friday")
     elif day_string == "TuTh":
         days.append("Tuesday")
         days.append("Thursday")
+    elif day_string == "MoWeFr":
+        days.append("Monday")
+        days.append("Wednesday")
+        days.append("Friday")
+    return days
 
-def add_class_to_schedule(course, schedule):
+def add_class_to_schedule(db,course, schedule):
+    #db = SessionLocal()
     dept, num = splitCourse(course)
-
-    section = get_class_sections_by_course_number(num)
-
-    day_string = section.days
+    section = get_class_sections_by_course_number(db, num)
+    #print(section[0].id)
+    day_string = section[0].days
     days = []
 
-    convert_days(days, day_string)
+    days = convert_days(days, day_string)
 
-    start = section.start_time
-    end = section.end_time
-    location = section.location
+    if course == "CS 4500":
+        print("WEIFJDIFNFKN")
+    location = section[0].location
 
     # Add class to schedule
+    #print(days)
+    time = f"{section[0].start_time.strftime('%H:%M')} {section[0].end_time.strftime('%H:%M')}"
     for day in days:
-        schedule.append(ScheduleItem(day, start, end, course, location))
+        schedule.append(
+            ScheduleItem(
+                day=day, 
+                startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"), 
+                endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
+                class_=course, 
+                room="TBD")
+        )
+    #print(schedule)
 
 def generate_schedule(audit_id):
     db = SessionLocal()
@@ -39,14 +56,6 @@ def generate_schedule(audit_id):
     schedule: list[ScheduleItem] = []
 
     for requirement in audit.requirements:
-        if "Major Requirements" in requirement.title:
-
-            subreq = requirement.subrequirements[0]
-
-            course = subreq.select_from[0]
-
-            add_class_to_schedule(course, schedule)
-
         if "Capstone" in requirement.title:
 
             for subreq in requirement.subrequirements:
@@ -55,31 +64,30 @@ def generate_schedule(audit_id):
 
                     for course in subreq.select_from:
 
-                        if "4000" in course:
-                            add_class_to_schedule(course, schedule)
+                        if "4500" in course:
+                            print("FOUND CAPSTONE")
+                            print(course)
+                            add_class_to_schedule(db, course, schedule)
+                            for c in schedule:
+                                print(c.class_)
 
         if "Computer Science Electives" in requirement.title:
             
             for subreq in requirement.subrequirements:
-
                 if "[No Title]" in subreq.title:
-                    first = subreq.select_from[0]
-                    second = subreq.select_from[1]
+                    rules = subreq.rules
+                    for rule in rules:
+                        if rule.kind == "RANGE":
+                            min_class = rule.number_min
+                            max_class = rule.number_max
+                            rule_subject = rule.subject
+                            courses = list_courses_in_number_range(db, rule_subject, min_class, max_class)
+                            for course in courses:
 
-                    dept1, num1 = splitCourse(first)
-                    dept2, num2 = splitCourse(second)
-
-                    courses = []
-                    if num1 < num2:
-                        courses = list_courses_in_number_range(dept1, num1, num2)
-                    else:
-                        course = list_courses_in_number_range(dept1, num2, num1)
-
-                    for course in courses:
-                        if course == "5150" or courses == "4300":
-                            add_class_to_schedule(dept1 + " " + course, schedule)
-
-        return schedule
+                                if course.number == "5955" or course.number == "4530" or course.number == "3090":
+                                    add_class_to_schedule(db, rule_subject + " " + course.number, schedule)
+        #print(schedule)
+    return schedule
 
 
 

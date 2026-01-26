@@ -83,7 +83,7 @@ class ClassSection(Base):
     section_code: Mapped[str] = mapped_column(String(16), nullable=False) # "001", "002"
 
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MWF", "TuTh"
+    days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MoWe", "TuTh"
     start_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
     end_time: Mapped[Optional[time]] = mapped_column(Time, nullable=True)
 
