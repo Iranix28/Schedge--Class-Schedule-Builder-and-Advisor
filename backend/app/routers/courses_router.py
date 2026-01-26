@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from app.database.session import DBSession
 from app.models.db_models import CourseCreate, CourseRead
 
-from app.database.query_routers.courses_query import create_course, list_courses,get_course, get_course_by_code, list_courses_in_number_range,
+from app.database.query_routers.courses_query import create_course, list_courses,get_course, get_course_by_code, list_courses_in_number_range
 
 
 from backend.exceptions import EntityNotFound
