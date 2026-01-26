@@ -87,7 +87,7 @@ function ChatUI() {
     formData.append("file", file);
 
     try {
-        const res = await fetch(`${BASE_URL}/upload-audit/`, {
+        const res = await fetch(`${BASE_URL}/audit/`, {
             method: "POST",
             body: formData
         });
