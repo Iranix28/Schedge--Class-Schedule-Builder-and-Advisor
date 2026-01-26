@@ -2,14 +2,12 @@ const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
 const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
-// const API_KEY = "local"; // not needed for FastAPI unless you want it
 
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			// no Authorization header needed for the tiny FastAPI example
 		},
 		body: JSON.stringify({ message: userText }),
 	});
@@ -18,10 +16,8 @@ async function sendMessageLLM(userText, onToken) {
 		throw new Error(`LLM request failed: ${res.status}`);
 	}
 
-	// FastAPI returns a normal JSON body, not a stream
 	const data = await res.json();
-	// { reply: "full answer text" }
-	onToken(data.reply); // call your appendToken once with the whole reply
+	onToken(data.reply);
 }
 
 function ChatUI() {
@@ -33,15 +29,16 @@ function ChatUI() {
 	const [uploadedFiles, setUploadedFiles] = useState([]);
 	const [visualizationData, setVisualizationData] = useState(null);
 	const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
-	const [class_code, setClass_code] = useState(""); // New state for class code input
-	const [availableSections, setAvailableSections] = useState([]); // Sections returned from API
-	const [showSectionModal, setShowSectionModal] = useState(false); // Modal visibility
-	const [showCoursesPanel, setShowCoursesPanel] = useState(false); // Course browser panel
-	const [allCourses, setAllCourses] = useState([]); // All available courses
+	const [class_code, setClass_code] = useState("");
+	const [availableSections, setAvailableSections] = useState([]);
+	const [showSectionModal, setShowSectionModal] = useState(false);
+	const [showCoursesPanel, setShowCoursesPanel] = useState(false);
+	const [allCourses, setAllCourses] = useState([]);
 	const [isLoadingCourses, setIsLoadingCourses] = useState(false);
-	const [courseSearchQuery, setCourseSearchQuery] = useState(""); // Search query for courses
+	const [courseSearchQuery, setCourseSearchQuery] = useState("");
 	const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
 	const [selectedCourse, setSelectedCourse] = useState(null);
+	const [hoveredScheduleItem, setHoveredScheduleItem] = useState(null);
 	const messagesEndRef = useRef(null);
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
@@ -50,7 +47,7 @@ function ChatUI() {
 		setSelectedCourse(course);
 		setShowCourseDetailModal(true);
 	};
-
+	
 	const closeCourseDetails = () => {
 		setShowCourseDetailModal(false);
 		setSelectedCourse(null);
@@ -72,39 +69,49 @@ function ChatUI() {
 		}
 	}, [input]);
 
+	useEffect(() => {
+		const onSubmit = (e) => {
+			console.log("FORM SUBMIT CAUGHT", e.target);
+			e.preventDefault();
+			e.stopPropagation();
+		};
+
+		document.addEventListener("submit", onSubmit, true);
+		return () => document.removeEventListener("submit", onSubmit, true);
+	}, []);
+
 	const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+		const file = e.target.files[0];
+		if (!file) return;
 
-    setUploadedFiles(prev => [...prev, {
-        name: file.name,
-        size: (file.size / 1024).toFixed(2) + " KB",
-        type: file.type,
-    }]);
+		setUploadedFiles(prev => [...prev, {
+			name: file.name,
+			size: (file.size / 1024).toFixed(2) + " KB",
+			type: file.type,
+		}]);
 
-    // Build form-data for FastAPI upload
-    const formData = new FormData();
-    formData.append("file", file);
+		const formData = new FormData();
+		formData.append("file", file);
 
-    try {
-        const res = await fetch(`${BASE_URL}/upload-audit/`, {
-            method: "POST",
-            body: formData
-        });
+		try {
+			const res = await fetch(`${BASE_URL}/upload-audit/`, {
+				method: "POST",
+				body: formData
+			});
 
-        if (!res.ok) throw new Error("Schedule fetch failed");
+			if (!res.ok) throw new Error("Schedule fetch failed");
 
-        const schedule = await res.json(); // ← DUMMY_SCHEDULE arrives here
+			const schedule = await res.json();
 
-        setVisualizationData({
-            type: "schedule",
-            data: schedule,
-        });
-    } catch (err) {
-        console.error(err);
-        alert("Failed to load schedule from backend");
-    }
-};
+			setVisualizationData({
+				type: "schedule",
+				data: schedule,
+			});
+		} catch (err) {
+			console.error(err);
+			alert("Failed to load schedule from backend");
+		}
+	};
 
 	const handleSubmit = async () => {
 		if (!input.trim() || isLoading) return;
@@ -113,7 +120,6 @@ function ChatUI() {
 		setInput("");
 		setIsLoading(true);
 
-		// push user, then an empty assistant placeholder to stream into
 		setMessages((prev) => [
 			...prev,
 			{ role: "user", content: userMessage },
@@ -132,7 +138,6 @@ function ChatUI() {
 		try {
 			await sendMessageLLM(userMessage, appendToken);
 		} catch (err) {
-			// show an error bubble if the request fails
 			setMessages((prev) => [
 				...prev,
 				{ role: "assistant", content: `⚠️ ${err.message}` },
@@ -157,7 +162,6 @@ function ChatUI() {
 		setIsRightPanelExpanded(!isRightPanelExpanded);
 	};
 
-	// Helper function to parse day abbreviations (e.g., "MoTuWe" -> ["Monday", "Tuesday", "Wednesday"])
 	const parseDayAbbreviations = (dayStr) => {
 		const dayMap = {
 			"Mo": "Monday",
@@ -179,7 +183,6 @@ function ChatUI() {
 		return days;
 	};
 
-	// Function to handle adding course - fetches available sections
 	const handleAddCourse = async () => {
 		if (!class_code.trim()) {
 			alert("Please enter a class code");
@@ -194,7 +197,6 @@ function ChatUI() {
 			if (!res.ok) throw new Error("Failed to fetch course sections");
 
 			const sections = await res.json();
-			// sections should be an array of ScheduleItem objects
 			setAvailableSections(sections);
 			setShowSectionModal(true);
 			
@@ -204,18 +206,14 @@ function ChatUI() {
 		}
 	};
 
-	// Function to handle selecting a section from the modal
 	const handleSelectSection = (section) => {
-		// Parse the day string to get individual days
 		const days = parseDayAbbreviations(section.day);
 		
-		// Create a separate entry for each day
 		const newEntries = days.map(day => ({
 			...section,
 			day: day
 		}));
 
-		// Add the selected section(s) to the visualization data
 		if (visualizationData) {
 			setVisualizationData({
 				...visualizationData,
@@ -228,7 +226,6 @@ function ChatUI() {
 			});
 		}
 
-		// Close modal and reset
 		setShowSectionModal(false);
 		setAvailableSections([]);
 		setClass_code("");
@@ -239,7 +236,6 @@ function ChatUI() {
 		setAvailableSections([]);
 	};
 
-	// Function to fetch all courses
 	const fetchAllCourses = async () => {
 		setIsLoadingCourses(true);
 		try {
@@ -247,14 +243,11 @@ function ChatUI() {
 				method: "GET",
 			});
 
-			if (!res.ok){
-				const text = await res.text();
-  				throw new Error(`Failed to fetch courses: ${res.status} ${text}`);
-			}
+			if (!res.ok) throw new Error("Failed to fetch courses");
 
 			const courses = await res.json();
-			console.log("Fetched courses:", courses); // Debug log
-			console.log("Number of courses:", courses.length); // Debug log
+			console.log("Fetched courses:", courses);
+			console.log("Number of courses:", courses.length);
 			setAllCourses(courses);
 		} catch (err) {
 			console.error("Error fetching courses:", err);
@@ -264,7 +257,6 @@ function ChatUI() {
 		}
 	};
 
-	// Toggle courses panel and fetch if needed
 	const toggleCoursesPanel = () => {
 		if (!showCoursesPanel && allCourses.length === 0) {
 			fetchAllCourses();
@@ -272,16 +264,11 @@ function ChatUI() {
 		setShowCoursesPanel(!showCoursesPanel);
 	};
 
-	// Handle clicking a course from the browser
-	const handleCourseClick = (courseCode) => {
-		setClass_code(courseCode);
+	const handleCourseClick = (course) => {
 		setShowCoursesPanel(false);
-		// Note: we need to fetch sections with the course code, so we'll call the API directly
-		// instead of calling handleAddCourse() which expects class_code state to be set
-		fetchCourseSections(courseCode);
+		openCourseDetails(course);
 	};
 
-	// Fetch sections for a specific course code
 	const fetchCourseSections = async (courseCode) => {
 		try {
 			const res = await fetch(`${BASE_URL}/schedule/${courseCode}`, {
@@ -299,7 +286,44 @@ function ChatUI() {
 		}
 	};
 
-	// Filter courses based on search query
+	const handleScheduleItemClick = (scheduleItem) => {
+		const courseCodeMatch = scheduleItem.class_.match(/(\d+)/);
+		if (!courseCodeMatch) return;
+		
+		const courseCode = courseCodeMatch[1];
+		
+		const course = allCourses.find(c => c.course_code.toString() === courseCode);
+		
+		if (course) {
+			openCourseDetails(course);
+		} else {
+			openCourseDetails({
+				department: "CS",
+				course_code: courseCode,
+				course_name: scheduleItem.class_,
+				credits: "N/A",
+				description: "Course details not available. Please check the course catalog."
+			});
+		}
+	};
+
+	const handleDeleteCourse = (e, scheduleItem) => {
+		e.stopPropagation();
+		
+		const updatedData = visualizationData.data.filter(
+			item => item.class_ !== scheduleItem.class_
+		);
+
+		if (updatedData.length === 0) {
+			setVisualizationData(null);
+		} else {
+			setVisualizationData({
+				...visualizationData,
+				data: updatedData,
+			});
+		}
+	};
+
 	const filteredCourses = allCourses.filter(course => {
 		const searchLower = courseSearchQuery.toLowerCase();
 		return (
@@ -310,11 +334,6 @@ function ChatUI() {
 		);
 	});
 
-	// Debug log
-	console.log("All courses:", allCourses);
-	console.log("Filtered courses:", filteredCourses);
-	console.log("Search query:", courseSearchQuery);
-
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
 			{/* Left Side - Chat Interface */}
@@ -323,7 +342,6 @@ function ChatUI() {
 					isRightPanelExpanded ? "w-0" : "w-1/2"
 				}`}
 			>
-				{/* Header */}
 				<header
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
@@ -333,7 +351,6 @@ function ChatUI() {
 					</div>
 				</header>
 
-				{/* Messages Container */}
 				<div className="flex-1 overflow-y-auto">
 					<div className="px-4 py-4 space-y-3">
 						{messages.map((message, index) => (
@@ -399,17 +416,13 @@ function ChatUI() {
 					</div>
 				</div>
 
-				{/* Input Area */}
 				<div className="border-t border-slate-200 px-6 py-4 bg-white">
 					<div>
 						<div
 							className="relative flex items-center gap-3 bg-slate-50 rounded-full border border-slate-200 px-3 py-2 focus-within:ring-2 focus-within:ring-opacity-50 transition-all"
-							style={{
-								focusWithinBorderColor: "#BE0000",
-								focusWithinRingColor: "#BE0000",
-							}}
 						>
 							<button
+								type= "button"
 								onClick={() => fileInputRef.current?.click()}
 								className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition-all text-sm font-bold"
 								title="Upload file"
@@ -434,6 +447,7 @@ function ChatUI() {
 								disabled={isLoading}
 							/>
 							<button
+								type="button"
 								onClick={handleSubmit}
 								disabled={!input.trim() || isLoading}
 								className="flex-shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg text-lg"
@@ -443,7 +457,6 @@ function ChatUI() {
 							</button>
 						</div>
 
-						{/* Uploaded Files Display - Below chat bar */}
 						{uploadedFiles.length > 0 && (
 							<div className="mt-2 flex gap-2 overflow-x-auto">
 								{uploadedFiles.map((file, index) => (
@@ -456,6 +469,7 @@ function ChatUI() {
 											{file.name}
 										</span>
 										<button
+											type="button"
 											onClick={() => removeFile(index)}
 											className="text-slate-400 hover:text-red-500 text-xs ml-0.5"
 										>
@@ -469,13 +483,12 @@ function ChatUI() {
 				</div>
 			</div>
 
-			{/* Right Side - Visualizations & File Management */}
+			{/* Right Side */}
 			<div
 				className={`flex flex-col bg-slate-50 transition-all duration-500 ease-in-out ${
 					isRightPanelExpanded ? "w-full" : "w-1/2"
 				}`}
 			>
-				{/* Right Panel Header */}
 				<header
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center justify-between shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
@@ -483,6 +496,7 @@ function ChatUI() {
 					<div className="flex items-center gap-4">
 						<h2 className="text-xl font-semibold text-white">View</h2>
 						<button
+							type="button"
 							onClick={toggleCoursesPanel}
 							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
 							style={{ color: "#BE0000" }}
@@ -492,10 +506,9 @@ function ChatUI() {
 					</div>
 					<div className="flex items-center gap-3">
 						<button
+							type="button"
 							onClick={() => {
-								// Add your logout logic here
 								console.log("Logout clicked");
-								// Example: window.location.href = '/login';
 							}}
 							className="px-2 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm"
 							style={{ color: "#BE0000", fontSize: "10px" }}
@@ -510,11 +523,10 @@ function ChatUI() {
 					</div>
 				</header>
 
-				{/* Content Area */}
-				<div className="flex-1 overflow-y-auto p-6 space-y-6 relative">
-					{/* Courses Slide-in Panel */}
+				<div className="flex-1 overflow-y-auto p-6 space-y-6 relative overflow-hidden">
+					{/* Courses Panel */}
 					<div
-						className={`absolute top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 ease-in-out z-20 ${
+						className={`fixed top-16 right-0 h-[calc(100vh-4rem)] bg-white shadow-2xl transition-transform duration-300 ease-in-out z-20 ${
 							showCoursesPanel ? "translate-x-0" : "translate-x-full"
 						}`}
 						style={{ width: "400px" }}
@@ -526,6 +538,7 @@ function ChatUI() {
 										Available Courses
 									</h3>
 									<button
+										type="button"
 										onClick={toggleCoursesPanel}
 										className="text-slate-400 hover:text-slate-600 text-xl font-bold"
 									>
@@ -538,7 +551,6 @@ function ChatUI() {
 									onChange={(e) => setCourseSearchQuery(e.target.value)}
 									placeholder="Search courses..."
 									className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-									style={{ focusRingColor: "#BE0000" }}
 								/>
 							</div>
 							
@@ -557,7 +569,7 @@ function ChatUI() {
 										{filteredCourses.map((course, index) => (
 											<div
 												key={index}
-												onClick={() => openCourseDetails(course)}
+												onClick={() => handleCourseClick(course)}
 												className="border border-slate-200 rounded-lg p-3 hover:border-red-700 hover:bg-slate-50 cursor-pointer transition-all"
 											>
 												<div className="flex justify-between items-start mb-1">
@@ -584,16 +596,14 @@ function ChatUI() {
 						</div>
 					</div>
 
-					{/* Visualization Section */}
+					{/* Schedule Visualization */}
 					{visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
 							<h3 className="text-base font-semibold text-slate-800 mb-3">
 								Weekly Class Schedule
 							</h3>
 
-							{/* Calendar Grid */}
 							<div className="w-full">
-								{/* Header with days */}
 								<div className="grid grid-cols-6 gap-1 mb-1">
 									<div className="text-xs font-semibold text-slate-600 text-center py-1">
 										Time
@@ -608,9 +618,7 @@ function ChatUI() {
 									))}
 								</div>
 
-								{/* Time slots with positioning */}
 								<div className="relative">
-									{/* Background grid */}
 									<div className="space-y-0.5">
 										{[
 											"8AM",
@@ -644,7 +652,6 @@ function ChatUI() {
 										))}
 									</div>
 
-									{/* Absolute positioned classes */}
 									<div className="absolute inset-0 pointer-events-none">
 										<div className="grid grid-cols-6 gap-1 h-full">
 											<div></div>
@@ -659,11 +666,7 @@ function ChatUI() {
 													{visualizationData.data
 														.filter((item) => item.day === day)
 														.map((classItem, idx) => {
-															// Parse start time
-															const startMatch =
-																classItem.startTime.match(
-																	/(\d+):(\d+)\s*(AM|PM)/
-																);
+															const startMatch = classItem.startTime.match(/(\d+):(\d+)\s*(AM|PM)/);
 															let startHour = parseInt(startMatch[1]);
 															const startMin = parseInt(startMatch[2]);
 															const startPeriod = startMatch[3];
@@ -672,11 +675,7 @@ function ChatUI() {
 															if (startPeriod === "AM" && startHour === 12)
 																startHour = 0;
 
-															// Parse end time
-															const endMatch =
-																classItem.endTime.match(
-																	/(\d+):(\d+)\s*(AM|PM)/
-																);
+															const endMatch = classItem.endTime.match(/(\d+):(\d+)\s*(AM|PM)/);
 															let endHour = parseInt(endMatch[1]);
 															const endMin = parseInt(endMatch[2]);
 															const endPeriod = endMatch[3];
@@ -685,20 +684,17 @@ function ChatUI() {
 															if (endPeriod === "AM" && endHour === 12)
 																endHour = 0;
 
-															// Calculate position and height (each hour = 40px + 2px gap)
-															const startOffset =
-																(startHour - 8) * 42 +
-																(startMin / 60) * 42;
-															const duration =
-																endHour -
-																startHour +
-																(endMin - startMin) / 60;
+															const startOffset = (startHour - 8) * 42 + (startMin / 60) * 42;
+															const duration = endHour - startHour + (endMin - startMin) / 60;
 															const height = duration * 42 - 2;
 
 															return (
 																<div
 																	key={idx}
-																	className="absolute rounded px-1.5 py-1 text-white pointer-events-auto"
+																	onClick={() => handleScheduleItemClick(classItem)}
+																	onMouseEnter={() => setHoveredScheduleItem(classItem.class_)}
+																	onMouseLeave={() => setHoveredScheduleItem(null)}
+																	className="absolute rounded px-1.5 py-1 text-white pointer-events-auto cursor-pointer hover:opacity-90 transition-opacity"
 																	style={{
 																		backgroundColor: "#BE0000",
 																		top: `${startOffset}px`,
@@ -707,31 +703,26 @@ function ChatUI() {
 																		right: 0,
 																	}}
 																>
-																	<div
-																		className="font-semibold truncate"
-																		style={{ fontSize: "10px" }}
-																	>
+																	<div className="font-semibold truncate" style={{ fontSize: "10px" }}>
 																		{classItem.class_}
 																	</div>
-																	<div
-																		className="truncate"
-																		style={{
-																			fontSize: "9px",
-																			opacity: 0.9,
-																		}}
-																	>
+																	<div className="truncate" style={{ fontSize: "9px", opacity: 0.9 }}>
 																		{classItem.room}
 																	</div>
-																	<div
-																		className="truncate"
-																		style={{
-																			fontSize: "8px",
-																			opacity: 0.8,
-																		}}
-																	>
-																		{classItem.startTime}-
-																		{classItem.endTime}
+																	<div className="truncate" style={{ fontSize: "8px", opacity: 0.8 }}>
+																		{classItem.startTime}-{classItem.endTime}
 																	</div>
+																	
+																	{hoveredScheduleItem === classItem.class_ && (
+																		<button
+																			type="button"
+																			onClick={(e) => handleDeleteCourse(e, classItem)}
+																			className="absolute top-1 right-1 w-4 h-4 bg-white text-red-700 rounded-full flex items-center justify-center hover:bg-red-100 transition-all shadow-sm"
+																			style={{ fontSize: "10px", fontWeight: "bold" }}
+																		>
+																			×
+																		</button>
+																	)}
 																</div>
 															);
 														})}
@@ -743,7 +734,7 @@ function ChatUI() {
 							</div>
 						</div>
 					)}
-					{/* Empty State for Visualizations */}
+
 					{!visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
 							<h3 className="text-lg font-semibold text-slate-800 mb-4">
@@ -759,7 +750,6 @@ function ChatUI() {
 						</div>
 					)}
 					
-					{/* Add Course Section */}
 					<div className="mt-4 flex justify-center items-center gap-3">
 						<input
 							type="text"
@@ -772,11 +762,9 @@ function ChatUI() {
 							}}
 							placeholder="Enter class code (e.g., 1410)"
 							className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800"
-							style={{
-								focusRingColor: "#BE0000",
-							}}
 						/>
 						<button
+							type="button"
 							onClick={handleAddCourse}
 							className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
 							style={{ backgroundColor: '#BE0000' }}
@@ -788,7 +776,7 @@ function ChatUI() {
 				</div>
 			</div>
 
-			{/* Section Selection Modal */}
+			{/* Section Modal */}
 			{showSectionModal && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
@@ -797,6 +785,7 @@ function ChatUI() {
 								Select a Section for Class {class_code}
 							</h3>
 							<button
+								type="button"
 								onClick={closeModal}
 								className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
 							>
@@ -830,6 +819,7 @@ function ChatUI() {
 												</p>
 											</div>
 											<button
+												type="button"
 												className="px-3 py-1 text-white text-sm font-semibold rounded hover:opacity-90"
 												style={{ backgroundColor: '#BE0000' }}
 											>
@@ -844,56 +834,59 @@ function ChatUI() {
 				</div>
 			)}
 
-						{/* Course Detail Modal */}
+			{/* Course Detail Modal */}
 			{showCourseDetailModal && selectedCourse && (
-			<div
-				className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-				onClick={closeCourseDetails} // click outside closes
-			>
 				<div
-				className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto"
-				onClick={(e) => e.stopPropagation()} // prevent outside click close
+					className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+					onClick={closeCourseDetails}
 				>
-				<div className="flex justify-between items-start mb-4">
-					<div>
-					<h3 className="text-xl font-semibold text-slate-800">
-						{selectedCourse.department} {selectedCourse.course_code}: {selectedCourse.course_name}
-					</h3>
-					<p className="text-sm text-slate-500 mt-1">
-						{selectedCourse.credits} credits
-					</p>
+					<div
+						className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className="flex justify-between items-start mb-4">
+							<div>
+								<h3 className="text-xl font-semibold text-slate-800">
+									{selectedCourse.department} {selectedCourse.course_code}: {selectedCourse.course_name}
+								</h3>
+								<p className="text-sm text-slate-500 mt-1">
+									{selectedCourse.credits} credits
+								</p>
+							</div>
+
+							<button
+								type="button"
+								onClick={closeCourseDetails}
+								className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
+								aria-label="Close"
+							>
+								×
+							</button>
+						</div>
+
+						<div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
+							{selectedCourse.description && selectedCourse.description.trim().length > 0
+								? selectedCourse.description
+								: "No description available for this course."}
+						</div>
+
+						<div className="mt-6 flex justify-end">
+							<button
+								type="button"
+								onClick={closeCourseDetails}
+								className="px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90"
+								style={{ backgroundColor: "#BE0000" }}
+							>
+								Close
+							</button>
+						</div>
 					</div>
-
-					<button
-					onClick={closeCourseDetails}
-					className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
-					aria-label="Close"
-					>
-					×
-					</button>
 				</div>
-
-				<div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
-					{selectedCourse.description && selectedCourse.description.trim().length > 0
-					? selectedCourse.description
-					: "No description available for this course."}
-				</div>
-
-				<div className="mt-6 flex justify-end">
-					<button
-					onClick={closeCourseDetails}
-					className="px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90"
-					style={{ backgroundColor: "#BE0000" }}
-					>
-					Close
-					</button>
-				</div>
-				</div>
-			</div>
 			)}
 
 			{/* Expand/Collapse Button */}
 			<button
+				type="button"
 				onClick={toggleRightPanel}
 				className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
 				style={{
@@ -914,10 +907,6 @@ function ChatUI() {
 					></div>
 				)}
 			</button>
-			
 		</div>
-		
 	);
-	
-	
 }
