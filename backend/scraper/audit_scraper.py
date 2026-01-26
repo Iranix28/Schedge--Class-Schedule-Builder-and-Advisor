@@ -123,6 +123,8 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
 
     commit_audit(db)
 
+    return auditId
+
 def extractCourseInfo(element):
     """
     Extracts department, number, and name from a list of (completed) courses in the audit
@@ -325,5 +327,5 @@ def scrapeDegreeAudit(html_file):
 
         parsedRequirements.append(requirement_obj)
 
-    outputRequirements(parsedRequirements)
-    return parsedRequirements
+    # Returns the audit ID to the router
+    return outputRequirements(parsedRequirements)

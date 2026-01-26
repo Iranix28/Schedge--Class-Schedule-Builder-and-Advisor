@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
 from backend.scraper.audit_scraper import scrapeDegreeAudit
+from backend.app.services import generate_schedule
 
 from app.database.session import DBSession
 from app.database.query_routers.audit_requirements_query import get_audit_tree, format_audit_tree_as_text
@@ -15,9 +16,10 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 
 @router.post("/", status_code=201, response_model=List[ScheduleItem])
 def post_degree_audit(file: UploadFile = File(...)):
-    reqs = scrapeDegreeAudit(file.file)
+    audit_id = scrapeDegreeAudit(file.file)
+    schedule = generate_schedule(audit_id)
 
-    return DUMMY_SCHEDULE
+    return schedule
 
 
 @router.get("/{audit_id}", response_model=UserAuditRead)
