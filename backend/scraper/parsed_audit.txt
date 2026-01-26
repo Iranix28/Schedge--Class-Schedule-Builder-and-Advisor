@@ -40,5 +40,3 @@ Requirement: Capstone RequirementComplete one of the following:
     Needs Count: 2
     Not From: None
     Select From: CS 4940, CS 4970
-
-

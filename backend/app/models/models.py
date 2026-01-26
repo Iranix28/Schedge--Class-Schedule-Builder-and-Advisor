@@ -14,6 +14,13 @@ class ScheduleItem(BaseModel):
     class_: str
     room: str
 
+class CourseItem(BaseModel):
+    department: str
+    course_code: str
+    course_name: str
+    credits: int
+    description: str
+
 DUMMY_SCHEDULE: List[ScheduleItem] = [
     ScheduleItem(
         day="Monday",

@@ -1,7 +1,7 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
-const BASE_URL = "http://136.38.172.23:8000"; // FastAPI, not Ollama
+const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
 // const API_KEY = "local"; // not needed for FastAPI unless you want it
 
 async function sendMessageLLM(userText, onToken) {
@@ -33,9 +33,28 @@ function ChatUI() {
 	const [uploadedFiles, setUploadedFiles] = useState([]);
 	const [visualizationData, setVisualizationData] = useState(null);
 	const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
+	const [class_code, setClass_code] = useState(""); // New state for class code input
+	const [availableSections, setAvailableSections] = useState([]); // Sections returned from API
+	const [showSectionModal, setShowSectionModal] = useState(false); // Modal visibility
+	const [showCoursesPanel, setShowCoursesPanel] = useState(false); // Course browser panel
+	const [allCourses, setAllCourses] = useState([]); // All available courses
+	const [isLoadingCourses, setIsLoadingCourses] = useState(false);
+	const [courseSearchQuery, setCourseSearchQuery] = useState(""); // Search query for courses
+	const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
+	const [selectedCourse, setSelectedCourse] = useState(null);
 	const messagesEndRef = useRef(null);
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
+
+	const openCourseDetails = (course) => {
+		setSelectedCourse(course);
+		setShowCourseDetailModal(true);
+	};
+
+	const closeCourseDetails = () => {
+		setShowCourseDetailModal(false);
+		setSelectedCourse(null);
+	};
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -87,83 +106,6 @@ function ChatUI() {
     }
 };
 
-	//DIDN'T CHANGE ANYTHING ELSE BIG JUST COMMENTED OUT THIS FUNCTION AND REPLACED IT WITH THE ABOVE 
-	//SMALL CHANGE {classItem.class} to {classItem.class_}
-	// const handleFileUpload = (e) => {
-	// 	const files = Array.from(e.target.files);
-	// 	if (files.length > 0) {
-	// 		const newFiles = files.map((file) => ({
-	// 			name: file.name,
-	// 			size: (file.size / 1024).toFixed(2) + " KB",
-	// 			type: file.type,
-	// 		}));
-	// 		setUploadedFiles((prev) => [...prev, ...newFiles]);
-
-	// 		// Simulate generating a visualization after file upload
-	// 		setTimeout(() => {
-	// 			setVisualizationData({
-	// 				type: "schedule",
-	// 				data: generateSampleSchedule(),
-	// 			});
-	// 		}, 2000);
-	// 	}
-	// };
-
-	// //we can make this dynamically created aswell as the class day and start times.
-	// const generateSampleSchedule = () => {
-	// 	return [
-	// 		{
-	// 			day: "Monday",
-	// 			startTime: "9:00 AM",
-	// 			endTime: "10:30 AM",
-	// 			class: "CS 3500",
-	// 			room: "Room 101",
-	// 		},
-	// 		{
-	// 			day: "Monday",
-	// 			startTime: "11:00 AM",
-	// 			endTime: "12:30 PM",
-	// 			class: "CS 3810",
-	// 			room: "Lab 203",
-	// 		},
-	// 		{
-	// 			day: "Tuesday",
-	// 			startTime: "10:00 AM",
-	// 			endTime: "12:30 PM",
-	// 			class: "CS 3130",
-	// 			room: "Lab 105",
-	// 		},
-	// 		{
-	// 			day: "Tuesday",
-	// 			startTime: "2:00 PM",
-	// 			endTime: "3:30 PM",
-	// 			class: "CS 3500 Lab",
-	// 			room: "Room 304",
-	// 		},
-	// 		{
-	// 			day: "Wednesday",
-	// 			startTime: "9:00 AM",
-	// 			endTime: "10:30 AM",
-	// 			class: "CS 3500",
-	// 			room: "Room 101",
-	// 		},
-	// 		{
-	// 			day: "Thursday",
-	// 			startTime: "10:00 AM",
-	// 			endTime: "12:30 PM",
-	// 			class: "CS 3130",
-	// 			room: "Lab 105",
-	// 		},
-	// 		{
-	// 			day: "Friday",
-	// 			startTime: "10:00 AM",
-	// 			endTime: "11:30 AM",
-	// 			class: "CS 3090",
-	// 			room: "Lab 401",
-	// 		},
-	// 	];
-	// };
-
 	const handleSubmit = async () => {
 		if (!input.trim() || isLoading) return;
 
@@ -214,6 +156,164 @@ function ChatUI() {
 	const toggleRightPanel = () => {
 		setIsRightPanelExpanded(!isRightPanelExpanded);
 	};
+
+	// Helper function to parse day abbreviations (e.g., "MoTuWe" -> ["Monday", "Tuesday", "Wednesday"])
+	const parseDayAbbreviations = (dayStr) => {
+		const dayMap = {
+			"Mo": "Monday",
+			"Tu": "Tuesday",
+			"We": "Wednesday",
+			"Th": "Thursday",
+			"Fr": "Friday",
+			"Sa": "Saturday",
+			"Su": "Sunday"
+		};
+		
+		const days = [];
+		for (let i = 0; i < dayStr.length; i += 2) {
+			const abbr = dayStr.substring(i, i + 2);
+			if (dayMap[abbr]) {
+				days.push(dayMap[abbr]);
+			}
+		}
+		return days;
+	};
+
+	// Function to handle adding course - fetches available sections
+	const handleAddCourse = async () => {
+		if (!class_code.trim()) {
+			alert("Please enter a class code");
+			return;
+		}
+
+		try {
+			const res = await fetch(`${BASE_URL}/schedule/${class_code}`, {
+				method: "GET",
+			});
+
+			if (!res.ok) throw new Error("Failed to fetch course sections");
+
+			const sections = await res.json();
+			// sections should be an array of ScheduleItem objects
+			setAvailableSections(sections);
+			setShowSectionModal(true);
+			
+		} catch (err) {
+			console.error(err);
+			alert(`Failed to add course: ${err.message}`);
+		}
+	};
+
+	// Function to handle selecting a section from the modal
+	const handleSelectSection = (section) => {
+		// Parse the day string to get individual days
+		const days = parseDayAbbreviations(section.day);
+		
+		// Create a separate entry for each day
+		const newEntries = days.map(day => ({
+			...section,
+			day: day
+		}));
+
+		// Add the selected section(s) to the visualization data
+		if (visualizationData) {
+			setVisualizationData({
+				...visualizationData,
+				data: [...visualizationData.data, ...newEntries],
+			});
+		} else {
+			setVisualizationData({
+				type: "schedule",
+				data: newEntries,
+			});
+		}
+
+		// Close modal and reset
+		setShowSectionModal(false);
+		setAvailableSections([]);
+		setClass_code("");
+	};
+
+	const closeModal = () => {
+		setShowSectionModal(false);
+		setAvailableSections([]);
+	};
+
+	// Function to fetch all courses
+	const fetchAllCourses = async () => {
+		setIsLoadingCourses(true);
+		try {
+			const res = await fetch(`${BASE_URL}/schedule/get_courses`, {
+				method: "GET",
+			});
+
+			if (!res.ok){
+				const text = await res.text();
+  				throw new Error(`Failed to fetch courses: ${res.status} ${text}`);
+			}
+
+			const courses = await res.json();
+			console.log("Fetched courses:", courses); // Debug log
+			console.log("Number of courses:", courses.length); // Debug log
+			setAllCourses(courses);
+		} catch (err) {
+			console.error("Error fetching courses:", err);
+			alert(`Failed to load courses: ${err.message}`);
+		} finally {
+			setIsLoadingCourses(false);
+		}
+	};
+
+	// Toggle courses panel and fetch if needed
+	const toggleCoursesPanel = () => {
+		if (!showCoursesPanel && allCourses.length === 0) {
+			fetchAllCourses();
+		}
+		setShowCoursesPanel(!showCoursesPanel);
+	};
+
+	// Handle clicking a course from the browser
+	const handleCourseClick = (courseCode) => {
+		setClass_code(courseCode);
+		setShowCoursesPanel(false);
+		// Note: we need to fetch sections with the course code, so we'll call the API directly
+		// instead of calling handleAddCourse() which expects class_code state to be set
+		fetchCourseSections(courseCode);
+	};
+
+	// Fetch sections for a specific course code
+	const fetchCourseSections = async (courseCode) => {
+		try {
+			const res = await fetch(`${BASE_URL}/schedule/${courseCode}`, {
+				method: "GET",
+			});
+
+			if (!res.ok) throw new Error("Failed to fetch course sections");
+
+			const sections = await res.json();
+			setAvailableSections(sections);
+			setShowSectionModal(true);
+		} catch (err) {
+			console.error(err);
+			alert(`Failed to add course: ${err.message}`);
+		}
+	};
+
+	// Filter courses based on search query
+	const filteredCourses = allCourses.filter(course => {
+		const searchLower = courseSearchQuery.toLowerCase();
+		return (
+			course.department.toLowerCase().includes(searchLower) ||
+			course.course_code.toString().includes(searchLower) ||
+			course.course_name.toLowerCase().includes(searchLower) ||
+			(course.description && course.description.toLowerCase().includes(searchLower))
+		);
+	});
+
+	// Debug log
+	console.log("All courses:", allCourses);
+	console.log("Filtered courses:", filteredCourses);
+	console.log("Search query:", courseSearchQuery);
 
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
@@ -380,7 +480,16 @@ function ChatUI() {
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center justify-between shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
 				>
-					<h2 className="text-xl font-semibold text-white">View</h2>
+					<div className="flex items-center gap-4">
+						<h2 className="text-xl font-semibold text-white">View</h2>
+						<button
+							onClick={toggleCoursesPanel}
+							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
+							style={{ color: "#BE0000" }}
+						>
+							{showCoursesPanel ? "Hide Courses" : "Browse Courses"}
+						</button>
+					</div>
 					<div className="flex items-center gap-3">
 						<button
 							onClick={() => {
@@ -402,7 +511,79 @@ function ChatUI() {
 				</header>
 
 				{/* Content Area */}
-				<div className="flex-1 overflow-y-auto p-6 space-y-6">
+				<div className="flex-1 overflow-y-auto p-6 space-y-6 relative">
+					{/* Courses Slide-in Panel */}
+					<div
+						className={`absolute top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 ease-in-out z-20 ${
+							showCoursesPanel ? "translate-x-0" : "translate-x-full"
+						}`}
+						style={{ width: "400px" }}
+					>
+						<div className="h-full flex flex-col">
+							<div className="p-4 border-b border-slate-200">
+								<div className="flex justify-between items-center mb-3">
+									<h3 className="text-lg font-semibold text-slate-800">
+										Available Courses
+									</h3>
+									<button
+										onClick={toggleCoursesPanel}
+										className="text-slate-400 hover:text-slate-600 text-xl font-bold"
+									>
+										×
+									</button>
+								</div>
+								<input
+									type="text"
+									value={courseSearchQuery}
+									onChange={(e) => setCourseSearchQuery(e.target.value)}
+									placeholder="Search courses..."
+									className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+									style={{ focusRingColor: "#BE0000" }}
+								/>
+							</div>
+							
+							<div className="flex-1 overflow-y-auto p-4">
+								{isLoadingCourses ? (
+									<div className="text-center py-8 text-slate-500">
+										<div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-2" style={{ borderColor: "#BE0000" }}></div>
+										<p>Loading courses...</p>
+									</div>
+								) : filteredCourses.length === 0 ? (
+									<p className="text-center text-slate-500 py-8">
+										{courseSearchQuery ? "No courses match your search" : "No courses available"}
+									</p>
+								) : (
+									<div className="space-y-2">
+										{filteredCourses.map((course, index) => (
+											<div
+												key={index}
+												onClick={() => openCourseDetails(course)}
+												className="border border-slate-200 rounded-lg p-3 hover:border-red-700 hover:bg-slate-50 cursor-pointer transition-all"
+											>
+												<div className="flex justify-between items-start mb-1">
+													<h4 className="font-semibold text-slate-800 text-sm">
+														{course.department} {course.course_code}
+													</h4>
+													<span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+														{course.credits} credits
+													</span>
+												</div>
+												<p className="text-sm text-slate-700 font-medium mb-1">
+													{course.course_name}
+												</p>
+												{course.description && (
+													<p className="text-xs text-slate-600 line-clamp-2">
+														{course.description}
+													</p>
+												)}
+											</div>
+										))}
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
+
 					{/* Visualization Section */}
 					{visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
@@ -562,7 +743,6 @@ function ChatUI() {
 							</div>
 						</div>
 					)}
-
 					{/* Empty State for Visualizations */}
 					{!visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
@@ -578,8 +758,139 @@ function ChatUI() {
 							</div>
 						</div>
 					)}
+					
+					{/* Add Course Section */}
+					<div className="mt-4 flex justify-center items-center gap-3">
+						<input
+							type="text"
+							value={class_code}
+							onChange={(e) => setClass_code(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleAddCourse();
+								}
+							}}
+							placeholder="Enter class code (e.g., 1410)"
+							className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800"
+							style={{
+								focusRingColor: "#BE0000",
+							}}
+						/>
+						<button
+							onClick={handleAddCourse}
+							className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+							style={{ backgroundColor: '#BE0000' }}
+						>
+							<span>+</span>
+							ADD COURSE
+						</button>
+					</div>
 				</div>
 			</div>
+
+			{/* Section Selection Modal */}
+			{showSectionModal && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+						<div className="flex justify-between items-center mb-4">
+							<h3 className="text-xl font-semibold text-slate-800">
+								Select a Section for Class {class_code}
+							</h3>
+							<button
+								onClick={closeModal}
+								className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
+							>
+								×
+							</button>
+						</div>
+						
+						<div className="space-y-3">
+							{availableSections.length === 0 ? (
+								<p className="text-center text-slate-500 py-8">No sections available</p>
+							) : (
+								availableSections.map((section, index) => (
+									<div
+										key={index}
+										onClick={() => handleSelectSection(section)}
+										className="border border-slate-200 rounded-lg p-4 hover:border-red-700 hover:bg-slate-50 cursor-pointer transition-all"
+									>
+										<div className="flex justify-between items-start">
+											<div>
+												<h4 className="font-semibold text-slate-800 mb-1">
+													{section.class_}
+												</h4>
+												<p className="text-sm text-slate-600">
+													<span className="font-medium">Day:</span> {section.day}
+												</p>
+												<p className="text-sm text-slate-600">
+													<span className="font-medium">Time:</span> {section.startTime} - {section.endTime}
+												</p>
+												<p className="text-sm text-slate-600">
+													<span className="font-medium">Room:</span> {section.room}
+												</p>
+											</div>
+											<button
+												className="px-3 py-1 text-white text-sm font-semibold rounded hover:opacity-90"
+												style={{ backgroundColor: '#BE0000' }}
+											>
+												Select
+											</button>
+										</div>
+									</div>
+								))
+							)}
+						</div>
+					</div>
+				</div>
+			)}
+
+						{/* Course Detail Modal */}
+			{showCourseDetailModal && selectedCourse && (
+			<div
+				className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+				onClick={closeCourseDetails} // click outside closes
+			>
+				<div
+				className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+				onClick={(e) => e.stopPropagation()} // prevent outside click close
+				>
+				<div className="flex justify-between items-start mb-4">
+					<div>
+					<h3 className="text-xl font-semibold text-slate-800">
+						{selectedCourse.department} {selectedCourse.course_code}: {selectedCourse.course_name}
+					</h3>
+					<p className="text-sm text-slate-500 mt-1">
+						{selectedCourse.credits} credits
+					</p>
+					</div>
+
+					<button
+					onClick={closeCourseDetails}
+					className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
+					aria-label="Close"
+					>
+					×
+					</button>
+				</div>
+
+				<div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
+					{selectedCourse.description && selectedCourse.description.trim().length > 0
+					? selectedCourse.description
+					: "No description available for this course."}
+				</div>
+
+				<div className="mt-6 flex justify-end">
+					<button
+					onClick={closeCourseDetails}
+					className="px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90"
+					style={{ backgroundColor: "#BE0000" }}
+					>
+					Close
+					</button>
+				</div>
+				</div>
+			</div>
+			)}
 
 			{/* Expand/Collapse Button */}
 			<button
@@ -603,6 +914,10 @@ function ChatUI() {
 					></div>
 				)}
 			</button>
+			
 		</div>
+		
 	);
+	
+	
 }
