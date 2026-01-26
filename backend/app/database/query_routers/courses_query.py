@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, cast, Integer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -30,6 +30,7 @@ def get_course(db: Session, course_id: int) -> Optional[Course]:
     result = db.execute(stmt)
     return result.scalars().first()
 
+<<<<<<< Updated upstream
 def get_course_id(db: Session, subject: str, number: str) -> int:
     stmt = (
         select(Course.id)
@@ -49,16 +50,34 @@ def get_course_id(db: Session, subject: str, number: str) -> int:
     return int(course_id)
 
 def get_course_by_code(db: Session, subject: str, number: str) -> Optional[Course]:
+=======
+def list_courses_in_number_range(
+    db: Session,
+    subject: str,
+    number_min: int,
+    number_max: int,
+) -> List[Course]:
+>>>>>>> Stashed changes
     stmt = (
         select(Course)
         .join(Course.department)
         .where(
             Department.subject == subject,
+<<<<<<< Updated upstream
             Course.number == number,
         )
     )
     result = db.execute(stmt)
     return result.scalars().first()
+=======
+            cast(Course.number, Integer) >= number_min,
+            cast(Course.number, Integer) <= number_max,
+        )
+        .order_by(cast(Course.number, Integer), Course.id)
+    )
+    result = db.execute(stmt)
+    return result.scalars().all()
+>>>>>>> Stashed changes
 
 # def update_course(db: Session, course_id: int, course_in: CourseUpdate) -> Optional[Course]:
 #     course = get_course(db, course_id)
