@@ -30,8 +30,7 @@ def get_course(db: Session, course_id: int) -> Optional[Course]:
     result = db.execute(stmt)
     return result.scalars().first()
 
-<<<<<<< Updated upstream
-def get_course_id(db: Session, subject: str, number: str) -> int:
+def get_course_id(db: Session, subject: str, number: str) -> Optional[int]:
     stmt = (
         select(Course.id)
         .join(Course.department)
@@ -44,32 +43,35 @@ def get_course_id(db: Session, subject: str, number: str) -> int:
     course_id = result.scalar_one_or_none()
 
     if course_id is None:
-        #raise ValueError(f"Course not found for code '{subject} {number}'")
         return None
 
     return int(course_id)
 
+
 def get_course_by_code(db: Session, subject: str, number: str) -> Optional[Course]:
-=======
+    stmt = (
+        select(Course)
+        .join(Course.department)
+        .where(
+            Department.subject == subject,
+            Course.number == number,
+        )
+    )
+    result = db.execute(stmt)
+    return result.scalars().first()
+
+
 def list_courses_in_number_range(
     db: Session,
     subject: str,
     number_min: int,
     number_max: int,
 ) -> List[Course]:
->>>>>>> Stashed changes
     stmt = (
         select(Course)
         .join(Course.department)
         .where(
             Department.subject == subject,
-<<<<<<< Updated upstream
-            Course.number == number,
-        )
-    )
-    result = db.execute(stmt)
-    return result.scalars().first()
-=======
             cast(Course.number, Integer) >= number_min,
             cast(Course.number, Integer) <= number_max,
         )
@@ -77,7 +79,6 @@ def list_courses_in_number_range(
     )
     result = db.execute(stmt)
     return result.scalars().all()
->>>>>>> Stashed changes
 
 # def update_course(db: Session, course_id: int, course_in: CourseUpdate) -> Optional[Course]:
 #     course = get_course(db, course_id)
