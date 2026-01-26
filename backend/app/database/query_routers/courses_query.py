@@ -48,6 +48,18 @@ def get_course_id(db: Session, subject: str, number: str) -> int:
 
     return int(course_id)
 
+def get_course_by_code(db: Session, subject: str, number: str) -> Optional[Course]:
+    stmt = (
+        select(Course)
+        .join(Course.department)
+        .where(
+            Department.subject == subject,
+            Course.number == number,
+        )
+    )
+    result = db.execute(stmt)
+    return result.scalars().first()
+
 # def update_course(db: Session, course_id: int, course_in: CourseUpdate) -> Optional[Course]:
 #     course = get_course(db, course_id)
 #     if not course:

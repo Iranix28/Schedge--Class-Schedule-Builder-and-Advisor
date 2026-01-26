@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.session import DBSession
 from app.models.db_models import CourseCreate, CourseRead, CourseUpdate
 
-from app.database.query_routers.courses_query import create_course, list_courses, get_course
+from app.database.query_routers.courses_query import create_course, list_courses, get_course, get_course_by_code
 
 from backend.exceptions import EntityNotFound
 
@@ -23,10 +23,16 @@ def create_course_endpoint(course_in: CourseCreate, db: DBSession):
 def list_courses_endpoint(db: DBSession):
     return list_courses(db)
 
-
 @router.get("/{course_id}", response_model=CourseRead)
 def get_course_endpoint(course_id: int, db: DBSession):
     course = get_course(db, course_id)
     if not course:
         raise EntityNotFound(entity_name="Course", entity_id=course_id)
+    return course
+
+@router.get("/by-code/", response_model=CourseRead)
+def get_course_by_code_endpoint(subject: str, number: str, db: DBSession):
+    course = get_course_by_code(db, subject, number)
+    if not course:
+        raise EntityNotFound(entity_name="Course", entity_id=f"{subject} {number}")
     return course
