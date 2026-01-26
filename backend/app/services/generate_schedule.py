@@ -28,6 +28,7 @@ def add_class_to_schedule(db,course, schedule):
     section = get_class_sections_by_course_number(db, num)
     #print(section[0].id)
     day_string = section[0].days
+
     days = []
 
     days = convert_days(days, day_string)
@@ -84,10 +85,12 @@ def generate_schedule(audit_id):
                             courses = list_courses_in_number_range(db, rule_subject, min_class, max_class)
                             for course in courses:
 
+
                                 if course.number == "5955" or course.number == "4530" or course.number == "3090":
                                     add_class_to_schedule(db, rule_subject + " " + course.number, schedule)
         #print(schedule)
     return schedule
+
 
 
 
