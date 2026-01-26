@@ -14,10 +14,27 @@ db = SessionLocal()
 
 router = APIRouter(prefix="/schedule", tags=["schedule"])
 
+# THIS MUST COME FIRST - before /{class_code}
+@router.get("/get_courses", response_model=List[CourseItem]) 
+def get_courses() -> List[CourseItem]:
+    courses = list_courses(db)
+    frontend_courses: list[CourseItem] = []
+    print(len(courses))
+
+    for course in courses:
+        frontend_courses.append(CourseItem(
+            department=str(course.department_id),
+            course_code=str(course.number) if course.number is not None else "",
+            course_name=str(course.name) if course.name is not None else "",
+            credits=course.units if course.units is not None else 0,
+            description=str(course.description) if course.description is not None else "",
+        ))
+    return frontend_courses
+
+# THIS COMES SECOND - after specific routes
 @router.get("/{class_code}", response_model=List[ScheduleItem]) 
 def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
     list_section = get_class_sections_by_course_number(db, str(class_code))
-    print(list_section)
     frontend_sections: list[ScheduleItem] = []
     for class_section in list_section:
         time = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
@@ -31,24 +48,4 @@ def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
             class_= str(class_code)  + " " + str(class_section.section_code),
             room="TBD",
         ))
-    print(DUMMY_SCHEDULE)
-    print("\n")
-    print(frontend_sections)
     return frontend_sections
-
-@router.get("/get_courses", response_model=List[CourseItem]) 
-def get_courses() -> List[CourseItem]:
-    list_courses = list_courses(db)
-    frontend_courses: list[CourseItem] = []
-    print(list_courses)
-    
-    for course in list_courses:
-        # add this class to the frontend sections list
-        frontend_courses.append(CourseItem(
-            department=course.department_id,
-            course_code=course.number,
-            course_name=course.name,
-            credits=course.units,
-            description=course.description,
-        ))
-    return frontend_courses
