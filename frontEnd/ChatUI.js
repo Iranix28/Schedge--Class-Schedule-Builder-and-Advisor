@@ -322,7 +322,7 @@ function ChatUI() {
 								onChange={handleFileUpload}
 								className="hidden"
 								multiple
-								accept=".txt,.pdf,.doc,.docx,.csv,html"
+								accept=".txt,.pdf,.doc,.docx,.csv,.html"
 							/>
 							<input
 								type="text"
