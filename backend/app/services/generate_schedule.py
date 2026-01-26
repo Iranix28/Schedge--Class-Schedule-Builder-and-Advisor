@@ -15,10 +15,10 @@ def convert_days(days, day_string):
         days.append("Tuesday")
         days.append("Thursday")
 
-def add_class_to_schedule(course, schedule):
+def add_class_to_schedule(course, schedule, db):
     dept, num = splitCourse(course)
 
-    section = get_class_sections_by_course_number(num)
+    section = get_class_sections_by_course_number(db, num)
 
     day_string = section.days
     days = []
@@ -45,7 +45,7 @@ def generate_schedule(audit_id):
 
             course = subreq.select_from[0]
 
-            add_class_to_schedule(course, schedule)
+            add_class_to_schedule(course, schedule, db)
 
         if "Capstone" in requirement.title:
 
@@ -56,7 +56,7 @@ def generate_schedule(audit_id):
                     for course in subreq.select_from:
 
                         if "4000" in course:
-                            add_class_to_schedule(course, schedule)
+                            add_class_to_schedule(course, schedule, db)
 
         if "Computer Science Electives" in requirement.title:
             
@@ -77,7 +77,7 @@ def generate_schedule(audit_id):
 
                     for course in courses:
                         if course == "5150" or courses == "4300":
-                            add_class_to_schedule(dept1 + " " + course, schedule)
+                            add_class_to_schedule(dept1 + " " + course, schedule, db)
 
         return schedule
 
