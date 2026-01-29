@@ -4,7 +4,7 @@ import websockets
 import requests
 import argparse
 
-SERVER_URL = "ws:///worker"
+SERVER_URL = "ws://136.36.121.11:8000/worker"
 LOCAL_BASE_URL = "http://localhost:8000"  # Docker/FastAPI LLM endpoint
 
 # ANSI color codes

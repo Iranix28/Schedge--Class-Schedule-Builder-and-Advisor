@@ -23,7 +23,7 @@ def get_courses() -> List[CourseItem]:
 
     for course in courses:
         frontend_courses.append(CourseItem(
-            department=str(course.department_id),
+            department="CS",
             course_code=str(course.number) if course.number is not None else "",
             course_name=str(course.name) if course.name is not None else "",
             credits=course.units if course.units is not None else 0,
@@ -45,7 +45,7 @@ def get_classes_from_code(class_code: int) -> List[ScheduleItem]:
             day=class_section.days,
             startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"),
             endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
-            class_= str(class_code)  + " " + str(class_section.section_code),
+            class_= str(class_code)  + " - " + str(class_section.section_code),
             room="TBD",
         ))
     return frontend_sections

@@ -1,7 +1,6 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
-const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
 
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {
@@ -22,7 +21,7 @@ async function sendMessageLLM(userText, onToken) {
 
 function ChatUI() {
 	const [messages, setMessages] = useState([
-		{ role: "assistant", content: "Hello! How can I help you today?" },
+		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
 	]);
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
