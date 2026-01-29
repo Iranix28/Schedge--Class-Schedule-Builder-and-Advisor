@@ -12,7 +12,7 @@ from app.database.query_routers.audit_requirements_query import get_audit_tree, 
 from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteRead, UserAuditRead
 from app.models.models import ScheduleItem, DUMMY_SCHEDULE
 
-router = APIRouter(prefix="/audit", tags=["audit"])
+router = APIRouter(prefix="/upload-audit", tags=["audit"])
 
 @router.post("/", status_code=201, response_model=List[ScheduleItem])
 def post_degree_audit(file: UploadFile = File(...),):
