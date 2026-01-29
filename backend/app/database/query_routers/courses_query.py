@@ -1,9 +1,9 @@
 from typing import List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, cast, Integer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.database.schema import Course
+from app.database.schema import Course, Department
 from app.models.db_models import CourseCreate, CourseUpdate
 
 def create_course(db: Session, course_in: CourseCreate) -> Course:
@@ -29,6 +29,56 @@ def get_course(db: Session, course_id: int) -> Optional[Course]:
     stmt = select(Course).where(Course.id == course_id)
     result = db.execute(stmt)
     return result.scalars().first()
+
+def get_course_id(db: Session, subject: str, number: str) -> Optional[int]:
+    stmt = (
+        select(Course.id)
+        .join(Course.department)
+        .where(
+            Department.subject == subject,
+            Course.number == number,
+        )
+    )
+    result = db.execute(stmt)
+    course_id = result.scalar_one_or_none()
+
+    if course_id is None:
+        return None
+
+    return int(course_id)
+
+
+def get_course_by_code(db: Session, subject: str, number: str) -> Optional[Course]:
+    stmt = (
+        select(Course)
+        .join(Course.department)
+        .where(
+            Department.subject == subject,
+            Course.number == number,
+        )
+    )
+    result = db.execute(stmt)
+    return result.scalars().first()
+
+
+def list_courses_in_number_range(
+    db: Session,
+    subject: str,
+    number_min: int,
+    number_max: int,
+) -> List[Course]:
+    stmt = (
+        select(Course)
+        .join(Course.department)
+        .where(
+            Department.subject == subject,
+            cast(Course.number, Integer) >= number_min,
+            cast(Course.number, Integer) <= number_max,
+        )
+        .order_by(cast(Course.number, Integer), Course.id)
+    )
+    result = db.execute(stmt)
+    return result.scalars().all()
 
 # def update_course(db: Session, course_id: int, course_in: CourseUpdate) -> Optional[Course]:
 #     course = get_course(db, course_id)
