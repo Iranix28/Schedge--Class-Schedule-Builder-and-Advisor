@@ -24,7 +24,7 @@ def splitCourse(course):
 
     return dept, num
 
-def outputRequirements(requirements, filename="parsed_audit.txt"):
+def outputRequirements(requirements, completedCourses, filename="parsed_audit.txt"):
     """
     Takes in a list of all the requirements and outputs it
     a readable friendly way to a text file.
@@ -113,6 +113,16 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
 
         lines.append("\n")
 
+
+    lines.append("=" * 60)
+    lines.append(f"Requirement: {req['title']}")
+    lines.append("=" * 60)
+
+    for course in completedCourses:
+        lines.append(course + "\n")
+    
+    lines.append("\n")
+
     # Make output file appear next to this .py file
     script_dir = os.path.dirname(os.path.abspath(__file__))
     output_path = os.path.join(script_dir, filename)
@@ -145,6 +155,33 @@ def extractCourseInfo(element):
         name = None
 
     return code, name
+
+def extractCourses(title, courses, soup):
+    header = soup.find(string=re.compile(title))
+    if not header:
+        return
+
+    reqDiv = header.find_parent("div", class_="requirement")
+
+    for table in reqDiv.select("table.completedCourses"):
+        for row in table.select("tr.takenCourse"):
+            courseTd = row.select_one("td.course")
+
+            if not course or not grade:
+                continue
+
+            course = courseTd.get_text(strip=True)
+
+            if "AP" in title:
+                gradeTd = row.select_one("td.grade")
+                grade = gradeTd.get_text(strip=True)
+
+                # Keep AP equivalents only
+                if grade == "AP" and not course.startswith("ACT"):
+                    courses.append(course)
+                    return
+            
+            courses.append(course)
 
 def scrapeDegreeAudit(html_file):
     """
@@ -327,5 +364,11 @@ def scrapeDegreeAudit(html_file):
 
         parsedRequirements.append(requirement_obj)
 
+    # Get courses related to AP scores, transfer courses and total courses taken at the University of Utah
+    coursesTaken = []
+    extractCourses("SUMMARY OF ALL AP", coursesTaken, soup)
+    extractCourses("SUMMARY OF TRANSFER CREDIT", coursesTaken, soup)
+    extractCourses("SUMMARY OF COURSES TAKEN AT THE UNIVERSITY OF UTAH", coursesTaken, soup)
+
     # Returns the audit ID to the router
-    return outputRequirements(parsedRequirements)
+    return outputRequirements(parsedRequirements, coursesTaken)
