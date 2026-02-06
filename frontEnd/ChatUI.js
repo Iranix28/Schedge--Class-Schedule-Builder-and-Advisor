@@ -1,6 +1,7 @@
 const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
+const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
 
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {

@@ -1,0 +1,145 @@
+const { useState } = React;
+
+function LoginPage({ onLoginSuccess }) {
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(false);
+	const [error, setError] = useState("");
+
+	const handleSubmit = () => {
+		setError("");
+
+		if (!username.trim() || !password.trim()) {
+			setError("Please enter both username and password");
+			return;
+		}
+
+		// Here you would normally validate credentials against a backend
+		// For now, we'll accept any non-empty credentials
+		console.log("Login attempt:", { username, password, rememberMe });
+		
+		// Call the success callback to transition to ChatUI
+		onLoginSuccess(username, rememberMe);
+	};
+
+	const handleKeyDown = (e) => {
+		if (e.key === "Enter") {
+			handleSubmit();
+		}
+	};
+
+	return (
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+			<div className="w-full max-w-xl">
+				<div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+					<div className="px-10 pt-10 pb-8 text-center" style={{ backgroundColor: "#BE0000" }}>
+						<div className="w-25 h-25 bg-white rounded-full mx-auto mb-5 flex items-center justify-center shadow-lg" style={{ width: "100px", height: "100px" }}>
+							<div className="text-5xl font-bold" style={{ color: "#BE0000" }}>
+								U
+							</div>
+						</div>
+						<h1 className="text-3xl font-bold text-white mb-2">
+							Advisor Chat
+						</h1>
+						<p className="text-white text-opacity-90 text-base">
+							Sign in to your account
+						</p>
+					</div>
+
+					<div className="px-10 py-10">
+						<div className="space-y-7">
+							{error && (
+								<div className="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-lg text-base">
+									{error}
+								</div>
+							)}
+
+							<div>
+								<label htmlFor="username" className="block text-base font-medium text-slate-700 mb-2">
+									Username
+								</label>
+								<input
+									id="username"
+									type="text"
+									value={username}
+									onChange={(e) => setUsername(e.target.value)}
+									onKeyDown={handleKeyDown}
+									className="w-full px-5 py-4 text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+									placeholder="Enter your username"
+								/>
+							</div>
+
+							<div>
+								<label htmlFor="password" className="block text-base font-medium text-slate-700 mb-2">
+									Password
+								</label>
+								<input
+									id="password"
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									onKeyDown={handleKeyDown}
+									className="w-full px-5 py-4 text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+									placeholder="Enter your password"
+								/>
+							</div>
+
+							<div className="flex items-center justify-between">
+								<label className="flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										checked={rememberMe}
+										onChange={(e) => setRememberMe(e.target.checked)}
+										className="w-5 h-5 rounded border-slate-300 cursor-pointer"
+										style={{ accentColor: "#BE0000" }}
+									/>
+									<span className="ml-2 text-base text-slate-600">Remember me</span>
+								</label>
+								<button
+									onClick={() => alert("Password reset functionality coming soon!")}
+									className="text-base font-medium hover:underline"
+									style={{ color: "#BE0000" }}
+								>
+									Forgot password?
+								</button>
+							</div>
+
+							<button
+								onClick={handleSubmit}
+								className="w-full py-4 px-5 text-white text-lg font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+								style={{ backgroundColor: "#BE0000" }}
+							>
+								Sign In
+							</button>
+						</div>
+
+						<div className="mt-7 relative">
+							<div className="absolute inset-0 flex items-center">
+								<div className="w-full border-t border-slate-200"></div>
+							</div>
+							<div className="relative flex justify-center text-base">
+								<span className="px-2 bg-white text-slate-500">
+									Don't have an account?
+								</span>
+							</div>
+						</div>
+
+						<div className="mt-5 text-center">
+							<button
+								onClick={() => alert("Registration functionality coming soon!")}
+								className="text-base font-medium hover:underline"
+								style={{ color: "#BE0000" }}
+							>
+								Create an account
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div className="mt-10 text-center text-base text-slate-600">
+					<p>© 2025 University Advisor Chat. All rights reserved.</p>
+				</div>
+			</div>
+		</div>
+	);
+}

@@ -2,27 +2,68 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Chat UI</title>
-    <!-- Tailwind (optional; you used Tailwind classes) -->
+    <title>Advisor Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="h-screen">
     <div id="root" class="h-full"></div>
 
-    <!-- React + ReactDOM UMD (global React/ReactDOM objects) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-
-    <!-- Babel so the browser can understand JSX (dev only) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Your component file as JSX -->
+    <!-- Load your components -->
+    <script type="text/babel" src="./login.js"></script>
     <script type="text/babel" src="./ChatUI.js"></script>
 
-    <!-- Render it -->
+    <!-- Main App component -->
     <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [isAuthenticated, setIsAuthenticated] = useState(false);
+        const [userData, setUserData] = useState(null);
+
+        // Check if user was remembered on mount
+        useEffect(() => {
+          const savedUser = localStorage.getItem('rememberedUser');
+          if (savedUser) {
+            const user = JSON.parse(savedUser);
+            setUserData(user);
+            setIsAuthenticated(true);
+          }
+        }, []);
+
+        const handleLoginSuccess = (username, rememberMe) => {
+          const user = { username };
+          setUserData(user);
+          setIsAuthenticated(true);
+          
+          // Save to localStorage if "Remember me" is checked
+          if (rememberMe) {
+            localStorage.setItem('rememberedUser', JSON.stringify(user));
+          }
+        };
+
+        const handleLogout = () => {
+          setIsAuthenticated(false);
+          setUserData(null);
+          localStorage.removeItem('rememberedUser');
+        };
+
+        return (
+          <div className="h-full">
+            {!isAuthenticated ? (
+              <LoginPage onLoginSuccess={handleLoginSuccess} />
+            ) : (
+              <ChatUI userData={userData} onLogout={handleLogout} />
+            )}
+          </div>
+        );
+      }
+
       const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<ChatUI />);
+      root.render(<App />);
     </script>
   </body>
 </html>
