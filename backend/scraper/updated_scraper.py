@@ -18,50 +18,183 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 # ==================================================
 
 def parse_prerequisites(text: str):
+    """
+    Output structure:
+      - top-level list => AND
+      - sublist => OR
+      - sub-sublist => AND (inside an OR option)
+
+    Key feature:
+      - Handles bare numbers like "1220" by inheriting the last seen dept (e.g., MATH 1210 AND 1220 => MATH1220)
+    """
     if not text:
         return []
 
-    text = re.sub(r"\s+", " ", text)
+    s = re.sub(r"\s+", " ", text).strip()
+    s = re.sub(r"^\s*Prerequisites:\s*", "", s, flags=re.IGNORECASE)
 
-    text = re.sub(
-        r"Full Major Status[^.]*|permission of instructor[^.]*|Major or Minor[^.]*",
-        "",
-        text,
-        flags=re.IGNORECASE,
+    # Remove grade phrases so "'C' or better" doesn't create a bogus boolean OR
+    s = re.sub(r"(?i)\b['\"]?[A-F][+-]?['\"]?\s*or\s*better\s*in\b", " ", s)
+    s = re.sub(r"(?i)\bor\s+better\b", " better", s)
+
+    # Remove common non-course constraints (keeps course parentheses intact)
+    s = re.sub(r"(?i)\bFoundational Courses complete\b", " ", s)
+
+    def _strip_non_course_parens(match):
+        chunk = match.group(0)
+        return chunk if re.search(r"\b[A-Z]{2,6}\s*\d{4}\b", chunk) else " "
+
+    s = re.sub(r"\([^()]*\)", _strip_non_course_parens, s)
+
+    # Tokenize:
+    #  - parentheses
+    #  - AND/OR
+    #  - course tokens "MATH 1210"
+    #  - bare numbers "1220" (inherit dept)
+    token_re = re.compile(
+        r"(\()|(\))|\b(AND|OR)\b|\b([A-Z]{2,6})\s*(\d{4})\b|\b(\d{4})\b",
+        re.IGNORECASE
     )
 
-    course_pat = r"\b(?!AND\b|OR\b)([A-Z]{2,6})\s*(\d{4})\b"
-    matches = [(m.group(1) + m.group(2), m.start(), m.end())
-               for m in re.finditer(course_pat, text)]
+    tokens = []
+    last_dept = None
 
-    result = []
-    i = 0
-    while i < len(matches):
-        course, _, end = matches[i]
-
-        if i + 1 < len(matches):
-            next_start = matches[i + 1][1]
-            between = text[end:next_start].lower()
-
-            if " or " in between and " and " not in between:
-                group = [course]
-                i += 1
-                while i < len(matches):
-                    group.append(matches[i][0])
-                    if i + 1 < len(matches):
-                        between2 = text[matches[i][2]:matches[i + 1][1]].lower()
-                        if " or " not in between2 or " and " in between2:
-                            break
-                    i += 1
-                result.append(group)
+    for m in token_re.finditer(s):
+        if m.group(1):
+            tokens.append(("LP", "("))
+            # reset dept at a new paren group boundary to avoid weird carry
+            # (still okay because each branch usually reintroduces dept)
+            # But we keep last_dept because "(MATH 1210 AND 1220)" needs it.
+        elif m.group(2):
+            tokens.append(("RP", ")"))
+        elif m.group(3):
+            op = m.group(3).upper()
+            tokens.append((op, op))
+            # After OR, typically a new branch begins; dept will usually be reintroduced,
+            # but we keep last_dept in case it isn't.
+        elif m.group(4) and m.group(5):
+            dept = m.group(4).upper()
+            num = m.group(5)
+            last_dept = dept
+            tokens.append(("COURSE", f"{dept}{num}"))
+        elif m.group(6):
+            # bare number, inherit last dept
+            num = m.group(6)
+            if last_dept:
+                tokens.append(("COURSE", f"{last_dept}{num}"))
             else:
-                result.append(course)
-        else:
-            result.append(course)
+                # no dept context; ignore
+                pass
 
+    if not tokens:
+        return []
+
+    # --- Recursive descent parser (AND precedence > OR) ---
+    i = 0
+
+    def peek():
+        return tokens[i] if i < len(tokens) else ("EOF", "")
+
+    def consume(expected=None):
+        nonlocal i
+        tok = peek()
+        if expected and tok[0] != expected:
+            return None
         i += 1
+        return tok
 
-    return result
+    def parse_factor():
+        tok = peek()
+        if tok[0] == "COURSE":
+            consume("COURSE")
+            return ("COURSE", tok[1])
+        if tok[0] == "LP":
+            consume("LP")
+            node = parse_or()
+            consume("RP")  # tolerate missing RP
+            return node
+        consume()
+        return None
+
+    def parse_and():
+        left = parse_factor()
+        terms = [left] if left else []
+        while peek()[0] == "AND":
+            consume("AND")
+            right = parse_factor()
+            if right:
+                terms.append(right)
+        if not terms:
+            return None
+        if len(terms) == 1:
+            return terms[0]
+        return ("AND", terms)
+
+    def parse_or():
+        left = parse_and()
+        terms = [left] if left else []
+        while peek()[0] == "OR":
+            consume("OR")
+            right = parse_and()
+            if right:
+                terms.append(right)
+        if not terms:
+            return None
+        if len(terms) == 1:
+            return terms[0]
+        return ("OR", terms)
+
+    ast = parse_or()
+    if not ast:
+        return []
+
+    # Normalize: drop None, flatten same operators
+    def norm(node):
+        if not node:
+            return None
+        t = node[0]
+        if t == "COURSE":
+            return node
+        if t in ("AND", "OR"):
+            children = []
+            for c in node[1]:
+                nc = norm(c)
+                if not nc:
+                    continue
+                if nc[0] == t:
+                    children.extend(nc[1])
+                else:
+                    children.append(nc)
+            if not children:
+                return None
+            if len(children) == 1:
+                return children[0]
+            return (t, children)
+        return None
+
+    ast = norm(ast)
+    if not ast:
+        return []
+
+    # Convert AST to your storage format
+    def to_store(node):
+        if node[0] == "COURSE":
+            return node[1]
+        if node[0] == "AND":
+            return [to_store(c) for c in node[1] if to_store(c) is not None]
+        if node[0] == "OR":
+            return [to_store(c) for c in node[1] if to_store(c) is not None]
+        return None
+
+    stored = to_store(ast)
+
+    # Enforce top-level AND list
+    if isinstance(stored, str):
+        return [stored]
+    if isinstance(stored, list):
+        return stored if ast[0] == "AND" else [stored]
+    return []
+
 
 # ==================================================
 # DETAILS PAGE: description + prereqs

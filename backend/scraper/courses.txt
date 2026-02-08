@@ -255,7 +255,7 @@ available_seats: 39
 schedule: TuTh/09:10AM-10:30AM
 location: MEK 3550
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -268,7 +268,7 @@ available_seats: -1
 schedule: Fr/09:40AM-10:30AM
 location: WEB L126
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -281,7 +281,7 @@ available_seats: 0
 schedule: Fr/10:45AM-11:35AM
 location: WEB L126
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -294,7 +294,7 @@ available_seats: 57
 schedule: MoWe/08:05AM-09:25AM
 location: WEB L103
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -307,7 +307,7 @@ available_seats: 14
 schedule: Fr/09:40AM-10:30AM
 location: GC 3680
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -320,7 +320,7 @@ available_seats: 3
 schedule: Fr/10:45AM-11:35AM
 location: GC 3680
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2420
@@ -489,7 +489,7 @@ available_seats: 59
 schedule: TuTh/09:10AM-10:30AM
 location: GC 1900
 description: An introduction to probability theory and statistics, with an emphasis on solving problems in electrical and computer engineering.  Topics in probability include discrete and continuous random variables, probability distributions, sums and functions of random variables, the law of large numbers, and the central limit theorem. Topics in statistics include sample mean and variance, estimating distributions, correlation, regression, and hypothesis testing.  Engineering applications include failure analysis, process control, communication systems, and speech recognition.
-prerequisites: ["MATH1220"]
+prerequisites: [["MATH1220", "MATH1320", "MATH1321"]]
 --------------------------------------------------------------------------------
 
 course_id: CS3190
@@ -502,7 +502,7 @@ available_seats: 95
 schedule: MoWe/03:00PM-04:20PM
 location: WEB L101
 description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
-prerequisites: [["CS2100", "MATH2200"], "MATH2270"]
+prerequisites: [["CS2100", "MATH2200"]]
 --------------------------------------------------------------------------------
 
 course_id: CS3200
@@ -788,7 +788,7 @@ available_seats: 4
 schedule: TuTh/02:00PM-03:20PM
 location: WEB L103
 description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
-prerequisites: [["PHYS2220", "ECE1240"], "ECE1245", "ECE1050"]
+prerequisites: [["PHYS2220", ["ECE1240", "ECE1245", "ECE1050"]]]
 --------------------------------------------------------------------------------
 
 course_id: CS3700
@@ -801,7 +801,7 @@ available_seats: 4
 schedule: 
 location: 
 description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
-prerequisites: [["PHYS2220", "ECE1240"], "ECE1245", "ECE1050"]
+prerequisites: [["PHYS2220", ["ECE1240", "ECE1245", "ECE1050"]]]
 --------------------------------------------------------------------------------
 
 course_id: CS3810
@@ -866,7 +866,7 @@ available_seats: 6
 schedule: MoWeFr/09:40AM-10:30AM
 location: CTIHB 109
 description: During their last two semesters, senior Computer Science students form teams to develop significant software projects. This class is the first semester in the sequence. Seniors will work on team formation, project identification, project planning (including UI design, software architecture, testing methods, scheduling, etc.), and completion of a system prototype. This course will provide teams with time and guidance to effectively plan their projects, as well as emphasizing the written and oral communications necessary to succeed in industry. Projects formed in this course must be completed during the following semester in CS 4500. Students should have four or less CS electives/required courses left when signing up for this course and should be graduating during the following semester.
-prerequisites: ["CS3505", ["WRTG3014", "HONOR3200"]]
+prerequisites: ["CS3505"]
 --------------------------------------------------------------------------------
 
 course_id: CS4150
@@ -1113,7 +1113,7 @@ available_seats: 5
 schedule: TuTh/03:40PM-05:00PM
 location: WEB 1230
 description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
-prerequisites: ["CS3500", "MATH2250"]
+prerequisites: ["CS3500", ["MATH2250", "MATH2270"]]
 --------------------------------------------------------------------------------
 
 course_id: CS5635
@@ -1126,7 +1126,7 @@ available_seats: 9
 schedule: MoWe/01:25PM-02:45PM
 location: WEB 1230
 description: Introduction to the principles, methods, and techniques for effective visual analysis of scientific data. Students will explore many aspects of visualization, including techniques for scalar, vector, and tensor field data; surface and volume geometry representations and scientific animation. Students will acquire hands-on experience using visualization software to study applications including but not limited to those that arise in science, engineering, and medicine. A complementary course - CS 5630/6630 Visualization for Data Science - that focuses on visualization related to tabular data (e.g., graphs, text, and maps), will be taught each Fall Semester.
-prerequisites: ["CS3500", "MATH1210", "MATH1310", "MATH1311"]
+prerequisites: ["CS3500", [["MATH1210", "MATH1220"], ["MATH1310", "MATH1320"], ["MATH1311", "MATH1321"]]]
 --------------------------------------------------------------------------------
 
 course_id: CS5740
