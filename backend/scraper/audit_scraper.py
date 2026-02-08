@@ -166,8 +166,14 @@ def extractCourses(title, courses, soup):
     for table in reqDiv.select("table.completedCourses"):
         for row in table.select("tr.takenCourse"):
             courseTd = row.select_one("td.course")
+            creditTD = row.select_one("td.credit")
 
-            if not course or not grade:
+            if not courseTd or not creditTD:
+                continue
+
+            creditGained = float(creditTD.get_text(strip=True))
+
+            if creditGained <= 0.0:
                 continue
 
             course = courseTd.get_text(strip=True)
@@ -273,10 +279,18 @@ def scrapeDegreeAudit(html_file):
             completedTag = sub.select(".completedCourses tr.takenCourse")
 
             for course in completedTag:
-                code, name = extractCourseInfo(course)
+                creditTag  = course.select_one("td.credit")
 
-                if code:
-                    completedCourses[code] = name
+                if not creditTag:
+                    continue
+
+                creditGained = float(creditTag.text.strip())
+
+                if creditGained > 0.0:
+                    code, name = extractCourseInfo(course)
+
+                    if code:
+                        completedCourses[code] = name
 
             # Number of courses to take to meet this requirement
             needsTag = sub.select_one(".subreqNeeds .count")
