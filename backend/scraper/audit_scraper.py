@@ -20,7 +20,7 @@ def splitCourse(course):
     dept = course[:splitIndex].strip()
 
     # Get the course number from the string
-    num  = course[splitIndex:].strip()        
+    num  = course[splitIndex:splitIndex + 4].strip()        
 
     return dept, num
 
@@ -114,22 +114,31 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
         lines.append("\n")
 
 
+    # Add completed courses to DB and output file
     lines.append("=" * 60)
-    lines.append(f"Requirement: {req['title']}")
+    lines.append(f"Total Completed Courses")
     lines.append("=" * 60)
+    
+    comp_course_ids = []
 
     for course in completedCourses:
         lines.append(course + "\n")
-    
+
+        dept, num = splitCourse(course)
+        comp_course_ids.append(get_course_id(db, dept, num))
+
+    if comp_course_ids:
+        add_completed_courses_bulk(db=db, user_id=0, course_ids=comp_course_ids)
+
     lines.append("\n")
 
-    # Make output file appear next to this .py file
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.join(script_dir, filename)
+    # # Make output file appear next to this .py file
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # output_path = os.path.join(script_dir, filename)
 
-    # Write file
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
+    # # Write file
+    # with open(output_path, "w", encoding="utf-8") as f:
+    #     f.write("\n".join(lines))
 
     commit_audit(db)
 

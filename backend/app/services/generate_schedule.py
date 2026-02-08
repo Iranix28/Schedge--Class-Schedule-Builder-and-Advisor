@@ -25,6 +25,7 @@ def convert_days(days, day_string):
 def add_class_to_schedule(db,course, schedule):
     #db = SessionLocal()
     dept, num = splitCourse(course)
+    print(num + " \n")
     section = get_class_sections_by_course_number(db, num)
     #print(section[0].id)
     day_string = section[0].days
