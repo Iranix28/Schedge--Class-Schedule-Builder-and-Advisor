@@ -47,6 +47,10 @@ function ChatUI() {
 		setSelectedCourse(course);
 		setShowCourseDetailModal(true);
 	};
+
+	useEffect(() => {
+    	fetchAllCourses();
+	}, []);
 	
 	const closeCourseDetails = () => {
 		setShowCourseDetailModal(false);
