@@ -48,19 +48,39 @@ def _get_course_by_subject_and_number(db: Session, subject: str, number: str) ->
 
     return course
 
-def get_course_prerequisite_by_subject(db: Session, department_subject: str, course_number: str) -> Optional[CoursePrerequisite]:
+def get_course_prerequisites_by_subject(db: Session, department_subject: str, course_number: str) -> List[Course]:
     stmt = (
         select(Course)
         .join(Department)
         .where(Department.subject == department_subject)
         .where(Course.number == course_number)
-        .options(joinedload(Course.prerequisites))
+        .options(
+            joinedload(Course.prerequisites)
+            .joinedload(CoursePrerequisite.prerequisite_course)
+        )
     )
+
     course = db.execute(stmt).scalars().first()
-    if course:
-        prerequisites = [prereq.prerequisite_course for prereq in course.prerequisites]
-        return prerequisites
-    return None
+    if not course:
+        return []
+
+    return [cp.prerequisite_course for cp in course.prerequisites]
+
+def get_course_prerequisites_by_course_id(db: Session, course_id: int) -> List[Course]:
+    stmt = (
+        select(Course)
+        .where(Course.id == course_id)
+        .options(
+            joinedload(Course.prerequisites)
+            .joinedload(CoursePrerequisite.prerequisite_course)
+        )
+    )
+
+    course = db.execute(stmt).scalars().first()
+    if not course:
+        return []
+
+    return [cp.prerequisite_course for cp in course.prerequisites]
 
 def create_course_prerequisite_by_codes(db: Session, data: CoursePrerequisiteCreateByCode) -> CoursePrerequisite:
     course = _get_course_by_subject_and_number(db, data.department_subject, data.course_number)
