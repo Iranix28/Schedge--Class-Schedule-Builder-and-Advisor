@@ -20,7 +20,7 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
-function ChatUI() {
+function ChatUI({userData, onLogout}) {
 	const [messages, setMessages] = useState([
 		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
 	]);
@@ -512,6 +512,7 @@ function ChatUI() {
 						<button
 							type="button"
 							onClick={() => {
+								onLogout();
 								console.log("Logout clicked");
 							}}
 							className="px-2 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm"
