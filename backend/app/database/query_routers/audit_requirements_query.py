@@ -4,7 +4,7 @@ from typing import Optional, Iterable, Dict, List
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, aliased
 
-from app.database.schema import UserAudit, AuditRequirement, AuditRequirementRule, Department, Course
+from app.database.schema import UserAudit, AuditRequirement, AuditRequirementRule, Department, Course, UserCompletedCourse
 from app.models.db_models import UserAuditRead, AuditRequirementRead, AuditSubrequirementRead, AuditRuleRead
 
 
@@ -314,3 +314,74 @@ def format_audit_tree_as_text(tree: UserAuditRead) -> str:
         lines.append("\n")
 
     return "\n".join(lines)
+
+
+
+#========================Methods for querying completed courses for audits========================
+
+
+def add_completed_course(db: Session, user_id: int, course_id: int) -> bool:
+    """
+    Adds user_id and course_id if its not in database.
+    Will returns True if inserted, False if it already existed.
+    """
+    exists_stmt = select(UserCompletedCourse.id).where(
+        UserCompletedCourse.user_id == user_id,
+        UserCompletedCourse.course_id == course_id,
+    )
+    if db.execute(exists_stmt).scalar_one_or_none() is not None:
+        return False
+
+    row = UserCompletedCourse(user_id=user_id, course_id=course_id)
+    db.add(row)
+    db.flush()
+    return True
+
+def add_completed_courses_bulk(db: Session, user_id: int, course_ids: Iterable[int]) -> int:
+    """
+    Bulk add completed courses for a user, will skip ones that already exist.
+    Returns number of rows that were added.
+    """
+    course_ids_list = list({int(cid) for cid in course_ids if cid is not None})
+    if not course_ids_list:
+        return 0
+
+    existing_stmt = select(UserCompletedCourse.course_id).where(
+        UserCompletedCourse.user_id == user_id,
+        UserCompletedCourse.course_id.in_(course_ids_list),
+    )
+    existing = set(db.execute(existing_stmt).scalars().all())
+
+    to_add = [cid for cid in course_ids_list if cid not in existing]
+    if not to_add:
+        return 0
+
+    db.add_all([UserCompletedCourse(user_id=user_id, course_id=cid) for cid in to_add])
+    db.flush()
+    return len(to_add)
+
+def get_completed_course_ids(db: Session, user_id: int) -> List[int]:
+    """
+    Returns just the list of completed course_ids for a user.
+    """
+    stmt = select(UserCompletedCourse.course_id).where(UserCompletedCourse.user_id == user_id)
+    return list(db.execute(stmt).scalars().all())
+
+def is_course_completed(db: Session, user_id: int, course_id: int) -> bool:
+    """
+    True if courses exists (meaning completed).
+    """
+    stmt = select(UserCompletedCourse.id).where(UserCompletedCourse.user_id == user_id, UserCompletedCourse.course_id == course_id)
+    return db.execute(stmt).scalar_one_or_none() is not None
+
+def get_completed_courses(db: Session, user_id: int) -> List[Course]:
+    """
+    Returns Course objects for the user's completed courses.
+    """
+    stmt = (
+        select(Course)
+        .join(UserCompletedCourse, UserCompletedCourse.course_id == Course.id)
+        .where(UserCompletedCourse.user_id == user_id)
+    )
+    return list(db.execute(stmt).scalars().all())
+
