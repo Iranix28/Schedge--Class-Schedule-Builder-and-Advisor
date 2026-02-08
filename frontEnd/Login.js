@@ -39,10 +39,10 @@ function LoginPage({ onLoginSuccess }) {
 							</div>
 						</div>
 						<h1 className="text-3xl font-bold text-white mb-2">
-							Advisor Chat
+							Schedge
 						</h1>
 						<p className="text-white text-opacity-90 text-base">
-							Sign in to your account
+							Login
 						</p>
 					</div>
 

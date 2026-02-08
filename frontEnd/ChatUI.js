@@ -48,8 +48,25 @@ function ChatUI({userData, onLogout}) {
 		setShowCourseDetailModal(true);
 	};
 
+	//warm up llm to on screen start up and fetch all course info.
+	const warmupDoneRef = useRef(false);
 	useEffect(() => {
-    	fetchAllCourses();
+		fetchAllCourses();
+		if (warmupDoneRef.current) return;
+		warmupDoneRef.current = true;
+
+		// fire and forget warmup
+		(async () => {
+		try {
+			const warmupPrompt = "Warmup. Reply with OK.";
+			await sendMessageLLM(warmupPrompt, () => {
+			// ignore tokens so nothing is displayed
+			});
+		} catch (e) {
+			// optional: do nothing or log
+			console.log("Warmup failed:", e?.message || e);
+		}
+		})();
 	}, []);
 	
 	const closeCourseDetails = () => {
