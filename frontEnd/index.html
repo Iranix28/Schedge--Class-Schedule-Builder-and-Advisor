@@ -14,6 +14,8 @@
 
     <!-- Load your components -->
     <script type="text/babel" src="./login.js"></script>
+    <script type="text/babel" src="./PlanSelection.js"></script>
+    <script type="text/babel" src="./MultiSemesterUI.js"></script>
     <script type="text/babel" src="./ChatUI.js"></script>
 
     <!-- Main App component -->
@@ -23,8 +25,10 @@
       function App() {
         const [isAuthenticated, setIsAuthenticated] = useState(false);
         const [userData, setUserData] = useState(null);
+        const [selectedPlan, setSelectedPlan] = useState(null);
+        const [selectedSemester, setSelectedSemester] = useState(null);
 
-        // Check if user was remembered on mount
+        // Initialize and handle browser back/forward
         useEffect(() => {
           const savedUser = localStorage.getItem('rememberedUser');
           if (savedUser) {
@@ -32,6 +36,24 @@
             setUserData(user);
             setIsAuthenticated(true);
           }
+
+          // Listen for browser back/forward button
+          const handlePopState = (event) => {
+            if (event.state) {
+              setSelectedPlan(event.state.selectedPlan || null);
+              setSelectedSemester(event.state.selectedSemester || null);
+            } else {
+              setSelectedPlan(null);
+              setSelectedSemester(null);
+            }
+          };
+
+          window.addEventListener('popstate', handlePopState);
+          
+          // Set initial state
+          window.history.replaceState({ selectedPlan: null, selectedSemester: null }, '', '/');
+
+          return () => window.removeEventListener('popstate', handlePopState);
         }, []);
 
         const handleLoginSuccess = (username, rememberMe) => {
@@ -39,7 +61,6 @@
           setUserData(user);
           setIsAuthenticated(true);
           
-          // Save to localStorage if "Remember me" is checked
           if (rememberMe) {
             localStorage.setItem('rememberedUser', JSON.stringify(user));
           }
@@ -48,15 +69,65 @@
         const handleLogout = () => {
           setIsAuthenticated(false);
           setUserData(null);
+          setSelectedPlan(null);
+          setSelectedSemester(null);
           localStorage.removeItem('rememberedUser');
+          window.history.pushState({ selectedPlan: null, selectedSemester: null }, '', '/');
+        };
+
+        const handleSelectPlan = (planType) => {
+          setSelectedPlan(planType);
+          window.history.pushState({ selectedPlan: planType, selectedSemester: null }, '', `#${planType}`);
+        };
+
+        const handleSelectSemester = (semester) => {
+          setSelectedSemester(semester);
+          // Store only the semester ID, not the whole object
+          window.history.pushState(
+            { selectedPlan: 'multi', semesterId: semester.id, semesterName: semester.name },
+            '', 
+            `#multi-semester-${semester.id}`
+          );
+        };
+
+        const handleBackToPlanSelection = () => {
+          window.history.back();
+        };
+
+        const handleBackToMultiSemester = () => {
+          window.history.back();
         };
 
         return (
           <div className="h-full">
             {!isAuthenticated ? (
               <LoginPage onLoginSuccess={handleLoginSuccess} />
+            ) : !selectedPlan ? (
+              <PlanSelection 
+                onSelectPlan={handleSelectPlan} 
+                userData={userData} 
+                onLogout={handleLogout} 
+              />
+            ) : selectedPlan === 'single' ? (
+              <ChatUI 
+                userData={userData} 
+                onLogout={handleLogout}
+                onBack={handleBackToPlanSelection}
+              />
+            ) : selectedPlan === 'multi' && !selectedSemester ? (
+              <MultiSemesterUI 
+                userData={userData} 
+                onLogout={handleLogout}
+                onSelectSemester={handleSelectSemester}
+                onBack={handleBackToPlanSelection}
+              />
             ) : (
-              <ChatUI userData={userData} onLogout={handleLogout} />
+              <ChatUI 
+                userData={userData} 
+                onLogout={handleLogout}
+                semester={selectedSemester}
+                onBack={handleBackToMultiSemester}
+              />
             )}
           </div>
         );
