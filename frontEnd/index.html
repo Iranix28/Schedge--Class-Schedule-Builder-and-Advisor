@@ -12,9 +12,10 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Load your components -->
+        <!-- Load your components -->
     <script type="text/babel" src="./login.js"></script>
     <script type="text/babel" src="./PlanSelection.js"></script>
+    <script type="text/babel" src="./SavedPlansUI.js"></script>
     <script type="text/babel" src="./MultiSemesterUI.js"></script>
     <script type="text/babel" src="./ChatUI.js"></script>
 
@@ -27,6 +28,7 @@
         const [userData, setUserData] = useState(null);
         const [selectedPlan, setSelectedPlan] = useState(null);
         const [selectedSemester, setSelectedSemester] = useState(null);
+        const [selectedSavedPlan, setSelectedSavedPlan] = useState(null);
 
         // Initialize and handle browser back/forward
         useEffect(() => {
@@ -42,16 +44,18 @@
             if (event.state) {
               setSelectedPlan(event.state.selectedPlan || null);
               setSelectedSemester(event.state.selectedSemester || null);
+              setSelectedSavedPlan(event.state.selectedSavedPlan || null);
             } else {
               setSelectedPlan(null);
               setSelectedSemester(null);
+              setSelectedSavedPlan(null);
             }
           };
 
           window.addEventListener('popstate', handlePopState);
           
           // Set initial state
-          window.history.replaceState({ selectedPlan: null, selectedSemester: null }, '', '/');
+          window.history.replaceState({ selectedPlan: null, selectedSemester: null, selectedSavedPlan: null }, '', '/');
 
           return () => window.removeEventListener('popstate', handlePopState);
         }, []);
@@ -71,22 +75,31 @@
           setUserData(null);
           setSelectedPlan(null);
           setSelectedSemester(null);
+          setSelectedSavedPlan(null);
           localStorage.removeItem('rememberedUser');
-          window.history.pushState({ selectedPlan: null, selectedSemester: null }, '', '/');
+          window.history.pushState({ selectedPlan: null, selectedSemester: null, selectedSavedPlan: null }, '', '/');
         };
 
-        const handleSelectPlan = (planType) => {
+        const handleSelectPlanType = (planType) => {
           setSelectedPlan(planType);
-          window.history.pushState({ selectedPlan: planType, selectedSemester: null }, '', `#${planType}`);
+          window.history.pushState({ selectedPlan: planType, selectedSemester: null, selectedSavedPlan: null }, '', `#${planType}`);
         };
 
         const handleSelectSemester = (semester) => {
           setSelectedSemester(semester);
-          // Store only the semester ID, not the whole object
           window.history.pushState(
-            { selectedPlan: 'multi', semesterId: semester.id, semesterName: semester.name },
+            { selectedPlan: 'multi', semesterId: semester.id, semesterName: semester.name, selectedSavedPlan: null },
             '', 
             `#multi-semester-${semester.id}`
+          );
+        };
+
+        const handleSelectSavedPlan = (plan) => {
+          setSelectedSavedPlan(plan);
+          window.history.pushState(
+            { selectedPlan: 'saved', planId: plan.id, selectedSavedPlan: plan },
+            '',
+            `#saved-plan-${plan.id}`
           );
         };
 
@@ -98,15 +111,33 @@
           window.history.back();
         };
 
+        const handleBackToSavedPlans = () => {
+          window.history.back();
+        };
+
         return (
           <div className="h-full">
             {!isAuthenticated ? (
               <LoginPage onLoginSuccess={handleLoginSuccess} />
             ) : !selectedPlan ? (
               <PlanSelection 
-                onSelectPlan={handleSelectPlan} 
+                onSelectPlan={handleSelectPlanType} 
                 userData={userData} 
                 onLogout={handleLogout} 
+              />
+            ) : selectedPlan === 'saved' && !selectedSavedPlan ? (
+              <SavedPlansUI
+                userData={userData}
+                onLogout={handleLogout}
+                onBack={handleBackToPlanSelection}
+                onSelectPlan={handleSelectSavedPlan}
+              />
+            ) : selectedPlan === 'saved' && selectedSavedPlan ? (
+              <ChatUI 
+                userData={userData} 
+                onLogout={handleLogout}
+                onBack={handleBackToSavedPlans}
+                savedPlan={selectedSavedPlan}
               />
             ) : selectedPlan === 'single' ? (
               <ChatUI 
