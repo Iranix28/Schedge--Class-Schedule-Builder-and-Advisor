@@ -3,13 +3,6 @@ const { useState } = React;
 function MultiSemesterUI({ userData, onLogout, onSelectSemester }) {
 	const [semesters, setSemesters] = useState([
 		{ id: 1, name: "Fall 2025", year: 2025, term: "Fall", credits: 0, courses: [] },
-		{ id: 2, name: "Spring 2026", year: 2026, term: "Spring", credits: 0, courses: [] },
-		{ id: 3, name: "Fall 2026", year: 2026, term: "Fall", credits: 0, courses: [] },
-		{ id: 4, name: "Spring 2027", year: 2027, term: "Spring", credits: 0, courses: [] },
-		{ id: 5, name: "Fall 2027", year: 2027, term: "Fall", credits: 0, courses: [] },
-		{ id: 6, name: "Spring 2028", year: 2028, term: "Spring", credits: 0, courses: [] },
-		{ id: 7, name: "Fall 2028", year: 2028, term: "Fall", credits: 0, courses: [] },
-		{ id: 8, name: "Spring 2029", year: 2029, term: "Spring", credits: 0, courses: [] },
 	]);
 
 	const handleAddSemester = () => {
