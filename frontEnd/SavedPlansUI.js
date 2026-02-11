@@ -3,9 +3,6 @@ const { useState } = React;
 function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan }) {
 	const [savedPlans] = useState([
 		{ id: 1, title: "Fall 2025 Schedule Planning", date: "2025-01-15", courses: 5, semester: "Fall 2025" },
-		{ id: 2, title: "CS Major 4-Year Plan", date: "2025-01-10", courses: 32, semester: "Multi-Semester" },
-		{ id: 3, title: "Spring 2026 Course Selection", date: "2025-01-05", courses: 6, semester: "Spring 2026" },
-		{ id: 4, title: "Elective Planning", date: "2024-12-20", courses: 4, semester: "Fall 2025" },
 	]);
 
 	const [searchQuery, setSearchQuery] = useState("");

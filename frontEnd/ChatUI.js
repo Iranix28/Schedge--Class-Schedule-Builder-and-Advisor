@@ -367,7 +367,12 @@ function ChatUI({userData, onLogout}) {
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
 				>
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-3">
+							<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+								<div className="text-xl font-bold" style={{ color: "#BE0000" }}>
+									U
+								</div>
+							</div>
 						<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
 					</div>
 				</header>
@@ -436,7 +441,7 @@ function ChatUI({userData, onLogout}) {
 						<div ref={messagesEndRef} />
 					</div>
 				</div>
-
+				{/* all the textbox elements */}
 				<div className="border-t border-slate-200 px-6 py-4 bg-white">
 					<div>
 						<div
@@ -537,11 +542,6 @@ function ChatUI({userData, onLogout}) {
 						>
 							Logout
 						</button>
-						<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-							<div className="text-xl font-bold" style={{ color: "#BE0000" }}>
-								U
-							</div>
-						</div>
 					</div>
 				</header>
 
