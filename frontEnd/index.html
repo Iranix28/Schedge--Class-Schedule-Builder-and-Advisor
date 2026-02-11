@@ -72,6 +72,32 @@
           setUserData(null);
         };
 
+        const handleSelectPlanType = (planType) => {
+          setSelectedPlan(planType);
+        };
+
+        const handleBackToPlanSelection = () => {
+          setSelectedPlan(null);
+          setSelectedSemester(null);
+          setSelectedSavedPlan(null);
+        };
+
+        const handleSelectSavedPlan = (plan) => {
+          setSelectedSavedPlan(plan);
+        };
+
+        const handleBackToSavedPlans = () => {
+          setSelectedSavedPlan(null);
+        };
+
+        const handleSelectSemester = (semester) => {
+          setSelectedSemester(semester);
+        };
+
+        const handleBackToMultiSemester = () => {
+          setSelectedSemester(null);
+        };
+
         return (
           <div className="h-full">
             {!isAuthenticated ? (
