@@ -1,20 +1,70 @@
 const { useState } = React;
 
 function MultiSemesterUI({ userData, onLogout, onSelectSemester, onBack }) {
+	
+    // Function to get the next semester based on current date
+	const getNextSemester = () => {
+		const now = new Date();
+		const month = now.getMonth();
+		const year = now.getFullYear();
+		
+		// Spring: Jan-Apr (months 0-3)
+		// Summer: May-Jul (months 4-6)
+		// Fall: Aug-Dec (months 7-11)
+		
+		if (month >= 0 && month <= 3) {
+			// Currently in Spring, next is Summer
+			return { term: "Summer", year: year };
+		} else if (month >= 4 && month <= 6) {
+			// Currently in Summer, next is Fall
+			return { term: "Fall", year: year };
+		} else {
+			// Currently in Fall, next is Spring of next year
+			return { term: "Spring", year: year + 1 };
+		}
+	};
+
+	const initialSemester = getNextSemester();
 	const [semesters, setSemesters] = useState([
-		{ id: 1, name: "Fall 2025", year: 2025, term: "Fall", credits: 0, courses: [] },
+		{ 
+			id: 1, 
+			name: `${initialSemester.term} ${initialSemester.year}`, 
+			year: initialSemester.year, 
+			term: initialSemester.term, 
+			credits: 0, 
+			courses: [] 
+		},
 	]);
+
+	// Add keyframes for the pulsing border animation
+	const pulseStyle = `
+		@keyframes pulseBorder {
+			0%, 100% {
+				border-color: #cbd5e1;
+			}
+			50% {
+				border-color: #BE0000;
+			}
+		}
+		.pulse-border {
+			animation: pulseBorder 2s ease-in-out infinite;
+		}
+	`;
 
 	const handleAddSemester = () => {
 		const lastSemester = semesters[semesters.length - 1];
 		let newTerm, newYear;
 		
-		if (lastSemester.term === "Fall") {
-			newTerm = "Spring";
-			newYear = lastSemester.year + 1;
-		} else {
+		// Cycle through Spring -> Summer -> Fall -> Spring (next year)
+		if (lastSemester.term === "Spring") {
+			newTerm = "Summer";
+			newYear = lastSemester.year;
+		} else if (lastSemester.term === "Summer") {
 			newTerm = "Fall";
 			newYear = lastSemester.year;
+		} else { // Fall
+			newTerm = "Spring";
+			newYear = lastSemester.year + 1;
 		}
 
 		const newSemester = {
@@ -39,6 +89,9 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, onBack }) {
 
 	return (
 		<div className="flex flex-col h-screen bg-slate-100">
+			{/* Inject the pulse animation styles */}
+			<style>{pulseStyle}</style>
+			
 			{/* Header */}
 			<header
 				className="px-6 py-4 flex items-center justify-between shadow-sm"
@@ -171,16 +224,18 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, onBack }) {
 					<button
 						type="button"
 						onClick={handleAddSemester}
-						className="w-full py-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-red-700 hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-red-700 font-medium"
-					>
-						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-						</svg>
-						Add Another Semester
-					</button>
+					    className={`w-full py-4 border-2 border-dashed rounded-xl hover:border-red-700 hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-red-700 font-medium ${
+						semesters.length === 1 ? 'pulse-border' : 'border-slate-300'
+					}`}
+				>
+					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+					</svg>
+					Add Another Semester
+				</button>
 
-					{/* Summary Card */}
-					<div className="mt-6 bg-white rounded-xl shadow-md p-6">
+				{/* Summary Card */}
+				<div className="mt-6 bg-white rounded-xl shadow-md p-6">
 						<h3 className="text-lg font-semibold text-slate-800 mb-4">Degree Summary</h3>
 						<div className="grid grid-cols-3 gap-4">
 							<div className="text-center">
