@@ -17,36 +17,6 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 # NOTE: This groups adjacent OR sequences; it does not fully model parentheses/NOT.
 # ==================================================
 
-def _cleanup_dangling_ops(s: str) -> str:
-    """
-    Remove AND/OR tokens that are left dangling due to stripping non-course phrases
-    (e.g., removing AP options). Keeps boolean structure intact.
-    """
-    # Normalize spacing
-    s = re.sub(r"\s+", " ", s).strip()
-
-    # Remove AND/OR right after '(' or right before ')'
-    s = re.sub(r"(?i)\(\s*(AND|OR)\b", "(", s)
-    s = re.sub(r"(?i)\b(AND|OR)\s*\)", ")", s)
-
-    # Remove leading AND/OR
-    s = re.sub(r"(?i)^\s*(AND|OR)\b\s*", "", s)
-
-    # Remove trailing AND/OR
-    s = re.sub(r"(?i)\b(AND|OR)\s*$", "", s)
-
-    # Remove operator chains where there is no COURSE/close-paren on left
-    # e.g. "OR (", "AND (" at start of string or after another operator
-    s = re.sub(r"(?i)(^|\bAND\b|\bOR\b)\s+(AND|OR)\b", r"\1", s)
-
-    # Remove operators that are between '(' and '(' or between ')' and ')'
-    s = re.sub(r"(?i)\(\s*(AND|OR)\s*\(", "((", s)
-    s = re.sub(r"(?i)\)\s*(AND|OR)\s*\)", "))", s)
-
-    # Final whitespace normalize
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
 
 def parse_prerequisites(text: str):
     """
@@ -85,6 +55,10 @@ def parse_prerequisites(text: str):
 
     s = re.sub(r"\([^()]*\)", _strip_non_course_parens, s)
     s = re.sub(r"\s+", " ", s).strip()
+
+    # Treat ampersand as AND (some prereqs use "&" instead of "AND")
+    s = re.sub(r"\s*&\s*", " AND ", s)
+
 
     # Raw tokenize (we will filter operators after)
     token_re = re.compile(

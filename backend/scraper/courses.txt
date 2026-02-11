@@ -502,7 +502,7 @@ available_seats: 95
 schedule: MoWe/03:00PM-04:20PM
 location: WEB L101
 description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
-prerequisites: [["CS2100", "MATH2200"]]
+prerequisites: [["CS2100", "MATH2200"], ["MATH2270", "MATH2271"]]
 --------------------------------------------------------------------------------
 
 course_id: CS3200
@@ -866,7 +866,7 @@ available_seats: 6
 schedule: MoWeFr/09:40AM-10:30AM
 location: CTIHB 109
 description: During their last two semesters, senior Computer Science students form teams to develop significant software projects. This class is the first semester in the sequence. Seniors will work on team formation, project identification, project planning (including UI design, software architecture, testing methods, scheduling, etc.), and completion of a system prototype. This course will provide teams with time and guidance to effectively plan their projects, as well as emphasizing the written and oral communications necessary to succeed in industry. Projects formed in this course must be completed during the following semester in CS 4500. Students should have four or less CS electives/required courses left when signing up for this course and should be graduating during the following semester.
-prerequisites: ["CS3505"]
+prerequisites: ["CS3505", ["WRTG3014", "WRTG3015", "HONOR3200"]]
 --------------------------------------------------------------------------------
 
 course_id: CS4150
