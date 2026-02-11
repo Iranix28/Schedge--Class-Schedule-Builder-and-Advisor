@@ -17,6 +17,37 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 # NOTE: This groups adjacent OR sequences; it does not fully model parentheses/NOT.
 # ==================================================
 
+def _cleanup_dangling_ops(s: str) -> str:
+    """
+    Remove AND/OR tokens that are left dangling due to stripping non-course phrases
+    (e.g., removing AP options). Keeps boolean structure intact.
+    """
+    # Normalize spacing
+    s = re.sub(r"\s+", " ", s).strip()
+
+    # Remove AND/OR right after '(' or right before ')'
+    s = re.sub(r"(?i)\(\s*(AND|OR)\b", "(", s)
+    s = re.sub(r"(?i)\b(AND|OR)\s*\)", ")", s)
+
+    # Remove leading AND/OR
+    s = re.sub(r"(?i)^\s*(AND|OR)\b\s*", "", s)
+
+    # Remove trailing AND/OR
+    s = re.sub(r"(?i)\b(AND|OR)\s*$", "", s)
+
+    # Remove operator chains where there is no COURSE/close-paren on left
+    # e.g. "OR (", "AND (" at start of string or after another operator
+    s = re.sub(r"(?i)(^|\bAND\b|\bOR\b)\s+(AND|OR)\b", r"\1", s)
+
+    # Remove operators that are between '(' and '(' or between ')' and ')'
+    s = re.sub(r"(?i)\(\s*(AND|OR)\s*\(", "((", s)
+    s = re.sub(r"(?i)\)\s*(AND|OR)\s*\)", "))", s)
+
+    # Final whitespace normalize
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
 def parse_prerequisites(text: str):
     """
     Output structure:
@@ -24,8 +55,11 @@ def parse_prerequisites(text: str):
       - sublist => OR
       - sub-sublist => AND (inside an OR option)
 
-    Key feature:
-      - Handles bare numbers like "1220" by inheriting the last seen dept (e.g., MATH 1210 AND 1220 => MATH1220)
+    Key behaviors:
+      - Handles parentheses properly (AND has higher precedence than OR).
+      - Handles bare numbers like "1220" by inheriting the last seen dept (e.g., MATH 1210 AND 1220).
+      - Ignores non-course options (AP scores, Higher Math, etc.) WITHOUT breaking boolean structure by
+        dropping dangling AND/OR operators at the TOKEN level (only keep AND/OR between valid operands).
     """
     if not text:
         return []
@@ -33,58 +67,76 @@ def parse_prerequisites(text: str):
     s = re.sub(r"\s+", " ", text).strip()
     s = re.sub(r"^\s*Prerequisites:\s*", "", s, flags=re.IGNORECASE)
 
-    # Remove grade phrases so "'C' or better" doesn't create a bogus boolean OR
-    s = re.sub(r"(?i)\b['\"]?[A-F][+-]?['\"]?\s*or\s*better\s*in\b", " ", s)
+    # Remove grade phrases so "'C-' or better in ..." doesn't introduce a fake boolean OR
+    s = re.sub(
+        r"(?i)\b['\"]?[A-F](?:[+\-\u2010\u2011\u2012\u2013\u2014\u2212])?['\"]?\s*or\s*better\s*in\b",
+        " ",
+        s,
+    )
     s = re.sub(r"(?i)\bor\s+better\b", " better", s)
 
-    # Remove common non-course constraints (keeps course parentheses intact)
+    # Remove common non-course constraints
     s = re.sub(r"(?i)\bFoundational Courses complete\b", " ", s)
 
+    # Remove parenthetical constraints that don't contain course codes (e.g. (Major OR Minor ...))
     def _strip_non_course_parens(match):
         chunk = match.group(0)
         return chunk if re.search(r"\b[A-Z]{2,6}\s*\d{4}\b", chunk) else " "
 
     s = re.sub(r"\([^()]*\)", _strip_non_course_parens, s)
+    s = re.sub(r"\s+", " ", s).strip()
 
-    # Tokenize:
-    #  - parentheses
-    #  - AND/OR
-    #  - course tokens "MATH 1210"
-    #  - bare numbers "1220" (inherit dept)
+    # Raw tokenize (we will filter operators after)
     token_re = re.compile(
         r"(\()|(\))|\b(AND|OR)\b|\b([A-Z]{2,6})\s*(\d{4})\b|\b(\d{4})\b",
         re.IGNORECASE
     )
 
-    tokens = []
+    raw = []
     last_dept = None
 
     for m in token_re.finditer(s):
         if m.group(1):
-            tokens.append(("LP", "("))
-            # reset dept at a new paren group boundary to avoid weird carry
-            # (still okay because each branch usually reintroduces dept)
-            # But we keep last_dept because "(MATH 1210 AND 1220)" needs it.
+            raw.append(("LP", "("))
         elif m.group(2):
-            tokens.append(("RP", ")"))
+            raw.append(("RP", ")"))
         elif m.group(3):
             op = m.group(3).upper()
-            tokens.append((op, op))
-            # After OR, typically a new branch begins; dept will usually be reintroduced,
-            # but we keep last_dept in case it isn't.
+            raw.append((op, op))
         elif m.group(4) and m.group(5):
             dept = m.group(4).upper()
             num = m.group(5)
             last_dept = dept
-            tokens.append(("COURSE", f"{dept}{num}"))
+            raw.append(("COURSE", f"{dept}{num}"))
         elif m.group(6):
             # bare number, inherit last dept
             num = m.group(6)
             if last_dept:
-                tokens.append(("COURSE", f"{last_dept}{num}"))
-            else:
-                # no dept context; ignore
-                pass
+                raw.append(("COURSE", f"{last_dept}{num}"))
+            # else ignore
+
+    if not raw:
+        return []
+
+    # Filter AND/OR: keep only if it sits between valid operands
+    # operand on left: COURSE or RP
+    # operand on right: COURSE or LP
+    def is_left_operand(tok_type):   # before operator
+        return tok_type in ("COURSE", "RP")
+
+    def is_right_operand(tok_type):  # after operator
+        return tok_type in ("COURSE", "LP")
+
+    tokens = []
+    for idx, (tt, tv) in enumerate(raw):
+        if tt in ("AND", "OR"):
+            prev_type = raw[idx - 1][0] if idx - 1 >= 0 else None
+            next_type = raw[idx + 1][0] if idx + 1 < len(raw) else None
+            if prev_type and next_type and is_left_operand(prev_type) and is_right_operand(next_type):
+                tokens.append((tt, tv))
+            # else drop dangling operator
+        else:
+            tokens.append((tt, tv))
 
     if not tokens:
         return []
@@ -111,7 +163,7 @@ def parse_prerequisites(text: str):
         if tok[0] == "LP":
             consume("LP")
             node = parse_or()
-            consume("RP")  # tolerate missing RP
+            consume("RP")  # tolerate mismatched RP
             return node
         consume()
         return None
@@ -148,7 +200,7 @@ def parse_prerequisites(text: str):
     if not ast:
         return []
 
-    # Normalize: drop None, flatten same operators
+    # Normalize: drop None, flatten same ops
     def norm(node):
         if not node:
             return None
@@ -176,14 +228,24 @@ def parse_prerequisites(text: str):
     if not ast:
         return []
 
-    # Convert AST to your storage format
+    # Convert to your storage format
     def to_store(node):
         if node[0] == "COURSE":
             return node[1]
         if node[0] == "AND":
-            return [to_store(c) for c in node[1] if to_store(c) is not None]
+            out = []
+            for c in node[1]:
+                v = to_store(c)
+                if v is not None:
+                    out.append(v)
+            return out
         if node[0] == "OR":
-            return [to_store(c) for c in node[1] if to_store(c) is not None]
+            out = []
+            for c in node[1]:
+                v = to_store(c)
+                if v is not None:
+                    out.append(v)
+            return out
         return None
 
     stored = to_store(ast)

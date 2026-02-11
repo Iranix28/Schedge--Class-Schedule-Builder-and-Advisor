@@ -255,7 +255,7 @@ available_seats: 39
 schedule: TuTh/09:10AM-10:30AM
 location: MEK 3550
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -268,7 +268,7 @@ available_seats: -1
 schedule: Fr/09:40AM-10:30AM
 location: WEB L126
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -281,7 +281,7 @@ available_seats: 0
 schedule: Fr/10:45AM-11:35AM
 location: WEB L126
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -294,7 +294,7 @@ available_seats: 57
 schedule: MoWe/08:05AM-09:25AM
 location: WEB L103
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -307,7 +307,7 @@ available_seats: 14
 schedule: Fr/09:40AM-10:30AM
 location: GC 3680
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2100
@@ -320,7 +320,7 @@ available_seats: 3
 schedule: Fr/10:45AM-11:35AM
 location: GC 3680
 description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
-prerequisites: [["CS1410", "CS1420", "MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
 --------------------------------------------------------------------------------
 
 course_id: CS2420
