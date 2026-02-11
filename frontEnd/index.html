@@ -8,8 +8,14 @@
   <body class="h-screen">
     <div id="root" class="h-full"></div>
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- Load your components -->
@@ -26,29 +32,38 @@
 
         // Check if user was remembered on mount
         useEffect(() => {
-          const savedUser = localStorage.getItem('rememberedUser');
-          if (savedUser) {
-            const user = JSON.parse(savedUser);
-            setUserData(user);
-            setIsAuthenticated(true);
-          }
+          (async () => {
+            try {
+              const res = await fetch("http://localhost:8000/auth/me", {
+                credentials: "include",
+              });
+              if (!res.ok) return;
+
+              const user = await res.json(); // {id, username, role}
+              setUserData(user);
+              setIsAuthenticated(true);
+            } catch (e) {
+              // backend not reachable or CORS issue; stay logged out
+            }
+          })();
         }, []);
 
-        const handleLoginSuccess = (username, rememberMe) => {
+        const handleLoginSuccess = (username) => {
           const user = { username };
           setUserData(user);
           setIsAuthenticated(true);
-          
-          // Save to localStorage if "Remember me" is checked
-          if (rememberMe) {
-            localStorage.setItem('rememberedUser', JSON.stringify(user));
-          }
         };
 
-        const handleLogout = () => {
+        const handleLogout = async () => {
+          try {
+            await fetch("http://localhost:8000/auth/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch (e) {}
+
           setIsAuthenticated(false);
           setUserData(null);
-          localStorage.removeItem('rememberedUser');
         };
 
         return (
@@ -62,7 +77,7 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
+      const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<App />);
     </script>
   </body>

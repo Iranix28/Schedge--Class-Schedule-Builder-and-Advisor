@@ -6,7 +6,7 @@ function LoginPage({ onLoginSuccess }) {
 	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState("");
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		setError("");
 
 		if (!username.trim() || !password.trim()) {
@@ -14,12 +14,29 @@ function LoginPage({ onLoginSuccess }) {
 			return;
 		}
 
-		// Here you would normally validate credentials against a backend
-		// For now, we'll accept any non-empty credentials
-		console.log("Login attempt:", { username, password, rememberMe });
-		
-		// Call the success callback to transition to ChatUI
-		onLoginSuccess(username, rememberMe);
+		try {
+			const res = await fetch("http://localhost:8000/auth/login", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			credentials: "include", // IMPORTANT: allows HttpOnly cookie session
+			body: JSON.stringify({
+				username: username.trim(),
+				password: password,
+				remember_me: rememberMe,
+			}),
+			});
+
+			if (!res.ok) {
+			const err = await res.json().catch(() => ({}));
+			setError(err.detail || "Login failed");
+			return;
+			}
+
+			const user = await res.json(); // {id, username, role}
+			onLoginSuccess(user.username, rememberMe);
+		} catch (e) {
+			setError("Could not reach server. Is FastAPI running?");
+		}
 	};
 
 	const handleKeyDown = (e) => {

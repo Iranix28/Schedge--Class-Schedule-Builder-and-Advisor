@@ -21,6 +21,22 @@ class CourseItem(BaseModel):
     credits: int
     description: str
 
+class RegisterIn(BaseModel):
+    username: str
+    password: str
+
+class LoginIn(BaseModel):
+    username: str
+    password: str
+    remember_me: bool = False
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    role: str
+    class Config:
+        from_attributes = True
+
 DUMMY_SCHEDULE: List[ScheduleItem] = [
     ScheduleItem(
         day="Monday",
