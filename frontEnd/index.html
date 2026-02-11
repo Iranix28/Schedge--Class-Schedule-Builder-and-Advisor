@@ -8,8 +8,14 @@
   <body class="h-screen">
     <div id="root" class="h-full"></div>
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
         <!-- Load your components -->
@@ -32,87 +38,38 @@
 
         // Initialize and handle browser back/forward
         useEffect(() => {
-          const savedUser = localStorage.getItem('rememberedUser');
-          if (savedUser) {
-            const user = JSON.parse(savedUser);
-            setUserData(user);
-            setIsAuthenticated(true);
-          }
+          (async () => {
+            try {
+              const res = await fetch("http://localhost:8000/auth/me", {
+                credentials: "include",
+              });
+              if (!res.ok) return;
 
-          // Listen for browser back/forward button
-          const handlePopState = (event) => {
-            if (event.state) {
-              setSelectedPlan(event.state.selectedPlan || null);
-              setSelectedSemester(event.state.selectedSemester || null);
-              setSelectedSavedPlan(event.state.selectedSavedPlan || null);
-            } else {
-              setSelectedPlan(null);
-              setSelectedSemester(null);
-              setSelectedSavedPlan(null);
+              const user = await res.json(); // {id, username, role}
+              setUserData(user);
+              setIsAuthenticated(true);
+            } catch (e) {
+              // backend not reachable or CORS issue; stay logged out
             }
-          };
-
-          window.addEventListener('popstate', handlePopState);
-          
-          // Set initial state
-          window.history.replaceState({ selectedPlan: null, selectedSemester: null, selectedSavedPlan: null }, '', '/');
-
-          return () => window.removeEventListener('popstate', handlePopState);
+          })();
         }, []);
 
-        const handleLoginSuccess = (username, rememberMe) => {
+        const handleLoginSuccess = (username) => {
           const user = { username };
           setUserData(user);
           setIsAuthenticated(true);
-          
-          if (rememberMe) {
-            localStorage.setItem('rememberedUser', JSON.stringify(user));
-          }
         };
 
-        const handleLogout = () => {
+        const handleLogout = async () => {
+          try {
+            await fetch("http://localhost:8000/auth/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch (e) {}
+
           setIsAuthenticated(false);
           setUserData(null);
-          setSelectedPlan(null);
-          setSelectedSemester(null);
-          setSelectedSavedPlan(null);
-          localStorage.removeItem('rememberedUser');
-          window.history.pushState({ selectedPlan: null, selectedSemester: null, selectedSavedPlan: null }, '', '/');
-        };
-
-        const handleSelectPlanType = (planType) => {
-          setSelectedPlan(planType);
-          window.history.pushState({ selectedPlan: planType, selectedSemester: null, selectedSavedPlan: null }, '', `#${planType}`);
-        };
-
-        const handleSelectSemester = (semester) => {
-          setSelectedSemester(semester);
-          window.history.pushState(
-            { selectedPlan: 'multi', semesterId: semester.id, semesterName: semester.name, selectedSavedPlan: null },
-            '', 
-            `#multi-semester-${semester.id}`
-          );
-        };
-
-        const handleSelectSavedPlan = (plan) => {
-          setSelectedSavedPlan(plan);
-          window.history.pushState(
-            { selectedPlan: 'saved', planId: plan.id, selectedSavedPlan: plan },
-            '',
-            `#saved-plan-${plan.id}`
-          );
-        };
-
-        const handleBackToPlanSelection = () => {
-          window.history.back();
-        };
-
-        const handleBackToMultiSemester = () => {
-          window.history.back();
-        };
-
-        const handleBackToSavedPlans = () => {
-          window.history.back();
         };
 
         return (
@@ -164,7 +121,7 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
+      const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<App />);
     </script>
   </body>

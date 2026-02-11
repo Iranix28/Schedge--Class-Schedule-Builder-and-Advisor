@@ -7,6 +7,30 @@ from pgvector.sqlalchemy import Vector
 
 from app.database.base import Base
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+
+    # store ONLY a hash, never plaintext
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # student for now, but could have admin role later
+    role: Mapped[str] = mapped_column(String(20), nullable=False, default="student")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    # 1 user -> many audits
+    audits: Mapped[List["UserAudit"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 class Department(Base):
     """
     Department table (majors)
@@ -133,16 +157,22 @@ class UserAudit(Base):
     __tablename__ = "user_audits"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
 
     raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # or raw_json
 
+    user: Mapped["User"] = relationship(back_populates="audits")
+    
     requirements: Mapped[List["AuditRequirement"]] = relationship(
         back_populates="audit",
         cascade="all, delete-orphan",
-        )
+    )
 
 class AuditRequirement(Base):
     """

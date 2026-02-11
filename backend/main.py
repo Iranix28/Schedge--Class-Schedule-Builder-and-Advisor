@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 #python -m uvicorn routers.main:app --reload --port 8000
 #run command above to run server
 
-from app.routers import ollama_router, departments_router, courses_router, class_sections_router, course_prerequisites_router, audit_requirements_router, schedule_builder_router
+from app.routers import ollama_router, departments_router, courses_router, class_sections_router, course_prerequisites_router, audit_requirements_router, schedule_builder_router, auth_router
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request
@@ -16,7 +16,12 @@ app = FastAPI(
 # Allow your browser frontend to call this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # in production restrict this
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],       # in production restrict this
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,6 +41,7 @@ app.include_router(class_sections_router.router)
 app.include_router(course_prerequisites_router.router)
 app.include_router(audit_requirements_router.router)
 app.include_router(schedule_builder_router.router)
+app.include_router(auth_router.router)
 
 @app.get("/status", response_model=None, status_code=204)       #testing bruv
 def status():
