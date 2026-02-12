@@ -360,7 +360,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 			{/* Left Side - Chat Interface */}
 			<div
 				className={`flex flex-col border-r border-slate-300 bg-white transition-all duration-500 ease-in-out overflow-hidden ${
-					isRightPanelExpanded ? "w-0" : "w-1/2"
+					isRightPanelExpanded ? "w-0" : "w-1/3"
 				}`}
 			>
 				<header
@@ -522,7 +522,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 			{/* Right Side */}
 			<div
 				className={`flex flex-col bg-slate-50 transition-all duration-500 ease-in-out ${
-					isRightPanelExpanded ? "w-full" : "w-1/2"
+					isRightPanelExpanded ? "w-full" : "w-2/3"
 				}`}
 			>
 				<header
@@ -920,23 +920,22 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 			<button
 				type="button"
 				onClick={toggleRightPanel}
-				className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
+				className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
 				style={{
-					left: isRightPanelExpanded ? "10px" : "calc(50% - 12px)",
+					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 12px)",
 					borderColor: "#BE0000",
 					transition: "left 0.5s ease-in-out",
 				}}
 				title={isRightPanelExpanded ? "Show chat" : "Expand panel"}
 			>
 				{isRightPanelExpanded ? (
-					<span className="text-xs font-bold" style={{ color: "#BE0000" }}>
+					<span className="text-lg font-bold" style={{ color: "#BE0000" }}>
 						×
 					</span>
 				) : (
-					<div
-						className="w-2 h-2 rounded-full"
-						style={{ backgroundColor: "#BE0000" }}
-					></div>
+					<span className="text-lg font-bold" style={{ color: "#BE0000" }}>
+						←
+					</span>
 				)}
 			</button>
 		</div>
