@@ -1425,7 +1425,7 @@ available_seats: 9
 schedule: MoWe/01:25PM-02:45PM
 location: WEB 2250
 description: Control of serial robot manipulators is examined.  Topics include control system fundamentals, sensors and actuators, joint level control, centralized control, operational space control, and force control.  Projects provide hands on experience controlling a serial link manipulator.
-prerequisites: ["CS6130", "EN6200"]
+prerequisites: ["CS6130", "MEEN6200"]
 --------------------------------------------------------------------------------
 
 course_id: CS6370
@@ -1486,7 +1486,7 @@ section: 001
 units: 3.0
 instructor: Wiese, Jason
 component: Lecture
-available_seats: 3
+available_seats: 4
 schedule: MoWe/03:00PM-04:20PM
 location: ARCH 229
 description: Human-Computer Interaction (HCI) is a unique multidisciplinary field that emerged from multiple academic contexts: social science, cognitive science, Design, and computer science. Each of these disciplines continues to train experts within HCI research and practice. However, an expert in human-computer interaction needs to maintain expertise in one and sometimes several of these different fields, and to be knowledgeable across all of these areas. This course is designed for graduate students to develop skills for doing rigorous work in the field of HCI, with a goal of applying these skills in either an industry or academic context. While there are important differences between working in academia and working in industry, the core skills developed in this course are essential in both contexts.
@@ -1499,7 +1499,7 @@ section: 001
 units: 3.0
 instructor: YUKSEL, CEM
 component: Lecture
-available_seats: 6
+available_seats: 7
 schedule: TuTh/03:40PM-05:00PM
 location: WEB 1230
 description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
@@ -1668,7 +1668,7 @@ section: 001
 units: 3.0
 instructor: JIANG, YUE
 component: Special Topics
-available_seats: 13
+available_seats: 14
 schedule: TuTh/02:00PM-03:20PM
 location: MEB 3105
 description: 
