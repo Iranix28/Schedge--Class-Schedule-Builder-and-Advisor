@@ -4,6 +4,177 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+import time
+from app.database.query_routers.departments_query import *
+from app.database.query_routers.courses_query import *
+from app.database.query_routers.course_prerequisites_query import *
+from app.database.query_routers.class_sections_query import *
+from app.database.session import SessionLocal
+from datetime import datetime
+
+
+TERM_SEASON = "Spring"
+TERM_YEAR = 2026
+
+def parse_meeting_rows(schedule_str: str):
+    """
+    Input: 'MoWe/03:00PM-04:20PM, Tu/08:35AM-09:25AM'
+    Output: [{'days': 'MoWe', 'start': time|None, 'end': time|None}, ...]
+    """
+    if not schedule_str:
+        return []
+    rows = []
+    for part in schedule_str.split(","):
+        part = part.strip()
+        if not part or "/" not in part:
+            continue
+        days, times = part.split("/", 1)
+        days = days.strip()
+        times = times.strip()
+
+        if times.upper() in {"TBA", "ARRANGED"}:
+            rows.append({"days": days, "start": None, "end": None})
+            continue
+
+        if "-" not in times:
+            continue
+
+        start_s, end_s = [t.strip() for t in times.split("-", 1)]
+        try:
+            start_t = datetime.strptime(start_s, "%I:%M%p").time()
+            end_t = datetime.strptime(end_s, "%I:%M%p").time()
+        except ValueError:
+            continue
+
+        rows.append({"days": days, "start": start_t, "end": end_t})
+    return rows
+
+
+def _course_id_to_subject_number(course_id: str):
+    """
+    'CS4000' -> ('CS', '4000')
+    """
+    m = re.match(r"^([A-Z]+)(\d{4})$", (course_id or "").strip().upper())
+    if not m:
+        return None
+    return m.group(1), m.group(2)
+
+
+def _units_to_int(units):
+    """
+    Your CourseCreate.units is int.
+    Scraper may give '3.0', '4.0', '--', etc.
+    """
+    if units is None:
+        return 0
+    if isinstance(units, (int, float)):
+        return int(units)
+    u = str(units).strip()
+    if u in {"--", "N/A", ""}:
+        return 0
+    try:
+        return int(float(u))
+    except Exception:
+        return 0
+
+
+def save_to_db_no_prereqs(data: list[dict]):
+    """
+    Inserts departments/courses/sections. Skips prereqs entirely.
+    Requires your existing project functions:
+      - SessionLocal
+      - create_department, create_course, create_class_section_by_course_code
+      - DepartmentCreate, CourseCreate, ClassSectionCreateByCourseCode
+    """
+    db = SessionLocal()
+
+    # Cache to avoid duplicates in one run
+    dept_id_by_subject = {}
+    seen_courses = set()    # (subject, number)
+    seen_sections = set()   # (subject, number, term_year, section)
+
+    def get_or_create_dept(subject: str) -> int:
+        subject = subject.upper()
+        if subject in dept_id_by_subject:
+            return dept_id_by_subject[subject]
+
+        # If your CRUD doesn't handle duplicates, replace this with a "get_department_by_subject"
+        dept = create_department(db, DepartmentCreate(name=subject, subject=subject))
+        dept_id_by_subject[subject] = dept.id
+        return dept.id
+
+    for c in data:
+        course_id = (c.get("course_id") or "").strip().upper()
+        section_code = (c.get("section") or "").strip()
+        title = (c.get("course_name") or "").strip()
+        units_int = _units_to_int(c.get("units"))
+        description = (c.get("description") or "").strip() or None
+
+        instructor = (c.get("instructor") or "").strip() or None
+        schedule_str = (c.get("schedule") or "").strip()
+        location = (c.get("location") or "").strip() or None
+
+        parsed = _course_id_to_subject_number(course_id)
+        if not parsed:
+            continue
+        subject, number = parsed
+
+        # Ensure department + course exist
+        dept_id = get_or_create_dept(subject)
+
+        course_key = (subject, number)
+        if course_key not in seen_courses:
+            create_course(
+                db,
+                CourseCreate(
+                    department_id=dept_id,
+                    number=number,
+                    name=title or f"{subject}{number}",
+                    units=units_int,
+                    description=description,
+                ),
+            )
+            seen_courses.add(course_key)
+
+        # Insert section once
+        sec_key = (subject, number, TERM_YEAR, section_code)
+        if sec_key in seen_sections:
+            continue
+
+        meetings = parse_meeting_rows(schedule_str)
+        if meetings:
+            m0 = meetings[0]
+            new_section = ClassSectionCreateByCourseCode(
+                department_subject=subject,
+                course_number=number,
+                term_season=TERM_SEASON,
+                term_year=TERM_YEAR,
+                section_code=section_code,
+                location=location,
+                days=m0["days"],
+                start_time=m0["start"],
+                end_time=m0["end"],
+                professor_name=instructor,
+            )
+        else:
+            new_section = ClassSectionCreateByCourseCode(
+                department_subject=subject,
+                course_number=number,
+                term_season=TERM_SEASON,
+                term_year=TERM_YEAR,
+                section_code=section_code,
+                location=location,
+                days=None,
+                start_time=None,
+                end_time=None,
+                professor_name=instructor,
+            )
+
+        create_class_section_by_course_code(db, new_section)
+        seen_sections.add(sec_key)
+
+    db.close()
+
 
 # ==================================================
 # CONFIG
@@ -613,6 +784,8 @@ def main():
     DEPT_CODES = fetch_department_codes()
 
     data = scrape()
+    save_to_db_no_prereqs(data)
+
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     out_path = os.path.join(script_dir, "courses.txt")
