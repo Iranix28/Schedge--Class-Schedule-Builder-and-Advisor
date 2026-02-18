@@ -178,3 +178,25 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
     )
 
     return plans
+
+
+# ----------------------------
+# DELETE PLAN
+# ----------------------------
+
+@router.delete("/{plan_id}", status_code=204)
+def delete_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
+
+    plan = (
+        db.query(Plan)
+        .filter(Plan.id == plan_id, Plan.user_id == user_id)
+        .first()
+    )
+
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    db.delete(plan)
+    db.commit()
+
+    return
