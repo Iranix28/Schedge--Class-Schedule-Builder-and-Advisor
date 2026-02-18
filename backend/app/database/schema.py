@@ -1,9 +1,10 @@
 from datetime import datetime, timezone, time
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, Time, ForeignKey, UniqueConstraint, Index, DateTime, Text
+from sqlalchemy import Integer, String, Time, ForeignKey, UniqueConstraint, Index, DateTime, Text, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.database.base import Base
 
@@ -27,6 +28,16 @@ class User(Base):
 
     # 1 user -> many audits
     audits: Mapped[List["UserAudit"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    plans: Mapped[List["Plan"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    
+    conversations: Mapped[List["ChatConversation"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
@@ -266,3 +277,221 @@ class AuditRequirementRule(Base):
     requirement: Mapped["AuditRequirement"] = relationship(back_populates="rules")
     course: Mapped[Optional["Course"]] = relationship()        
     department: Mapped[Optional["Department"]] = relationship() 
+
+
+
+#============================================== Plan/PlanSemester/PlanCourseSelection ===============================================#
+
+class Plan(Base):
+    __tablename__ = "plans"
+    __table_args__ = (
+        Index("ix_plans_user_created", "user_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    audit_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("user_audits.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False, default="My Plan")
+    mode: Mapped[str] = mapped_column(String(16), nullable=False)  # "single" | "multi"
+    is_archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    settings: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    user: Mapped["User"] = relationship(back_populates="plans")
+    audit: Mapped[Optional["UserAudit"]] = relationship()
+
+    semesters: Mapped[List["PlanSemester"]] = relationship(
+        back_populates="plan",
+        cascade="all, delete-orphan",
+        order_by="PlanSemester.position",
+    )
+
+    conversations: Mapped[List["ChatConversation"]] = relationship(
+        back_populates="plan",
+        cascade="all, delete-orphan",
+    )
+
+class PlanSemester(Base):
+    __tablename__ = "plan_semesters"
+    __table_args__ = (
+        UniqueConstraint("plan_id", "term_season", "term_year", name="uq_plan_term"),
+        Index("ix_plan_semesters_plan_pos", "plan_id", "position"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    plan_id: Mapped[int] = mapped_column(
+        ForeignKey("plans.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    term_season: Mapped[str] = mapped_column(String(16), nullable=False)  # "Fall" | "Spring" | "Summer"
+    term_year: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # ordering in the UI 
+    position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+    plan: Mapped["Plan"] = relationship(back_populates="semesters")
+
+    course_selections: Mapped[List["PlanCourseSelection"]] = relationship(
+        back_populates="plan_semester",
+        cascade="all, delete-orphan",
+    )
+
+    conversations: Mapped[List["ChatConversation"]] = relationship(
+        back_populates="plan_semester",
+        cascade="all, delete-orphan",
+    )
+
+class PlanCourseSelection(Base):
+    __tablename__ = "plan_course_selections"
+    __table_args__ = (
+        UniqueConstraint("plan_semester_id", "course_id", name="uq_plan_sem_course"),
+        Index("ix_plan_course_semester", "plan_semester_id"),
+        Index("ix_plan_course_section", "class_section_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    plan_semester_id: Mapped[int] = mapped_column(
+        ForeignKey("plan_semesters.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    course_id: Mapped[int] = mapped_column(
+        ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    # The section for the course, if the section exists. If the user is cratting the plan after catalog is released
+    class_section_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("class_sections.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    # Can use later if we tie it to a requirement node that needs this course
+    requirement_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("audit_requirements.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="planned")  # planned | registered | completed | dropped
+
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    added_by: Mapped[str] = mapped_column(String(16), nullable=False, default="user")   # user | ai
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+    plan_semester: Mapped["PlanSemester"] = relationship(back_populates="course_selections")
+    course: Mapped["Course"] = relationship()
+    class_section: Mapped[Optional["ClassSection"]] = relationship()
+    requirement: Mapped[Optional["AuditRequirement"]] = relationship()
+
+#============================================== ChatConversation/ChatMessage ===============================================#
+
+class ChatConversation(Base):
+    __tablename__ = "chat_conversations"
+    __table_args__ = (
+        Index("ix_chat_conv_user_created", "user_id", "created_at"),
+        Index("ix_chat_conv_plan", "plan_id"),
+        Index("ix_chat_conv_plan_semester", "plan_semester_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    plan_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("plans.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    # Scoping to a just one semster of a plan when needed
+    plan_semester_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("plan_semesters.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    title: Mapped[str] = mapped_column(String(255), nullable=False, default="New Chat")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    last_message_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+    user: Mapped["User"] = relationship(back_populates="conversations")
+    plan: Mapped[Optional["Plan"]] = relationship(back_populates="conversations")
+    plan_semester: Mapped[Optional["PlanSemester"]] = relationship(back_populates="conversations")
+
+    messages: Mapped[List["ChatMessage"]] = relationship(
+        back_populates="conversation",
+        cascade="all, delete-orphan",
+        order_by="ChatMessage.seq",
+    )
+
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+    __table_args__ = (
+        UniqueConstraint("conversation_id", "seq", name="uq_chat_msg_seq"),
+        Index("ix_chat_msg_conv_created", "conversation_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("chat_conversations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    seq: Mapped[int] = mapped_column(Integer, nullable=False)
+    role: Mapped[str] = mapped_column(String(16), nullable=False)  # user | assistant | system
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    meta: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # model, tokens, tool calls, if we want to use later
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+    conversation: Mapped["ChatConversation"] = relationship(back_populates="messages")
