@@ -200,3 +200,74 @@ def delete_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return
+
+class PlanDetailResponse(BaseModel):
+    id: int
+    name: str
+    semester: SemesterInput
+    courseSelections: List[CourseSelectionInput]
+    messages: List[ChatMessageInput]
+
+# ----------------------------
+# GET PLAN DETAIL
+# ----------------------------
+@router.get("/{plan_id}", response_model=PlanDetailResponse)
+def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
+
+    plan = (
+        db.query(Plan)
+        .filter(Plan.id == plan_id, Plan.user_id == user_id)
+        .first()
+    )
+
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    semester = (
+        db.query(PlanSemester)
+        .filter(PlanSemester.plan_id == plan.id)
+        .first()
+    )
+
+    selections = (
+        db.query(PlanCourseSelection)
+        .filter(PlanCourseSelection.plan_semester_id == semester.id)
+        .all()
+    )
+
+    conversation = (
+        db.query(ChatConversation)
+        .filter(ChatConversation.plan_id == plan.id)
+        .first()
+    )
+
+    messages = []
+    if conversation:
+        chat_msgs = (
+            db.query(ChatMessage)
+            .filter(ChatMessage.conversation_id == conversation.id)
+            .order_by(ChatMessage.seq.asc())
+            .all()
+        )
+
+        for m in chat_msgs:
+            messages.append(
+                ChatMessageInput(role=m.role, content=m.content)
+            )
+
+    return PlanDetailResponse(
+        id=plan.id,
+        name=plan.name,
+        semester=SemesterInput(
+            term_season=semester.term_season,
+            term_year=semester.term_year,
+        ),
+        courseSelections=[
+            CourseSelectionInput(
+                course_id=s.course_id,
+                class_section_id=s.class_section_id,
+            )
+            for s in selections
+        ],
+        messages=messages,
+    )

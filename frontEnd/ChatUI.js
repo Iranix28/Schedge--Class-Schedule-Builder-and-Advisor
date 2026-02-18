@@ -102,6 +102,48 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 		return () => document.removeEventListener("submit", onSubmit, true);
 	}, []);
 
+	//CHECKS IF THERE IS PLAN DATA PASSED
+	useEffect(() => {
+		if (!savedPlan) return;
+
+		// Set plan name
+		setPlanName(savedPlan.name || "My Plan");
+
+		// Load chat messages
+		if (savedPlan.messages && savedPlan.messages.length > 0) {
+			setMessages(savedPlan.messages);
+		} else {
+			setMessages([
+				{
+					role: "assistant",
+					content: "Plan loaded. No previous chat history."
+				}
+			]);
+		}
+
+		// Load schedule visualization
+		if (savedPlan.courseSelections && savedPlan.courseSelections.length > 0) {
+			const reconstructed = [];
+
+			savedPlan.courseSelections.forEach((selection) => {
+				// You likely need backend to return schedule info.
+				// For now just store minimal structure.
+				reconstructed.push({
+					course_id: selection.course_id,
+					class_section_id: selection.class_section_id,
+				});
+			});
+
+			setVisualizationData({
+				type: "schedule",
+				data: reconstructed,
+			});
+		} else {
+			setVisualizationData(null);
+		}
+
+	}, [savedPlan]);
+
 	const handleFileUpload = async (e) => {
 		const file = e.target.files[0];
 		if (!file) return;

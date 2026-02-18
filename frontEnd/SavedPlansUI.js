@@ -107,10 +107,59 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan }) {
 							filteredPlans.map((plan) => (
 								<div
 									key={plan.id}
-									onClick={() => onSelectPlan(plan)}
-									className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group p-6 border-2 border-transparent hover:border-red-700"
+									onClick={async () => {
+										try {
+											const res = await fetch(
+												`http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`
+											);
+
+											if (!res.ok) {
+												const errText = await res.text();
+												throw new Error(errText);
+											}
+
+											const fullPlan = await res.json();
+
+											onSelectPlan(fullPlan);
+										} catch (err) {
+											console.error("Failed to load full plan:", err);
+											alert("Could not load plan");
+										}
+									}}
+									className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group p-6 border-2 border-transparent hover:border-red-700 relative"
 								>
-									<div className="flex justify-between items-start mb-3">
+									<button
+										onClick={async (e) => {
+											e.stopPropagation();
+											if (!confirm(`Are you sure you want to delete "${plan.name}"?`)) {
+												return;
+											}
+											
+											try {
+												const res = await fetch(
+													`http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`,
+													{ method: 'DELETE' }
+												);
+
+												if (!res.ok) {
+													const errText = await res.text();
+													throw new Error(errText);
+												}
+
+												// Refresh the plans list
+												setSavedPlans(savedPlans.filter(p => p.id !== plan.id));
+											} catch (err) {
+												console.error("Failed to delete plan:", err);
+												alert("Could not delete plan");
+											}
+										}}
+										className="absolute top-4 right-4 w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center transition-all shadow-md hover:shadow-lg font-bold text-xl z-10"
+										title="Delete plan"
+									>
+										×
+									</button>
+
+									<div className="flex justify-between items-start mb-3 pr-12">
 										<div className="flex-1">
 											<h3 className="text-xl font-bold text-slate-800 group-hover:text-red-700 transition-colors mb-1">
 												{plan.name}
