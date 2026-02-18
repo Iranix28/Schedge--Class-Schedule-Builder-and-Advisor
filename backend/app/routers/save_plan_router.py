@@ -15,6 +15,7 @@ from app.database.schema import (
     ChatConversation,
     ChatMessage,
     Course,
+    ClassSection,
 )
 
 router = APIRouter(prefix="/plans", tags=["plans"])
@@ -47,12 +48,23 @@ class ChatMessageInput(BaseModel):
     content: str
 
 
+class ScheduleItemInput(BaseModel):
+    class_: str
+    day: str
+    startTime: str
+    endTime: str
+    room: str
+    course_id: Optional[int] = None
+    class_section_id: Optional[int] = None
+
+
 class PlanCreateRequest(BaseModel):
     user_id: int
     name: str
     semester: SemesterInput
     courseSelections: List[CourseSelectionInput] = []
     messages: List[ChatMessageInput] = []
+    schedule: List[ScheduleItemInput] = []
 
 
 class PlanSummaryResponse(BaseModel):
@@ -60,6 +72,14 @@ class PlanSummaryResponse(BaseModel):
     name: str
     created_at: datetime
 
+class ScheduleItemResponse(BaseModel):
+    class_: str
+    day: str
+    startTime: str
+    endTime: str
+    room: str
+    course_id: Optional[int] = None
+    class_section_id: Optional[int] = None
 
 # ----------------------------
 # SAVE PLAN
@@ -79,6 +99,12 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         mode="single",
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
+        settings={
+            "schedule": [
+                item.model_dump() if hasattr(item, 'model_dump') else item.dict()
+                for item in payload.schedule
+            ]
+        } if payload.schedule else None,
     )
 
     db.add(new_plan)
@@ -207,6 +233,7 @@ class PlanDetailResponse(BaseModel):
     semester: SemesterInput
     courseSelections: List[CourseSelectionInput]
     messages: List[ChatMessageInput]
+    schedule: List[ScheduleItemResponse]
 
 # ----------------------------
 # GET PLAN DETAIL
@@ -255,19 +282,113 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                 ChatMessageInput(role=m.role, content=m.content)
             )
 
-    return PlanDetailResponse(
-        id=plan.id,
-        name=plan.name,
-        semester=SemesterInput(
-            term_season=semester.term_season,
-            term_year=semester.term_year,
-        ),
-        courseSelections=[
-            CourseSelectionInput(
-                course_id=s.course_id,
-                class_section_id=s.class_section_id,
+    # BUILD FULL SCHEDULE OBJECTS
+    schedule_items = []
+
+    # Map two-letter abbreviations to full day names
+    DAY_MAP = {
+        "Mo": "Monday",
+        "Tu": "Tuesday",
+        "We": "Wednesday",
+        "Th": "Thursday",
+        "Fr": "Friday",
+        "Sa": "Saturday",
+        "Su": "Sunday",
+    }
+
+    def _parse_days(day_str: str) -> list[str]:
+        """Expand 'MoWeFr' → ['Monday', 'Wednesday', 'Friday']"""
+        days = []
+        if not day_str:
+            return days
+        for i in range(0, len(day_str), 2):
+            abbr = day_str[i : i + 2]
+            if abbr in DAY_MAP:
+                days.append(DAY_MAP[abbr])
+        return days
+
+    def _format_time(t) -> str:
+        """Convert a datetime.time (e.g. 09:00, 14:30) → '9:00 AM' / '2:30 PM'"""
+        if t is None:
+            return ""
+        hour = t.hour
+        minute = t.minute
+        period = "AM" if hour < 12 else "PM"
+        display_hour = hour % 12
+        if display_hour == 0:
+            display_hour = 12
+        return f"{display_hour}:{minute:02d} {period}"
+
+    for selection in selections:
+
+        # if you have class_section_id
+        if selection.class_section_id:
+            section = (
+                db.query(ClassSection)
+                .filter(ClassSection.id == selection.class_section_id)
+                .first()
             )
-            for s in selections
-        ],
-        messages=messages,
-    )
+
+            if section:
+                # Look up the parent course to build the class_ label
+                course = (
+                    db.query(Course)
+                    .filter(Course.id == selection.course_id)
+                    .first()
+                )
+
+                # Build a label like "1410 - 001" to match what the frontend expects
+                if course:
+                    class_label = f"{course.number} - {section.section_code}"
+                else:
+                    class_label = section.section_code
+
+                # Expand combined days ("MoWeFr") into one schedule item per day
+                expanded_days = _parse_days(section.days or "")
+
+                for day_name in expanded_days:
+                    schedule_items.append(
+                        ScheduleItemResponse(
+                            class_=class_label,
+                            day=day_name,
+                            startTime=_format_time(section.start_time),
+                            endTime=_format_time(section.end_time),
+                            room=section.location or "",
+                            course_id=selection.course_id,
+                            class_section_id=selection.class_section_id,
+                        )
+                    )
+
+    # FALLBACK: if no schedule items were built from class_section lookups,
+    # use the raw schedule stored in plan.settings
+    if not schedule_items and plan.settings and "schedule" in plan.settings:
+        for item in plan.settings["schedule"]:
+            schedule_items.append(
+                ScheduleItemResponse(
+                    class_=item.get("class_", ""),
+                    day=item.get("day", ""),
+                    startTime=item.get("startTime", ""),
+                    endTime=item.get("endTime", ""),
+                    room=item.get("room", ""),
+                    course_id=item.get("course_id") or None,
+                    class_section_id=item.get("class_section_id") or None,
+                )
+            )
+
+    return PlanDetailResponse(
+    id=plan.id,
+    name=plan.name,
+    semester=SemesterInput(
+        term_season=semester.term_season,
+        term_year=semester.term_year,
+    ),
+    courseSelections=[
+        CourseSelectionInput(
+            course_id=s.course_id,
+            class_section_id=s.class_section_id,
+        )
+        for s in selections
+    ],
+    messages=messages,
+    schedule=schedule_items,
+)

@@ -122,25 +122,15 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 		}
 
 		// Load schedule visualization
-		if (savedPlan.courseSelections && savedPlan.courseSelections.length > 0) {
-			const reconstructed = [];
-
-			savedPlan.courseSelections.forEach((selection) => {
-				// You likely need backend to return schedule info.
-				// For now just store minimal structure.
-				reconstructed.push({
-					course_id: selection.course_id,
-					class_section_id: selection.class_section_id,
-				});
-			});
-
+		if (savedPlan.schedule && savedPlan.schedule.length > 0) {
 			setVisualizationData({
 				type: "schedule",
-				data: reconstructed,
+				data: savedPlan.schedule
 			});
 		} else {
 			setVisualizationData(null);
 		}
+
 
 	}, [savedPlan]);
 
@@ -294,7 +284,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 			...section,
 			day: day,
 			course_id: course.id,          // attach real DB id
-			class_section_id: null         // until backend returns real section ids
+			class_section_id: section.id || null  // use section DB id if available
 		}));
 
 		if (visualizationData) {
@@ -435,6 +425,15 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 				messages: messages.map((m) => ({
 					role: m.role,
 					content: m.content,
+				})),
+				schedule: (visualizationData?.data || []).map((item) => ({
+					class_: item.class_ || "",
+					day: item.day || "",
+					startTime: item.startTime || "",
+					endTime: item.endTime || "",
+					room: item.room || "",
+					course_id: item.course_id || null,
+					class_section_id: item.class_section_id || null,
 				})),
 			};
 

@@ -45,7 +45,7 @@ Units: 4.0
 Components: Lecture
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 003)
@@ -55,7 +55,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 004)
@@ -65,7 +65,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 005)
@@ -75,7 +75,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 006)
@@ -85,7 +85,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 007)
@@ -95,7 +95,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1410 - Object-Oriented Prog (Section 008)
@@ -105,7 +105,7 @@ Units: 0
 Components: Laboratory
 Description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
 Prerequisites Raw: 'C-' or better in CS 1400
-Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+
+Corequisites Raw: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR AP CalcAB score 4+ OR AP CalcBC score 3+
 Prerequisite list: ['or pre C- CS1400', 'co MATH1060', 'or co MATH1080', 'or co MATH1210', 'or co MATH1215', 'or co MATH1220', 'or co MATH1250', 'or co MATH1310', 'or co MATH1311']
 ----------------------------------------------------------------------
 CS 1420 - Accel Obj-Orient Prog (Section 001)
