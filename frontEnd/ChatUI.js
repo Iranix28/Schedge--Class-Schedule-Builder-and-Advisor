@@ -355,6 +355,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 		);
 	});
 
+	const handleSavePlan = () => {
+	}
+
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
 			{/* Left Side - Chat Interface */}
@@ -530,14 +533,36 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 					style={{ backgroundColor: "#BE0000" }}
 				>
 					<div className="flex items-center gap-4">
-						<h2 className="text-xl font-semibold text-white">View</h2>
+						{/* Editable Plan Name with Icon */}
+						<div className="relative group">
+							<input
+								type="text"
+								defaultValue="NAME PLAN"
+								className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
+								style={{ minWidth: "150px" }}
+								placeholder="Enter plan name"
+								onFocus={(e) => {
+									if (e.target.value === "NAME PLAN") {
+										e.target.select();
+									}
+								}}
+							/>
+							<svg 
+								className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" 
+								fill="none" 
+								stroke="currentColor" 
+								viewBox="0 0 24 24"
+							>
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+							</svg>
+						</div>
 						<button
 							type="button"
-							onClick={toggleCoursesPanel}
+							onClick={handleSavePlan}
 							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
 							style={{ color: "#BE0000" }}
 						>
-							{showCoursesPanel ? "Hide Courses" : "Browse Courses"}
+							SAVE PLAN
 						</button>
 					</div>
 					<div className="flex items-center gap-3">
@@ -554,7 +579,6 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 						</button>
 					</div>
 				</header>
-
 				<div className="flex-1 overflow-y-auto p-6 space-y-6 relative overflow-hidden">
 					{/* Courses Panel */}
 					<div
@@ -803,6 +827,14 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 						>
 							<span>+</span>
 							ADD COURSE
+						</button>
+						<button
+							type="button"
+							onClick={toggleCoursesPanel}
+							className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+							style={{ backgroundColor: '#BE0000', color: "#FFFFFF" }}
+						>
+							{showCoursesPanel ? "Hide Courses" : "Browse Courses"}
 						</button>
 					</div>
 				</div>
