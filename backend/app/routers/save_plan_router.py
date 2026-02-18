@@ -5,8 +5,17 @@ from datetime import datetime, timezone
 
 from app.database.session import SessionLocal
 from sqlalchemy import func
-from app import models as db_models
 from pydantic import BaseModel
+
+from app.database.schema import (
+    User,
+    Plan,
+    PlanSemester,
+    PlanCourseSelection,
+    ChatConversation,
+    ChatMessage,
+    Course,
+)
 
 router = APIRouter(prefix="/plans", tags=["plans"])
 
@@ -53,21 +62,18 @@ class PlanSummaryResponse(BaseModel):
 
 
 # ----------------------------
-# Route
+# SAVE PLAN
 # ----------------------------
 
 @router.post("", response_model=PlanSummaryResponse)
 def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
 
-    user = db.query(db_models.User).filter(
-        db_models.User.id == payload.user_id
-    ).first()
+    user = db.query(User).filter(User.id == payload.user_id).first()
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # 1️⃣ Create Plan
-    new_plan = db_models.Plan(
+    new_plan = Plan(
         user_id=payload.user_id,
         name=payload.name,
         mode="single",
@@ -76,10 +82,9 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
     )
 
     db.add(new_plan)
-    db.flush()  # get new_plan.id
+    db.flush()
 
-    # 2️⃣ Create Semester
-    new_semester = db_models.PlanSemester(
+    new_semester = PlanSemester(
         plan_id=new_plan.id,
         term_season=payload.semester.term_season,
         term_year=payload.semester.term_year,
@@ -89,16 +94,12 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
     db.add(new_semester)
     db.flush()
 
-    # 3️⃣ Add Course Selections (optional)
     for selection in payload.courseSelections:
-        course = db.query(db_models.Course).filter(
-            db_models.Course.id == selection.course_id
-        ).first()
-
+        course = db.query(Course).filter(Course.id == selection.course_id).first()
         if not course:
             continue
 
-        new_selection = db_models.PlanCourseSelection(
+        new_selection = PlanCourseSelection(
             plan_semester_id=new_semester.id,
             course_id=selection.course_id,
             class_section_id=selection.class_section_id,
@@ -108,8 +109,7 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
 
         db.add(new_selection)
 
-    # 4️⃣ Create Chat Conversation
-    new_conversation = db_models.ChatConversation(
+    new_conversation = ChatConversation(
         user_id=payload.user_id,
         plan_id=new_plan.id,
         plan_semester_id=new_semester.id,
@@ -121,9 +121,8 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
     db.add(new_conversation)
     db.flush()
 
-    # 5️⃣ Add Messages
     for idx, msg in enumerate(payload.messages):
-        new_message = db_models.ChatMessage(
+        new_message = ChatMessage(
             conversation_id=new_conversation.id,
             seq=idx,
             role=msg.role,
@@ -141,6 +140,11 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         created_at=new_plan.created_at,
     )
 
+
+# ----------------------------
+# LIST PLANS
+# ----------------------------
+
 class PlanListResponse(BaseModel):
     id: int
     name: str
@@ -155,28 +159,21 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
 
     plans = (
         db.query(
-            db_models.Plan.id,
-            db_models.Plan.name,
-            db_models.Plan.created_at,
-            db_models.PlanSemester.term_season,
-            db_models.PlanSemester.term_year,
-            func.count(db_models.PlanCourseSelection.id).label("total_courses"),
+            Plan.id,
+            Plan.name,
+            Plan.created_at,
+            PlanSemester.term_season,
+            PlanSemester.term_year,
+            func.count(PlanCourseSelection.id).label("total_courses"),
         )
-        .join(
-            db_models.PlanSemester,
-            db_models.PlanSemester.plan_id == db_models.Plan.id,
-        )
+        .join(PlanSemester, PlanSemester.plan_id == Plan.id)
         .outerjoin(
-            db_models.PlanCourseSelection,
-            db_models.PlanCourseSelection.plan_semester_id
-            == db_models.PlanSemester.id,
+            PlanCourseSelection,
+            PlanCourseSelection.plan_semester_id == PlanSemester.id,
         )
-        .filter(db_models.Plan.user_id == user_id)
-        .group_by(
-            db_models.Plan.id,
-            db_models.PlanSemester.id,
-        )
-        .order_by(db_models.Plan.created_at.desc())
+        .filter(Plan.user_id == user_id)
+        .group_by(Plan.id, PlanSemester.id)
+        .order_by(Plan.created_at.desc())
         .all()
     )
 

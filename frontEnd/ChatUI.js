@@ -230,10 +230,29 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 
 	const handleSelectSection = (section) => {
 		const days = parseDayAbbreviations(section.day);
-		
+
+		// Extract course number from "1410 - 001"
+		const match = section.class_?.match(/(\d+)\s*-\s*(\d+)/);
+		if (!match) return;
+
+		const courseCode = match[1];
+		const sectionCode = match[2];
+
+		// Find course from allCourses
+		const course = allCourses.find(
+			c => c.course_code.toString() === courseCode
+		);
+
+		if (!course) {
+			console.warn("Course not found for code:", courseCode);
+			return;
+		}
+
 		const newEntries = days.map(day => ({
 			...section,
-			day: day
+			day: day,
+			course_id: course.id,          // attach real DB id
+			class_section_id: null         // until backend returns real section ids
 		}));
 
 		if (visualizationData) {
