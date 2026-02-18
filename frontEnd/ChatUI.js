@@ -42,6 +42,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 	const messagesEndRef = useRef(null);
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
+	const [planName, setPlanName] = useState("My Plan");
 
 	const openCourseDetails = (course) => {
 		setSelectedCourse(course);
@@ -355,8 +356,68 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 		);
 	});
 
-	const handleSavePlan = () => {
-	}
+	const handleSavePlan = async () => {
+		try {
+			if (!userData?.id) {
+				alert("User not loaded");
+				return;
+			}
+
+			const payload = {
+				user_id: userData.id,   // <-- REQUIRED
+				name: planName,
+				semester: {
+					term_season: semester?.term_season || "Fall",
+					term_year: semester?.term_year || new Date().getFullYear(),
+				},
+				courseSelections: [],
+				messages: messages.map((m) => ({
+					role: m.role,
+					content: m.content,
+				})),
+			};
+
+			if (visualizationData?.data?.length > 0) {
+				const seen = new Set();
+
+				visualizationData.data.forEach((item) => {
+					if (!item.course_id) return;
+
+					const key = `${item.course_id}-${item.class_section_id || "null"}`;
+
+					if (!seen.has(key)) {
+						seen.add(key);
+
+						payload.courseSelections.push({
+							course_id: item.course_id,
+							class_section_id: item.class_section_id || null,
+						});
+					}
+				});
+			}
+
+			const res = await fetch(`${BASE_URL}/plans`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(payload),
+			});
+
+			if (!res.ok) {
+				const errText = await res.text();
+				throw new Error(errText);
+			}
+
+			alert("Plan saved successfully");
+		} catch (err) {
+			console.error("Save error:", err);
+			alert("Error saving plan");
+		}
+	};
+
+
+
 
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
@@ -536,17 +597,13 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 						{/* Editable Plan Name with Icon */}
 						<div className="relative group">
 							<input
-								type="text"
-								defaultValue="NAME PLAN"
-								className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
-								style={{ minWidth: "150px" }}
-								placeholder="Enter plan name"
-								onFocus={(e) => {
-									if (e.target.value === "NAME PLAN") {
-										e.target.select();
-									}
-								}}
-							/>
+	type="text"
+	value={planName}
+	onChange={(e) => setPlanName(e.target.value)}
+	className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
+	style={{ minWidth: "150px" }}
+	placeholder="Enter plan name"
+/>
 							<svg 
 								className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" 
 								fill="none" 

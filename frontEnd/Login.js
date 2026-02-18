@@ -33,7 +33,7 @@ function LoginPage({ onLoginSuccess }) {
 			}
 
 			const user = await res.json(); // {id, username, role}
-			onLoginSuccess(user.username, rememberMe);
+			onLoginSuccess(user, rememberMe);  // Pass entire user object
 		} catch (e) {
 			setError("Could not reach server. Is FastAPI running?");
 		}
