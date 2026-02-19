@@ -32,7 +32,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
 
     """
     
-    auditId = create_audit(db, 0)
+    auditId = create_audit(db, 1)
 
     lines = []
 

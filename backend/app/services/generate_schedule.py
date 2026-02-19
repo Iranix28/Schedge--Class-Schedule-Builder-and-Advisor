@@ -211,8 +211,8 @@ def generate_schedule(audit_id):
             needs_class_count = subreq.needs_count
             needs_credits = subreq.needs_credits
 
-            print("Needs Count: " + needs_class_count)
-            print("Needs Credits: " + needs_credits)
+            #print("Needs Count: " + needs_class_count)
+            #print("Needs Credits: " + needs_credits)
 
             for course in subreq.select_from:
                 # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
