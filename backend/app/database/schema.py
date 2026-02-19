@@ -76,6 +76,8 @@ class Course(Base):
     units: Mapped[Optional[int]] = mapped_column(Integer, nullable=False)  
     description: Mapped[Optional[str]] = mapped_column(String(5000), nullable=True)
 
+    prereq_conditions: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)   #json for prereq
+
     embedding: Mapped[Optional[List[float]]] = mapped_column(           
         Vector(1024),                                                 # change based embedding model
         nullable=True,
