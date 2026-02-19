@@ -82,7 +82,7 @@ def _units_to_int(units):
         return 0
 
 
-def save_to_db_no_prereqs(data: list[dict]):
+def save_to_db(data: list[dict]):
     """
     Inserts departments/courses/sections. Skips prereqs entirely.
     Requires your existing project functions:
@@ -117,6 +117,8 @@ def save_to_db_no_prereqs(data: list[dict]):
         instructor = (c.get("instructor") or "").strip() or None
         schedule_str = (c.get("schedule") or "").strip()
         location = (c.get("location") or "").strip() or None
+        prereqs = c.get("prerequisites") or []
+
 
         parsed = _course_id_to_subject_number(course_id)
         if not parsed:
@@ -136,6 +138,7 @@ def save_to_db_no_prereqs(data: list[dict]):
                     name=title or f"{subject}{number}",
                     units=units_int,
                     description=description,
+                    prereq_conditions=prereqs,
                 ),
             )
             seen_courses.add(course_key)
@@ -850,9 +853,9 @@ def main():
 
     # Optional DB insert
     if do_db:
-        # If you didn't modify save_to_db_no_prereqs to normalize dept subjects,
+        # If you didn't modify save_to_db to normalize dept subjects,
         # do that first so ME EN -> MEEN stays consistent.
-        save_to_db_no_prereqs(all_data)
+        save_to_db(all_data)
 
     # Write output (only what we scraped; if --subject is set, that's already filtered)
     script_dir = os.path.dirname(os.path.abspath(__file__))
