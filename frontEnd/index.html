@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
         <!-- Load your components -->
+    <script type="text/babel" src="./Sidebar.js"></script>
     <script type="text/babel" src="./login.js"></script>
     <script type="text/babel" src="./PlanSelection.js"></script>
     <script type="text/babel" src="./SavedPlansUI.js"></script>
@@ -35,6 +36,11 @@
         const [selectedPlan, setSelectedPlan] = useState(null);
         const [selectedSemester, setSelectedSemester] = useState(null);
         const [selectedSavedPlan, setSelectedSavedPlan] = useState(null);
+        const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+
+        const handlePlanSaved = () => {
+          setSidebarRefreshKey((k) => k + 1);
+        };
 
         // Initialize and handle browser back/forward
         useEffect(() => {
@@ -45,17 +51,14 @@
               });
               if (!res.ok) return;
 
-              const user = await res.json(); // {id, username, role}
+              const user = await res.json();
               setUserData(user);
               setIsAuthenticated(true);
-            } catch (e) {
-              // backend not reachable or CORS issue; stay logged out
-            }
+            } catch (e) {}
           })();
         }, []);
 
         const handleLoginSuccess = (user) => {
-          // user now contains { id, username, role }
           setUserData(user);
           setIsAuthenticated(true);
         };
@@ -84,6 +87,7 @@
 
         const handleSelectSavedPlan = (plan) => {
           setSelectedSavedPlan(plan);
+          setSelectedPlan('saved');
         };
 
         const handleBackToSavedPlans = () => {
@@ -98,51 +102,90 @@
           setSelectedSemester(null);
         };
 
+        const handleSidebarNavigate = (mode) => {
+          setSelectedSavedPlan(null);
+          setSelectedSemester(null);
+          setSelectedPlan(mode);
+        };
+
+        const handleSidebarNewChat = () => {
+          setSelectedSavedPlan(null);
+          setSelectedSemester(null);
+          setSelectedPlan('single');
+        };
+
+        const handleSidebarSelectPlan = (plan) => {
+          setSelectedSavedPlan(plan);
+          setSelectedPlan('saved');
+        };
+
         return (
           <div className="h-full">
-            {!isAuthenticated ? (
-              <LoginPage onLoginSuccess={handleLoginSuccess} />
-            ) : !selectedPlan ? (
-              <PlanSelection 
-                onSelectPlan={handleSelectPlanType} 
-                userData={userData} 
-                onLogout={handleLogout} 
-              />
-            ) : selectedPlan === 'saved' && !selectedSavedPlan ? (
-              <SavedPlansUI
+            {/* Sidebar – always visible on authenticated views */}
+            {isAuthenticated && (
+              <Sidebar
                 userData={userData}
-                onLogout={handleLogout}
-                onBack={handleBackToPlanSelection}
-                onSelectPlan={handleSelectSavedPlan}
-              />
-            ) : selectedPlan === 'saved' && selectedSavedPlan ? (
-              <ChatUI 
-                userData={userData} 
-                onLogout={handleLogout}
-                onBack={handleBackToSavedPlans}
-                savedPlan={selectedSavedPlan}
-              />
-            ) : selectedPlan === 'single' ? (
-              <ChatUI 
-                userData={userData} 
-                onLogout={handleLogout}
-                onBack={handleBackToPlanSelection}
-              />
-            ) : selectedPlan === 'multi' && !selectedSemester ? (
-              <MultiSemesterUI 
-                userData={userData} 
-                onLogout={handleLogout}
-                onSelectSemester={handleSelectSemester}
-                onBack={handleBackToPlanSelection}
-              />
-            ) : (
-              <ChatUI 
-                userData={userData} 
-                onLogout={handleLogout}
-                semester={selectedSemester}
-                onBack={handleBackToMultiSemester}
+                onNewChat={handleSidebarNewChat}
+                onSelectSavedPlan={handleSidebarSelectPlan}
+                onNavigate={handleSidebarNavigate}
+                refreshKey={sidebarRefreshKey}
               />
             )}
+
+            {/* Main content area – always offset by sidebar width */}
+            <div
+              style={{
+                marginLeft: isAuthenticated ? "260px" : "0px",
+                height: "100%",
+              }}
+            >
+              {!isAuthenticated ? (
+                <LoginPage onLoginSuccess={handleLoginSuccess} />
+              ) : !selectedPlan ? (
+                <PlanSelection 
+                  onSelectPlan={handleSelectPlanType} 
+                  userData={userData} 
+                  onLogout={handleLogout} 
+                />
+              ) : selectedPlan === 'saved' && !selectedSavedPlan ? (
+                <SavedPlansUI
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onBack={handleBackToPlanSelection}
+                  onSelectPlan={handleSelectSavedPlan}
+                />
+              ) : selectedPlan === 'saved' && selectedSavedPlan ? (
+                <ChatUI 
+                  userData={userData} 
+                  onLogout={handleLogout}
+                  onBack={handleBackToSavedPlans}
+                  savedPlan={selectedSavedPlan}
+                  onPlanSaved={handlePlanSaved}
+                />
+              ) : selectedPlan === 'single' ? (
+                <ChatUI 
+                  userData={userData} 
+                  onLogout={handleLogout}
+                  onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
+                />
+              ) : selectedPlan === 'multi' && !selectedSemester ? (
+                <MultiSemesterUI 
+                  userData={userData} 
+                  onLogout={handleLogout}
+                  onSelectSemester={handleSelectSemester}
+                  onBack={handleBackToPlanSelection}
+                />
+              ) : (
+                <ChatUI 
+                  userData={userData} 
+                  onLogout={handleLogout}
+                  semester={selectedSemester}
+                  onBack={handleBackToMultiSemester}
+                  onPlanSaved={handlePlanSaved}
+                />
+              )}
+            </div>
           </div>
         );
       }

@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan }) {
+function SavedPlansUI({ userData, onLogout, onSelectPlan }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
@@ -48,22 +48,6 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan }) {
 				style={{ backgroundColor: "#BE0000" }}
 			>
 				<div className="flex items-center gap-3">
-					{onBack && (
-						<button
-							type="button"
-							onClick={onBack}
-							className="mr-2 w-10 h-10 rounded-full bg-white text-red-700 flex items-center justify-center hover:bg-slate-100 transition-all"
-						>
-							<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-							</svg>
-						</button>
-					)}
-					<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-						<div className="text-xl font-bold" style={{ color: "#BE0000" }}>
-							U
-						</div>
-					</div>
 					<h1 className="text-xl font-semibold text-white">Saved Plans</h1>
 				</div>
 

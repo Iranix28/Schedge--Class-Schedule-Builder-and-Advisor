@@ -9,17 +9,9 @@ function PlanSelection({ onSelectPlan, userData, onLogout }) {
 				style={{ backgroundColor: "#BE0000" }}
 			>
 				<div className="flex items-center gap-3">
-					<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-						<div className="text-xl font-bold" style={{ color: "#BE0000" }}>
-							U
-						</div>
-					</div>
-					<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
+					<h1 className="text-xl font-semibold text-white">Plan Selection</h1>
 				</div>
 				<div className="flex items-center gap-3">
-					<span className="text-white text-sm">
-						Welcome, {userData?.username}
-					</span>
 					<button
 						type="button"
 						onClick={onLogout}
@@ -180,7 +172,7 @@ function PlanSelection({ onSelectPlan, userData, onLogout }) {
 
 			{/* Bottom Footer */}
 			<footer className="py-4 text-center text-sm text-slate-600">
-				<p>© 2025 University Advisor Chat. All rights reserved.</p>
+				<p>© 2025 Schedge. All rights reserved.</p>
 			</footer>
 		</div>
 	);

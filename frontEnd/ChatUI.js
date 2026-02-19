@@ -28,7 +28,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [uploadedFiles, setUploadedFiles] = useState([]);
 	const [visualizationData, setVisualizationData] = useState(null);
-	const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
+	const [chatWidthPercent, setChatWidthPercent] = useState(33);
+	const [isDragging, setIsDragging] = useState(false);
+	const containerRef = useRef(null);
 	const [class_code, setClass_code] = useState("");
 	const [availableSections, setAvailableSections] = useState([]);
 	const [showSectionModal, setShowSectionModal] = useState(false);
@@ -212,9 +214,35 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 		setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
 	};
 
-	const toggleRightPanel = () => {
-		setIsRightPanelExpanded(!isRightPanelExpanded);
+	// Drag handler for resizable panels
+	const handleDragStart = (e) => {
+		e.preventDefault();
+		setIsDragging(true);
 	};
+
+	useEffect(() => {
+		if (!isDragging) return;
+
+		const handleMouseMove = (e) => {
+			if (!containerRef.current) return;
+			const rect = containerRef.current.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const percent = (x / rect.width) * 100;
+			// Clamp between 10% and 70%
+			setChatWidthPercent(Math.min(70, Math.max(15.5, percent)));
+		};
+
+		const handleMouseUp = () => {
+			setIsDragging(false);
+		};
+
+		window.addEventListener("mousemove", handleMouseMove);
+		window.addEventListener("mouseup", handleMouseUp);
+		return () => {
+			window.removeEventListener("mousemove", handleMouseMove);
+			window.removeEventListener("mouseup", handleMouseUp);
+		};
+	}, [isDragging]);
 
 	const parseDayAbbreviations = (dayStr) => {
 		const dayMap = {
@@ -284,7 +312,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 			...section,
 			day: day,
 			course_id: course.id,          // attach real DB id
-			class_section_id: section.id || null  // use section DB id if available
+			class_section_id: null         // until backend returns real section ids
 		}));
 
 		if (visualizationData) {
@@ -426,15 +454,6 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 					role: m.role,
 					content: m.content,
 				})),
-				schedule: (visualizationData?.data || []).map((item) => ({
-					class_: item.class_ || "",
-					day: item.day || "",
-					startTime: item.startTime || "",
-					endTime: item.endTime || "",
-					room: item.room || "",
-					course_id: item.course_id || null,
-					class_section_id: item.class_section_id || null,
-				})),
 			};
 
 			if (visualizationData?.data?.length > 0) {
@@ -480,12 +499,11 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 
 
 	return (
-		<div className="flex h-screen bg-slate-100 relative">
+		<div ref={containerRef} className="flex h-screen bg-slate-100 relative" style={{ userSelect: isDragging ? "none" : "auto" }}>
 			{/* Left Side - Chat Interface */}
 			<div
-				className={`flex flex-col border-r border-slate-300 bg-white transition-all duration-500 ease-in-out overflow-hidden ${
-					isRightPanelExpanded ? "w-0" : "w-1/3"
-				}`}
+				className="flex flex-col border-r border-slate-300 bg-white overflow-hidden"
+				style={{ width: `${chatWidthPercent}%`, minWidth: "0" }}
 			>
 				<header
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
@@ -643,11 +661,22 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 				</div>
 			</div>
 
+			{/* Drag Handle */}
+			<div
+				onMouseDown={handleDragStart}
+				className="flex-shrink-0 w-2 cursor-col-resize flex items-center justify-center hover:bg-red-100 transition-colors group"
+				style={{ backgroundColor: isDragging ? "#fecaca" : "transparent" }}
+			>
+				<div
+					className="w-0.5 h-8 rounded-full group-hover:bg-red-400 transition-colors"
+					style={{ backgroundColor: isDragging ? "#BE0000" : "#cbd5e1" }}
+				/>
+			</div>
+
 			{/* Right Side */}
 			<div
-				className={`flex flex-col bg-slate-50 transition-all duration-500 ease-in-out ${
-					isRightPanelExpanded ? "w-full" : "w-2/3"
-				}`}
+				className="flex flex-col bg-slate-50 overflow-hidden"
+				style={{ width: `${100 - chatWidthPercent}%`, minWidth: "0" }}
 			>
 				<header
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center justify-between shadow-sm"
@@ -1065,28 +1094,6 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 				</div>
 			)}
 
-			{/* Expand/Collapse Button */}
-			<button
-				type="button"
-				onClick={toggleRightPanel}
-				className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
-				style={{
-					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 12px)",
-					borderColor: "#BE0000",
-					transition: "left 0.5s ease-in-out",
-				}}
-				title={isRightPanelExpanded ? "Show chat" : "Expand panel"}
-			>
-				{isRightPanelExpanded ? (
-					<span className="text-lg font-bold" style={{ color: "#BE0000" }}>
-						×
-					</span>
-				) : (
-					<span className="text-lg font-bold" style={{ color: "#BE0000" }}>
-						←
-					</span>
-				)}
-			</button>
 		</div>
 	);
 }
