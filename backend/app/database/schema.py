@@ -278,7 +278,23 @@ class AuditRequirementRule(Base):
     course: Mapped[Optional["Course"]] = relationship()        
     department: Mapped[Optional["Department"]] = relationship() 
 
+class UserCompletedCourse(Base):
+    __tablename__ = "user_completed_courses"
+    __table_args__ = (
+        UniqueConstraint("user_id", "course_id", name="uq_user_completed_course"),
+    )
 
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+
+    course_id: Mapped[int] = mapped_column(
+        ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    course: Mapped["Course"] = relationship()
 
 #============================================== Plan/PlanSemester/PlanCourseSelection ===============================================#
 

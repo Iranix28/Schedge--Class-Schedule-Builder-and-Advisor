@@ -20,11 +20,11 @@ def splitCourse(course):
     dept = course[:splitIndex].strip()
 
     # Get the course number from the string
-    num  = course[splitIndex:].strip()        
+    num  = course[splitIndex:splitIndex + 4].strip()        
 
     return dept, num
 
-def outputRequirements(requirements, filename="parsed_audit.txt"):
+def outputRequirements(requirements, completedCourses, filename="parsed_audit.txt"):
     """
     Takes in a list of all the requirements and outputs it
     a readable friendly way to a text file.
@@ -113,6 +113,24 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
 
         lines.append("\n")
 
+    # Add completed courses to DB and output file
+    lines.append("=" * 60)
+    lines.append(f"Total Completed Courses")
+    lines.append("=" * 60)
+    
+    comp_course_ids = []
+
+    for course in completedCourses:
+        lines.append(course + "\n")
+
+        dept, num = splitCourse(course)
+        comp_course_ids.append(get_course_id(db, dept, num))
+
+    if comp_course_ids:
+        add_completed_courses_bulk(db=db, user_id=0, course_ids=comp_course_ids)
+
+    lines.append("\n")
+
     # # Make output file appear next to this .py file
     # script_dir = os.path.dirname(os.path.abspath(__file__))
     # output_path = os.path.join(script_dir, filename)
@@ -145,6 +163,39 @@ def extractCourseInfo(element):
         name = None
 
     return code, name
+
+def extractCourses(title, courses, soup):
+    header = soup.find(string=re.compile(title))
+    if not header:
+        return
+
+    reqDiv = header.find_parent("div", class_="requirement")
+
+    for table in reqDiv.select("table.completedCourses"):
+        for row in table.select("tr.takenCourse"):
+            courseTd = row.select_one("td.course")
+            creditTD = row.select_one("td.credit")
+
+            if not courseTd or not creditTD:
+                continue
+
+            creditGained = float(creditTD.get_text(strip=True))
+
+            if creditGained <= 0.0:
+                continue
+
+            course = courseTd.get_text(strip=True)
+
+            if "AP" in title:
+                gradeTd = row.select_one("td.grade")
+                grade = gradeTd.get_text(strip=True)
+
+                # Keep AP equivalents only
+                if grade == "AP" and not course.startswith("ACT"):
+                    courses.append(course)
+                    return
+            
+            courses.append(course)
 
 def scrapeDegreeAudit(html_file):
     """
@@ -236,10 +287,18 @@ def scrapeDegreeAudit(html_file):
             completedTag = sub.select(".completedCourses tr.takenCourse")
 
             for course in completedTag:
-                code, name = extractCourseInfo(course)
+                creditTag  = course.select_one("td.credit")
 
-                if code:
-                    completedCourses[code] = name
+                if not creditTag:
+                    continue
+
+                creditGained = float(creditTag.text.strip())
+
+                if creditGained > 0.0:
+                    code, name = extractCourseInfo(course)
+
+                    if code:
+                        completedCourses[code] = name
 
             # Number of courses to take to meet this requirement
             needsTag = sub.select_one(".subreqNeeds .count")
@@ -327,5 +386,11 @@ def scrapeDegreeAudit(html_file):
 
         parsedRequirements.append(requirement_obj)
 
+    # Get courses related to AP scores, transfer courses and total courses taken at the University of Utah
+    coursesTaken = []
+    extractCourses("SUMMARY OF ALL AP", coursesTaken, soup)
+    extractCourses("SUMMARY OF TRANSFER CREDIT", coursesTaken, soup)
+    extractCourses("SUMMARY OF COURSES TAKEN AT THE UNIVERSITY OF UTAH", coursesTaken, soup)
+
     # Returns the audit ID to the router
-    return outputRequirements(parsedRequirements)
+    return outputRequirements(parsedRequirements, coursesTaken)

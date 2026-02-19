@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.session import DBSession
 from app.models.db_models import CoursePrerequisiteCreate, CoursePrerequisiteRead, CoursePrerequisiteResponse, CoursePrerequisiteCreateByCode
 
-from app.database.query_routers.course_prerequisites_query import create_course_prerequisite, create_course_prerequisite_by_codes, list_course_prerequisites, get_course_prerequisite, get_course_prerequisite_by_subject
+from app.database.query_routers.course_prerequisites_query import create_course_prerequisite, create_course_prerequisite_by_codes, list_course_prerequisites, get_course_prerequisite
 
 from backend.exceptions import EntityNotFound
 
@@ -23,12 +23,12 @@ def create_course_prerequisite_endpoint(course_prerequisite_in: CoursePrerequisi
 def list_course_prerequisites_endpoint(db: DBSession, course_id: Optional[int] = Query(default=None)):
     return list_course_prerequisites(db, course_id=course_id)
 
-@router.get("/by-subject", response_model=List[CoursePrerequisiteResponse])
-def get_course_prerequisites_by_subject_endpoint(db: DBSession, department_subject: str, course_number: str):
-    prerequisites = get_course_prerequisite_by_subject(db, department_subject, course_number)
-    if not prerequisites:
-        return []
-    return [CoursePrerequisiteResponse(id=prereq.id, name=prereq.name, number=prereq.number) for prereq in prerequisites]
+# @router.get("/by-subject", response_model=List[CoursePrerequisiteResponse])
+# def get_course_prerequisites_by_subject_endpoint(db: DBSession, department_subject: str, course_number: str):
+#     prerequisites = get_course_prerequisite_by_subject(db, department_subject, course_number)
+#     if not prerequisites:
+#         return []
+#     return [CoursePrerequisiteResponse(id=prereq.id, name=prereq.name, number=prereq.number) for prereq in prerequisites]
 
 @router.get("/{course_prerequisite_id}", response_model=CoursePrerequisiteRead)
 def get_course_prerequisite_endpoint(course_prerequisite_id: int, db: DBSession):
