@@ -211,6 +211,9 @@ def generate_schedule(audit_id):
             needs_class_count = subreq.needs_count
             needs_credits = subreq.needs_credits
 
+            print("Needs Count: " + needs_class_count)
+            print("Needs Credits: " + needs_credits)
+
             for course in subreq.select_from:
                 # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
                 if requirement_met(total_classes=total_classes, needs_class_count=needs_class_count, needs_credits=needs_credits):
@@ -224,6 +227,9 @@ def generate_schedule(audit_id):
                     dept2, maxNum = splitCourse(max_course.strip())
 
                     range_courses = list_courses_in_number_range(db=db, subject=dept1, number_min=int(minNum), number_max=int(maxNum))
+
+                    # Do credit check here if credit_count exists (do it in the else too). 
+                    # Loop through the completed courses for this requirement (check how many of teh total completed courses show up in the select from list) and subtract their credits from the needs_credits
 
                     for rangeCourse in range_courses:
                         # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
@@ -267,6 +273,10 @@ def generate_schedule(audit_id):
                                 # Subtract the courses credits from the total needed credits
                                 if needs_credits is not None:
                                     needs_credits -= rangeCourse.units
+
+                                # In this case only one class should be added for this requirement
+                                if needs_class_count is None and needs_credits is None:
+                                    break
                 else:
                     # Don't add courses that do not count towards requirement
                     dept, num = splitCourse(course)
@@ -302,5 +312,9 @@ def generate_schedule(audit_id):
                             # Subtract the courses credits from the total needed credits
                             if needs_credits is not None:
                                 needs_credits -= course_object.units
+
+                            # In this case only one class should be added for this requirement
+                            if needs_class_count is None and needs_credits is None:
+                                break
     
     return schedule
