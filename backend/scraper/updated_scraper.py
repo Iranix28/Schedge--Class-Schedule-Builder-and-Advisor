@@ -4,6 +4,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from urllib.parse import quote_plus
 import time
 from app.database.query_routers.departments_query import *
 from app.database.query_routers.courses_query import *
@@ -11,6 +12,9 @@ from app.database.query_routers.course_prerequisites_query import *
 from app.database.query_routers.class_sections_query import *
 from app.database.session import SessionLocal
 from datetime import datetime
+import argparse
+from urllib.parse import quote_plus
+
 
 
 TERM_SEASON = "Spring"
@@ -94,7 +98,7 @@ def save_to_db_no_prereqs(data: list[dict]):
     seen_sections = set()   # (subject, number, term_year, section)
 
     def get_or_create_dept(subject: str) -> int:
-        subject = subject.upper()
+        subject = re.sub(r"\s+", "", subject.upper())
         if subject in dept_id_by_subject:
             return dept_id_by_subject[subject]
 
@@ -196,7 +200,8 @@ DEPT_CODES: list[str] = []
 # UTILS
 # ==================================================
 
-H3_RE = re.compile(r"^([A-Z]+)\s*(\d+)\s*-\s*(\d+)\s*(.+)$")
+# Subject can be multi-word like "ME EN"
+H3_RE = re.compile(r"^([A-Z]{1,4}(?:\s+[A-Z]{1,4})*)\s*(\d+)\s*-\s*(\d+)\s*(.+)$")
 
 MEETING_CELL_RE = re.compile(
     r"([A-Za-z]{1,7}|TBA)\s*/\s*(\d{1,2}:\d{2}(?:AM|PM)|TBA)\s*-\s*(\d{1,2}:\d{2}(?:AM|PM)|TBA)",
@@ -234,6 +239,20 @@ def normalize_section(sec: str) -> str:
         return f"{int(sec):03d}"
     except Exception:
         return (sec or "").strip()
+
+
+def list_url_for_subject(subject_code: str) -> str:
+    # subject_code might be "ME EN" → encode as "ME+EN"
+    return BASE + f"class_list.html?subject={quote_plus(subject_code)}"
+
+
+def list_url_for_subject(subject_code: str) -> str:
+    return BASE + f"class_list.html?subject={quote_plus(subject_code)}"
+
+def course_id_subject(course_id: str) -> str:
+    m = re.match(r"^([A-Z]+)\d{4}$", (course_id or "").strip().upper())
+    return m.group(1) if m else ""
+
 
 
 # ==================================================
@@ -623,7 +642,9 @@ def _table_contains_meeting(table: Tag) -> bool:
 
 
 def _find_h3_with_meeting_table(soup: BeautifulSoup, subj: str, catno: str, section: str) -> Tag | None:
-    pat = re.compile(rf"\b{subj}\s*{catno}\s*-\s*{re.escape(section)}\b")
+    pat = re.compile(
+        rf"(?<!\w){re.escape(subj)}\s*{re.escape(catno)}\s*-\s*{re.escape(section)}(?!\w)"
+    )
     hits = [h3 for h3 in soup.find_all("h3") if pat.search(h3.get_text(" ", strip=True))]
 
     # Prefer the h3 whose next table actually contains meeting rows
@@ -686,11 +707,10 @@ def extract_schedule_and_location_from_base(soup: BeautifulSoup, subj: str, catn
 # ==================================================
 
 
-def scrape() -> list[dict]:
-    html = request_text(LIST_URL)
+def scrape(subject_code: str) -> list[dict]:
+    html = request_text(list_url_for_subject(subject_code))
     soup = BeautifulSoup(html, "html.parser")
 
-    # First pass: build all section records from schedule page
     sections: list[dict] = []
     seen: set[tuple[str, str]] = set()
 
@@ -700,12 +720,18 @@ def scrape() -> list[dict]:
         if not m:
             continue
 
-        subj, catno, sec_raw, name = m.groups()
-        if subj.upper() != SUBJECT.upper():
+        subj_raw, catno, sec_raw, name = m.groups()
+
+        # Some pages include small mismatches; only keep rows for the current subject we're scraping.
+        # Normalize both sides by collapsing whitespace.
+        if re.sub(r"\s+", "", subj_raw.upper()) != re.sub(r"\s+", "", subject_code.upper()):
             continue
 
         sec_norm = normalize_section(sec_raw)
-        course_id = f"{subj}{catno}"
+
+        # Normalize subject in course_id for DB consistency ("ME EN" -> "MEEN")
+        subj_norm = re.sub(r"\s+", "", subj_raw)
+        course_id = f"{subj_norm}{catno}"
 
         key = (course_id, sec_norm)
         if key in seen:
@@ -727,8 +753,10 @@ def scrape() -> list[dict]:
                 elif t.startswith("Seats Available:"):
                     seats = t.split(":", 1)[1].strip()
 
-        schedule, location = extract_schedule_and_location_from_base(soup, subj, catno, sec_raw)
-        description, prereqs_sched = scrape_details_schedule(subj, catno, sec_raw)
+        # IMPORTANT: pass subj_raw (possibly spaced) into schedule/details functions,
+        # because the schedule site uses that formatting in headings and query params.
+        schedule, location = extract_schedule_and_location_from_base(soup, subj_raw, catno, sec_raw)
+        description, prereqs_sched = scrape_details_schedule(subj_raw, catno, sec_raw)
 
         sections.append(
             {
@@ -743,12 +771,12 @@ def scrape() -> list[dict]:
                 "location": location,
                 "description": description,
                 "prerequisites": prereqs_sched,
-                "_subj": subj,
+                "_subj": subj_raw,
                 "_catno": catno,
             }
         )
 
-    # Second pass: catalog prereqs (course-level) and override when better
+    # Catalog prereqs override (course-level)
     catno_set = {(c["_subj"], c["_catno"]) for c in sections}
     catalog_map: dict[tuple[str, str], list] = {}
 
@@ -763,15 +791,14 @@ def scrape() -> list[dict]:
         cat_pr = catalog_map.get(key, [])
         sched_pr = c.get("prerequisites", [])
 
-        # Override only if catalog has more actual course tokens
         if _count_course_tokens(cat_pr) > _count_course_tokens(sched_pr):
             c["prerequisites"] = cat_pr
 
-        # drop internal keys
         del c["_subj"]
         del c["_catno"]
 
     return sections
+
 
 
 # ==================================================
@@ -780,23 +807,64 @@ def scrape() -> list[dict]:
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--subject",
+        default=None,
+        help="If set, only scrape/write/optionally DB-insert this subject (e.g., CS, MEEN)."
+    )
+    parser.add_argument(
+        "--db",
+        action="store_true",
+        help="If set, insert scraped content into the database."
+    )
+    args = parser.parse_args()
+
+    target_subject = args.subject.strip().upper() if args.subject else None
+    do_db = args.db
+
     global DEPT_CODES
     DEPT_CODES = fetch_department_codes()
 
-    data = scrape()
-    save_to_db_no_prereqs(data)
+    # If user provided --subject, only scrape that subject.
+    subjects_to_scrape = DEPT_CODES
+    if target_subject:
+        # Subject codes on the site may be spaced (e.g. "ME EN"). We match by collapsing whitespace.
+        def norm(x: str) -> str:
+            return re.sub(r"\s+", "", x.upper())
 
+        subjects_to_scrape = [s for s in DEPT_CODES if norm(s) == norm(target_subject)]
+        if not subjects_to_scrape:
+            raise SystemExit(f"No subject found matching: {target_subject}")
 
+    all_data: list[dict] = []
+    for subj in subjects_to_scrape:
+        try:
+            print(f"Scraping subject: {subj}")
+            subj_data = scrape(subj)  # assumes you changed scrape() to accept subject_code
+            print(f"  sections: {len(subj_data)}")
+            all_data.extend(subj_data)
+            time.sleep(0.25)
+        except Exception as e:
+            print(f"  FAILED {subj}: {e}")
+
+    # Optional DB insert
+    if do_db:
+        # If you didn't modify save_to_db_no_prereqs to normalize dept subjects,
+        # do that first so ME EN -> MEEN stays consistent.
+        save_to_db_no_prereqs(all_data)
+
+    # Write output (only what we scraped; if --subject is set, that's already filtered)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     out_path = os.path.join(script_dir, "courses.txt")
 
     with open(out_path, "w", encoding="utf-8") as f:
-        for c in data:
+        for c in all_data:
             for k, v in c.items():
                 f.write(f"{k}: {json.dumps(v) if isinstance(v, list) else v}\n")
             f.write("-" * 80 + "\n\n")
 
-    print(f"Wrote {len(data)} sections to {out_path}")
+    print(f"Wrote {len(all_data)} sections to {out_path}")
 
 
 if __name__ == "__main__":
