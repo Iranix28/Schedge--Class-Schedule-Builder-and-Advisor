@@ -132,6 +132,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted 
 
 												// Refresh the plans list
 												setSavedPlans(savedPlans.filter(p => p.id !== plan.id));
+												if (onPlanDeleted) onPlanDeleted();
 											} catch (err) {
 												console.error("Failed to delete plan:", err);
 												alert("Could not delete plan");
