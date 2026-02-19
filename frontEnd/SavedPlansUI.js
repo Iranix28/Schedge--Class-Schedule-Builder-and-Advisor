@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-function SavedPlansUI({ userData, onLogout, onSelectPlan }) {
+function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
