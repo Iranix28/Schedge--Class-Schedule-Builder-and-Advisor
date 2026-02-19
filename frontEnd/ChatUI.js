@@ -20,7 +20,7 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
-function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
+function ChatUI({userData, onLogout, savedPlan, semester}) {
 	const [messages, setMessages] = useState([
 		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
 	]);
@@ -509,23 +509,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester}) {
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
 				>
-					<div className="flex items-center gap-3">
-						{onBack && (
-							<button
-								type="button"
-								onClick={onBack}
-								className="mr-2 w-10 h-10 rounded-full bg-white text-red-700 flex items-center justify-center hover:bg-slate-100 transition-all"
-								title="Go back"
-							>
-								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-								</svg>
-							</button>
-						)}						<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-							<div className="text-xl font-bold" style={{ color: "#BE0000" }}>
-								U
-							</div>
-						</div>						<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
+					<div className="flex items-center gap-3">					
+						<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
 					</div>
 				</header>
 

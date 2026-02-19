@@ -52,7 +52,7 @@ function LoginPage({ onLoginSuccess }) {
 					<div className="px-10 pt-10 pb-8 text-center" style={{ backgroundColor: "#BE0000" }}>
 						<div className="w-25 h-25 bg-white rounded-full mx-auto mb-5 flex items-center justify-center shadow-lg" style={{ width: "100px", height: "100px" }}>
 							<div className="text-5xl font-bold" style={{ color: "#BE0000" }}>
-								U
+								S
 							</div>
 						</div>
 						<h1 className="text-3xl font-bold text-white mb-2">
