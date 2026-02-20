@@ -32,13 +32,13 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
 
     """
     
-    auditId = create_audit(db, 0)
+    auditId = create_audit(db, 1)
 
     lines = []
 
     for req in requirements:
         # DB
-        reqId = add_requirement(db, auditId, req["title"], needs_credits = req["needsCredits"] or None)
+        reqId = add_requirement(db, auditId, req["title"], needs_credits = req["needsCredits"] or None) #also pass in the needsCount for the requirement
 
         lines.append("=" * 60)
         lines.append(f"Requirement: {req['title']}")
@@ -46,7 +46,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
 
         for sub in req["subrequirements"]:
             # DB
-            subReqId = add_subrequirement(db, auditId, reqId, sub['title'] or "[No Title]", sub["needsCount"] or None, sub["needsCredits"] or None)
+            subReqId = add_subrequirement(db, auditId, reqId, sub['title'] or "[No Title]", sub["needsCount"] or None, req["needsCredits"] or None) # change this req to sub later
 
             lines.append(f"  Subrequirement: {sub['title'] or '[No Title]'}")
 
@@ -127,7 +127,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
         comp_course_ids.append(get_course_id(db, dept, num))
 
     if comp_course_ids:
-        add_completed_courses_bulk(db=db, user_id=0, course_ids=comp_course_ids)
+        add_completed_courses_bulk(db=db, user_id=1, course_ids=comp_course_ids)
 
     lines.append("\n")
 
@@ -255,10 +255,20 @@ def scrapeDegreeAudit(html_file):
 
         credits = int(match.group(1)) if match else None
 
+        needsCreditsTag = req.select_one(".reqNeeds span.hours.number")
+        needsCredits = float(needsCreditsTag.text.strip()) if needsCreditsTag else None
+
+        needsClassesTag = req.select_one(".reqNeeds span.count.number")
+        needsClasses = None
+
+        if needsClassesTag:
+            needsClasses = int(needsClassesTag.text.strip())
 
         requirement_obj = {
             "title": title,
-            "needsCredits": credits,
+            "totalCredits": credits,
+            "needsCredits": needsCredits,
+            "needsCount": needsClasses,
             "subrequirements": []
         }
 

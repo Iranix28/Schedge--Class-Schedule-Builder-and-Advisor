@@ -107,8 +107,6 @@ def course_prereqs_complete(db, course: str):
     dept, num = splitCourse(course)
 
     prereqs = get_course_prerequisites_by_subject(db=db, department_subject=dept, course_number=num)
-    print(prereqs)
-    print("\n")
 
     for prereq in prereqs:
         # Get subject (I believe .subject would return 'CS')
@@ -117,7 +115,7 @@ def course_prereqs_complete(db, course: str):
         pre_id = get_course_id(db=db, subject=pre_subject, number=prereq.number)
 
         # Use actual user ID that will be passed in when login is made
-        if not is_course_completed(db=db, user_id=0, course_id=pre_id):
+        if not is_course_completed(db=db, user_id=1, course_id=pre_id):
             return False
     
     return True
@@ -207,12 +205,28 @@ def generate_schedule(audit_id):
         if "Pre-Major" in req.title or "Major" in req.title:
             continue
 
+        # UNCOMMENT THIS
+        # needs_class_count = req.needs_count
+        # needs_credits = req.needs_credits
+
         for subreq in req.subrequirements:
+            # UNCOMMENT THIS
+            # if needs_class_count is None:
+            #     needs_class_count = subreq.needs_count
+
+            # if needs_credits is None:
+            #     needs_credits = subreq.needs_credits
+
+            # # Last reasource
+            # if needs_credits is None:
+            #     needs_credits = req["totalCredits"]
+
+            # DELETE THIS
             needs_class_count = subreq.needs_count
             needs_credits = subreq.needs_credits
 
-            print("Needs Count: " + needs_class_count)
-            print("Needs Credits: " + needs_credits)
+            # print("Needs Count: " + str(needs_class_count))
+            print("Needs Credits: " + str(needs_credits))
 
             for course in subreq.select_from:
                 # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
@@ -227,9 +241,6 @@ def generate_schedule(audit_id):
                     dept2, maxNum = splitCourse(max_course.strip())
 
                     range_courses = list_courses_in_number_range(db=db, subject=dept1, number_min=int(minNum), number_max=int(maxNum))
-
-                    # Do credit check here if credit_count exists (do it in the else too). 
-                    # Loop through the completed courses for this requirement (check how many of teh total completed courses show up in the select from list) and subtract their credits from the needs_credits
 
                     for rangeCourse in range_courses:
                         # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
@@ -261,10 +272,7 @@ def generate_schedule(audit_id):
 
                             if not conflict:
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
-                                print(req.title)
-                                print(needs_class_count)
-                                print(needs_credits)
-                                print("\n")
+                               
                                 total_classes -= 1
 
                                 if needs_class_count is not None:
