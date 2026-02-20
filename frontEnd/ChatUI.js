@@ -477,7 +477,54 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 		}
 	};
 
+	// --- Check if a section conflicts with current schedule ---
+	const getSectionConflict = (section) => {
+		const toMinutes = (timeStr) => {
+			const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/);
+			let h = parseInt(m[1]);
+			if (m[3] === "PM" && h !== 12) h += 12;
+			if (m[3] === "AM" && h === 12) h = 0;
+			return h * 60 + parseInt(m[2]);
+		};
 
+		const reasons = [];
+
+		// Check duplicate course
+		const sectionMatch = section.class_?.match(/(\d+)/);
+		if (sectionMatch) {
+			const courseCode = sectionMatch[1];
+			const duplicate = visualizationData?.data?.find(item => {
+				const existingMatch = item.class_?.match(/(\d+)/);
+				return existingMatch && existingMatch[1] === courseCode;
+			});
+			if (duplicate) reasons.push(`Already on schedule (${duplicate.class_})`);
+		}
+
+		// Check time overlaps across ALL days, grouped by class
+		const days = parseDayAbbreviations(section.day);
+		const conflictsByClass = {};
+		for (const day of days) {
+			const conflicting = (visualizationData?.data || []).filter(existing => {
+				if (existing.day !== day) return false;
+				const existStart = toMinutes(existing.startTime);
+				const existEnd = toMinutes(existing.endTime);
+				const newStart = toMinutes(section.startTime);
+				const newEnd = toMinutes(section.endTime);
+				return newStart < existEnd && newEnd > existStart;
+			});
+			for (const c of conflicting) {
+				if (!conflictsByClass[c.class_]) {
+					conflictsByClass[c.class_] = [];
+				}
+				conflictsByClass[c.class_].push(day);
+			}
+		}
+		for (const [className, classDays] of Object.entries(conflictsByClass)) {
+			reasons.push(`Conflicts with ${className} on ${classDays.join(", ")}`);
+		}
+
+		return reasons.length > 0 ? reasons : null;
+	};
 
 
 	return (
@@ -682,7 +729,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 						</button>
 					</div>
 				</header>
-				<div className="flex-1 overflow-y-auto p-6 space-y-6 relative overflow-hidden">
+				<div className="flex-1 overflow-y-auto pl-4 pr-6 py-6 space-y-6 relative overflow-hidden">
 					{/* Courses Panel */}
 					<div
 						className={`fixed top-16 right-0 h-[calc(100vh-4rem)] bg-white shadow-2xl transition-transform duration-300 ease-in-out z-20 ${
@@ -763,14 +810,12 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 							</h3>
 
 							<div className="w-full">
-								<div className="grid grid-cols-6 gap-1 mb-1">
-									<div className="text-xs font-semibold text-slate-600 text-center py-1">
-										Time
-									</div>
+								<div className="flex gap-1 mb-1">
+									<div style={{ width: "45px", flexShrink: 0 }}></div>
 									{["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
 										<div
 											key={day}
-											className="text-xs font-semibold text-slate-600 text-center py-1"
+											className="flex-1 text-sm font-semibold text-slate-600 text-center py-1"
 										>
 											{day}
 										</div>
@@ -780,19 +825,19 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 								<div className="relative">
 									<div className="space-y-0.5">
 										{[
-											"8AM",
-											"9AM",
-											"10AM",
-											"11AM",
-											"12PM",
-											"1PM",
-											"2PM",
-											"3PM",
-											"4PM",
-											"5PM",
+											"8 AM",
+											"9 AM",
+											"10 AM",
+											"11 AM",
+											"12 PM",
+											"1 PM",
+											"2 PM",
+											"3 PM",
+											"4 PM",
+											"5 PM",
 										].map((time) => (
-											<div key={time} className="grid grid-cols-6 gap-1">
-												<div className="text-xs text-slate-500 py-1 text-right pr-1 h-10">
+											<div key={time} className="flex gap-1">
+												<div className="text-slate-400 text-right pr-3 h-12 leading-none whitespace-nowrap" style={{ fontSize: "10px", marginTop: "-5px", width: "45px", flexShrink: 0 }}>
 													{time}
 												</div>
 												{[
@@ -804,7 +849,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 												].map((day) => (
 													<div
 														key={`${day}-${time}`}
-														className="h-10 border border-slate-100 rounded bg-slate-50"
+														className="flex-1 h-12 border-t border-slate-200 bg-slate-50"
 													></div>
 												))}
 											</div>
@@ -812,8 +857,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 									</div>
 
 									<div className="absolute inset-0 pointer-events-none">
-										<div className="grid grid-cols-6 gap-1 h-full">
-											<div></div>
+										<div className="flex gap-1 h-full">
+											<div style={{ width: "45px", flexShrink: 0 }}></div>
 											{[
 												"Monday",
 												"Tuesday",
@@ -821,7 +866,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 												"Thursday",
 												"Friday",
 											].map((day) => (
-												<div key={day} className="relative">
+												<div key={day} className="flex-1 relative">
 													{visualizationData.data
 														.filter((item) => item.day === day)
 														.map((classItem, idx) => {
@@ -843,9 +888,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 															if (endPeriod === "AM" && endHour === 12)
 																endHour = 0;
 
-															const startOffset = (startHour - 8) * 42 + (startMin / 60) * 42;
+															const startOffset = (startHour - 8) * 50 + (startMin / 60) * 50;
 															const duration = endHour - startHour + (endMin - startMin) / 60;
-															const height = duration * 42 - 2;
+															const height = duration * 50 - 2;
 
 															return (
 																<div
@@ -853,7 +898,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 																	onClick={() => handleScheduleItemClick(classItem)}
 																	onMouseEnter={() => setHoveredScheduleItem(classItem.class_)}
 																	onMouseLeave={() => setHoveredScheduleItem(null)}
-																	className="absolute rounded px-1.5 py-1 text-white pointer-events-auto cursor-pointer hover:opacity-90 transition-opacity"
+																	className="absolute px-1.5 py-1 text-white pointer-events-auto cursor-pointer hover:opacity-90 transition-opacity"
 																	style={{
 																		backgroundColor: "#BE0000",
 																		top: `${startOffset}px`,
@@ -862,13 +907,13 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 																		right: 0,
 																	}}
 																>
-																	<div className="font-semibold truncate" style={{ fontSize: "10px" }}>
+																	<div className="font-semibold truncate" style={{ fontSize: "12px" }}>
 																		{classItem.class_}
 																	</div>
-																	<div className="truncate" style={{ fontSize: "9px", opacity: 0.9 }}>
+																	<div className="truncate" style={{ fontSize: "11px", opacity: 0.9 }}>
 																		{classItem.room}
 																	</div>
-																	<div className="truncate" style={{ fontSize: "8px", opacity: 0.8 }}>
+																	<div className="truncate" style={{ fontSize: "10px", opacity: 0.8 }}>
 																		{classItem.startTime}-{classItem.endTime}
 																	</div>
 																	
@@ -964,37 +1009,56 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 							{availableSections.length === 0 ? (
 								<p className="text-center text-slate-500 py-8">No sections available</p>
 							) : (
-								availableSections.map((section, index) => (
-									<div
-										key={index}
-										onClick={() => handleSelectSection(section)}
-										className="border border-slate-200 rounded-lg p-4 hover:border-red-700 hover:bg-slate-50 cursor-pointer transition-all"
-									>
-										<div className="flex justify-between items-start">
-											<div>
-												<h4 className="font-semibold text-slate-800 mb-1">
-													{section.class_}
-												</h4>
-												<p className="text-sm text-slate-600">
-													<span className="font-medium">Day:</span> {section.day}
-												</p>
-												<p className="text-sm text-slate-600">
-													<span className="font-medium">Time:</span> {section.startTime} - {section.endTime}
-												</p>
-												<p className="text-sm text-slate-600">
-													<span className="font-medium">Room:</span> {section.room}
-												</p>
+								availableSections.map((section, index) => {
+									const conflictReasons = getSectionConflict(section);
+									const isDisabled = !!conflictReasons;
+									return (
+										<div
+											key={index}
+											onClick={() => !isDisabled && handleSelectSection(section)}
+											className={`border rounded-lg p-4 transition-all ${
+												isDisabled
+													? "border-slate-200 bg-slate-100 opacity-60 cursor-not-allowed"
+													: "border-slate-200 hover:border-red-700 hover:bg-slate-50 cursor-pointer"
+											}`}
+										>
+											<div className="flex justify-between items-start">
+												<div>
+													<h4 className={`font-semibold mb-1 ${isDisabled ? "text-slate-400" : "text-slate-800"}`}>
+														{section.class_}
+													</h4>
+													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}>
+														<span className="font-medium">Day:</span> {section.day}
+													</p>
+													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}>
+														<span className="font-medium">Time:</span> {section.startTime} - {section.endTime}
+													</p>
+													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}>
+														<span className="font-medium">Room:</span> {section.room}
+													</p>
+													{isDisabled && (
+														<div className="mt-2 space-y-0.5">
+															{conflictReasons.map((reason, i) => (
+																<p key={i} className="text-xs text-red-400 font-medium">
+																	⚠ {reason}
+																</p>
+															))}
+														</div>
+													)}
+												</div>
+												{!isDisabled && (
+													<button
+														type="button"
+														className="px-3 py-1 text-white text-sm font-semibold rounded hover:opacity-90"
+														style={{ backgroundColor: '#BE0000' }}
+													>
+														Select
+													</button>
+												)}
 											</div>
-											<button
-												type="button"
-												className="px-3 py-1 text-white text-sm font-semibold rounded hover:opacity-90"
-												style={{ backgroundColor: '#BE0000' }}
-											>
-												Select
-											</button>
 										</div>
-									</div>
-								))
+									);
+								})
 							)}
 						</div>
 					</div>
