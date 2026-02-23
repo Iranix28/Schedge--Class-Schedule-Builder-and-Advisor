@@ -256,13 +256,24 @@ def scrapeDegreeAudit(html_file):
         credits = int(match.group(1)) if match else None
 
         needsCreditsTag = req.select_one(".reqNeeds span.hours.number")
-        needsCredits = float(needsCreditsTag.text.strip()) if needsCreditsTag else None
+        needsCredits = None
+
+        if needsCreditsTag:
+            text = needsCreditsTag.text.strip()
+            try:
+                needsCredits = float(text)
+            except ValueError:
+                needsCredits = None
 
         needsClassesTag = req.select_one(".reqNeeds span.count.number")
         needsClasses = None
 
         if needsClassesTag:
-            needsClasses = int(needsClassesTag.text.strip())
+            text = needsClassesTag.text.strip()
+            try:
+                needsClasses = int(text)
+            except ValueError:
+                needsClasses = None
 
         requirement_obj = {
             "title": title,
