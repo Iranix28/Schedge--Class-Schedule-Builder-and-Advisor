@@ -8,17 +8,10 @@
   <body class="h-screen">
     <div id="root" class="h-full"></div>
 
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.development.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-    ></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-        <!-- Load your components -->
     <script type="text/babel" src="./Sidebar.js"></script>
     <script type="text/babel" src="./login.js"></script>
     <script type="text/babel" src="./PlanSelection.js"></script>
@@ -26,32 +19,26 @@
     <script type="text/babel" src="./MultiSemesterUI.js"></script>
     <script type="text/babel" src="./ChatUI.js"></script>
 
-    <!-- Main App component -->
     <script type="text/babel">
       const { useState, useEffect } = React;
 
       function App() {
-        const [isAuthenticated, setIsAuthenticated] = useState(false);
-        const [userData, setUserData] = useState(null);
-        const [selectedPlan, setSelectedPlan] = useState(null);
+        const [isAuthenticated, setIsAuthenticated]   = useState(false);
+        const [userData, setUserData]                 = useState(null);
+        const [selectedPlan, setSelectedPlan]         = useState(null);
         const [selectedSemester, setSelectedSemester] = useState(null);
         const [selectedSavedPlan, setSelectedSavedPlan] = useState(null);
         const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
-        const [resetKey, setResetKey] = useState(0);
+        const [resetKey, setResetKey]                 = useState(0);
+        const [multiPlanTitle, setMultiPlanTitle]     = useState("");
+        const [createdMultiPlanId, setCreatedMultiPlanId] = useState(null);
 
-        const handlePlanSaved = () => {
-          setSidebarRefreshKey((k) => k + 1);
-        };
-
-        // Initialize and handle browser back/forward
+        // ── auth ──────────────────────────────────────────────────────────────
         useEffect(() => {
           (async () => {
             try {
-              const res = await fetch("http://localhost:8000/auth/me", {
-                credentials: "include",
-              });
+              const res = await fetch("http://localhost:8000/auth/me", { credentials: "include" });
               if (!res.ok) return;
-
               const user = await res.json();
               setUserData(user);
               setIsAuthenticated(true);
@@ -59,95 +46,126 @@
           })();
         }, []);
 
-        const handleLoginSuccess = (user) => {
-          setUserData(user);
-          setIsAuthenticated(true);
-        };
+        const handleLoginSuccess = (user) => { setUserData(user); setIsAuthenticated(true); };
 
         const handleLogout = async () => {
-          try {
-            await fetch("http://localhost:8000/auth/logout", {
-              method: "POST",
-              credentials: "include",
-            });
-          } catch (e) {}
-
+          try { await fetch("http://localhost:8000/auth/logout", { method: "POST", credentials: "include" }); } catch (e) {}
           setIsAuthenticated(false);
           setUserData(null);
         };
 
-        const handleSelectPlanType = (planType) => {
-          setSelectedPlan(planType);
+        // ── plan saved callback ───────────────────────────────────────────────
+        const handlePlanSaved = () => setSidebarRefreshKey((k) => k + 1);
+
+        // ── helpers to fully reset multi-plan navigation state ────────────────
+        const resetMultiState = () => {
+          setSelectedSemester(null);
+          setCreatedMultiPlanId(null);
+          setMultiPlanTitle("");
+          setSemesterChatKey("none");
         };
 
-        const handleBackToPlanSelection = () => {
-          setSelectedPlan(null);
-          setSelectedSemester(null);
-          setSelectedSavedPlan(null);
-        };
+        // ── navigation handlers ───────────────────────────────────────────────
+        const handleSelectPlanType = (planType) => setSelectedPlan(planType);
 
         const handleSelectSavedPlan = (plan) => {
+          resetMultiState();
           setSelectedSavedPlan(plan);
-          if (plan.mode === "multi") {
-            setSelectedPlan("saved-multi");
-          } else {
-            setSelectedPlan('saved');
-          }
+          setSelectedPlan(plan.mode === "multi" ? "saved-multi" : "saved");
         };
 
-        const handleBackToSavedPlans = () => {
-          setSelectedSavedPlan(null);
-        };
+        const handleBackToSavedPlans = () => setSelectedSavedPlan(null);
+
+        const [semesterChatKey, setSemesterChatKey] = useState("none");
 
         const handleSelectSemester = (semester) => {
-          console.log("[handleSelectSemester] semester received:", JSON.stringify(semester));
+          if (semester._planTitle) setMultiPlanTitle(semester._planTitle);
+          // Compute a stable key NOW at click time — before any DB id patching happens.
+          // This key must never change during the semester visit or ChatUI will remount and wipe messages.
+          const stableKey = "sem-" + String(semester.semester_db_id || semester.id || Date.now());
+          setSemesterChatKey(stableKey);
           setSelectedSemester(semester);
         };
 
-        const handleBackToMultiSemester = (updatedSemesterData) => {
-          // Patch the updated messages + schedule back into selectedSavedPlan
-          // so MultiSemesterUI re-renders with fresh data without needing a full reload
-          if (updatedSemesterData && selectedSemester?.semester_db_id) {
-            setSelectedSavedPlan((prev) => {
-              if (!prev) return prev;
-              return {
-                ...prev,
-                semesters: prev.semesters.map((sem) =>
-                  sem.id === selectedSemester.semester_db_id
-                    ? { ...sem, messages: updatedSemesterData.messages, schedule: updatedSemesterData.schedule }
-                    : sem
-                ),
-              };
-            });
+        const handlePlanCreated = async (ids) => {
+          if (!ids.plan_id) return;
+          setCreatedMultiPlanId(ids.plan_id);
+          setSelectedSemester((prev) => ({
+            ...prev,
+            plan_id: ids.plan_id,
+            semester_db_id: ids.semester_db_id,
+          }));
+          setSidebarRefreshKey((k) => k + 1);
+          try {
+            const res = await fetch(
+              "http://localhost:8000/plans/multi/" + ids.plan_id + "?user_id=" + userData.id
+            );
+            if (!res.ok) return;
+            const fullPlan = await res.json();
+            setSelectedSavedPlan(fullPlan);
+          } catch (e) {
+            console.error("[handlePlanCreated] failed to fetch full plan:", e);
           }
+        };
+
+        const handleBackToMultiSemester = (updatedSemesterData) => {
+          const resolvedName = (updatedSemesterData && updatedSemesterData.planName) || multiPlanTitle;
+
+          setSelectedSavedPlan((prev) => {
+            // If no saved plan yet (fresh plan mid-creation), nothing to patch
+            if (!prev) return prev;
+            if (!updatedSemesterData) return prev;
+
+            const dbId = selectedSemester && selectedSemester.semester_db_id;
+            return {
+              ...prev,
+              name: resolvedName || prev.name,
+              semesters: prev.semesters.map((sem) =>
+                sem.id === dbId
+                  ? { ...sem, messages: updatedSemesterData.messages, schedule: updatedSemesterData.schedule }
+                  : sem
+              ),
+            };
+          });
+
+          if (resolvedName) setMultiPlanTitle(resolvedName);
+
+          if (createdMultiPlanId && selectedPlan === "multi") {
+            setSelectedPlan("saved-multi");
+          }
+
           setSelectedSemester(null);
         };
 
         const handleSidebarNavigate = (mode) => {
           setSelectedSavedPlan(null);
-          setSelectedSemester(null);
+          resetMultiState();
           setSelectedPlan(mode);
-          setResetKey((k) => k + 1); // force fresh remount of target UI
+          setResetKey((k) => k + 1);
+        };
+
+        const handleBackToPlanSelection = () => {
+          setSelectedPlan(null);
+          setSelectedSavedPlan(null);
+          resetMultiState();
         };
 
         const handleSidebarNewChat = () => {
           setSelectedSavedPlan(null);
-          setSelectedSemester(null);
-          setSelectedPlan('single');
+          resetMultiState();
+          setSelectedPlan("single");
         };
 
         const handleSidebarSelectPlan = (plan) => {
+          resetMultiState();
           setSelectedSavedPlan(plan);
-          if (plan.mode === "multi") {
-            setSelectedPlan("saved-multi");
-          } else {
-            setSelectedPlan('saved');
-          }
+          setSelectedPlan(plan.mode === "multi" ? "saved-multi" : "saved");
         };
+
+        // ── render ────────────────────────────────────────────────────────────
 
         return (
           <div className="h-full">
-            {/* Sidebar – always visible on authenticated views */}
             {isAuthenticated && (
               <Sidebar
                 userData={userData}
@@ -158,22 +176,14 @@
               />
             )}
 
-            {/* Main content area – always offset by sidebar width */}
-            <div
-              style={{
-                marginLeft: isAuthenticated ? "260px" : "0px",
-                height: "100%",
-              }}
-            >
+            <div style={{ marginLeft: isAuthenticated ? "260px" : "0px", height: "100%" }}>
               {!isAuthenticated ? (
                 <LoginPage onLoginSuccess={handleLoginSuccess} />
+
               ) : !selectedPlan ? (
-                <PlanSelection 
-                  onSelectPlan={handleSelectPlanType} 
-                  userData={userData} 
-                  onLogout={handleLogout} 
-                />
-              ) : selectedPlan === 'saved' && !selectedSavedPlan ? (
+                <PlanSelection onSelectPlan={handleSelectPlanType} userData={userData} onLogout={handleLogout} />
+
+              ) : selectedPlan === "saved" && !selectedSavedPlan ? (
                 <SavedPlansUI
                   userData={userData}
                   onLogout={handleLogout}
@@ -181,57 +191,76 @@
                   onSelectPlan={handleSelectSavedPlan}
                   onPlanDeleted={handlePlanSaved}
                 />
-              ) : selectedPlan === 'saved-multi' && selectedSavedPlan && !selectedSemester ? (
+
+              ) : selectedPlan === "saved-multi" && selectedSavedPlan && !selectedSemester ? (
                 <MultiSemesterUI
+                  key={selectedSavedPlan.id}
                   userData={userData}
                   onLogout={handleLogout}
                   onSelectSemester={handleSelectSemester}
                   savedPlan={selectedSavedPlan}
                   onBack={handleBackToPlanSelection}
                   onPlanSaved={handlePlanSaved}
+                  initialTitle={multiPlanTitle || selectedSavedPlan.name}
+                  onTitleChange={setMultiPlanTitle}
+                  planId={selectedSavedPlan.id}
                 />
-              ) : selectedPlan === 'saved-multi' && selectedSemester ? (
+
+              ) : selectedPlan === "saved-multi" && selectedSemester ? (
                 <ChatUI
+                  key={semesterChatKey}
                   userData={userData}
                   onLogout={handleLogout}
                   semester={selectedSemester}
                   onBack={handleBackToMultiSemester}
                   onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
                 />
-              ) : selectedPlan === 'saved' && selectedSavedPlan ? (
-                <ChatUI 
-                  userData={userData} 
+
+              ) : selectedPlan === "saved" && selectedSavedPlan ? (
+                <ChatUI
+                  key={selectedSavedPlan.id}
+                  userData={userData}
                   onLogout={handleLogout}
                   onBack={handleBackToSavedPlans}
                   savedPlan={selectedSavedPlan}
                   onPlanSaved={handlePlanSaved}
                 />
-              ) : selectedPlan === 'single' ? (
-                <ChatUI 
+
+              ) : selectedPlan === "single" ? (
+                <ChatUI
                   key={resetKey}
-                  userData={userData} 
+                  userData={userData}
                   onLogout={handleLogout}
                   onBack={handleBackToPlanSelection}
                   onPlanSaved={handlePlanSaved}
                 />
-              ) : selectedPlan === 'multi' && !selectedSemester ? (
-                <MultiSemesterUI 
+
+              ) : selectedPlan === "multi" && !selectedSemester ? (
+                <MultiSemesterUI
                   key={resetKey}
-                  userData={userData} 
+                  userData={userData}
                   onLogout={handleLogout}
                   onSelectSemester={handleSelectSemester}
                   onBack={handleBackToPlanSelection}
                   onPlanSaved={handlePlanSaved}
+                  initialTitle={multiPlanTitle}
+                  onTitleChange={setMultiPlanTitle}
+                  planId={createdMultiPlanId}
                 />
-              ) : (
-                <ChatUI 
-                  userData={userData} 
+
+              ) : selectedPlan === "multi" && selectedSemester ? (
+                <ChatUI
+                  key={semesterChatKey}
+                  userData={userData}
                   onLogout={handleLogout}
                   semester={selectedSemester}
                   onBack={handleBackToMultiSemester}
                   onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
                 />
-              )}
+
+              ) : null}
             </div>
           </div>
         );

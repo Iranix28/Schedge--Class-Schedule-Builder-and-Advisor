@@ -20,7 +20,7 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
-function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) {
+function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
 	const [messages, setMessages] = useState([
 		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
 	]);
@@ -135,10 +135,19 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 
 	}, [savedPlan]);
 
-	// Load saved messages + schedule when opening a semester from a saved multi plan
+	// Track whether we've already initialized from this semester so that patching
+	// plan_id / semester_db_id into the semester prop (after auto-creation) does NOT
+	// re-run this effect and wipe the user's in-progress messages.
+	const semesterInitializedRef = useRef(false);
+
+	// Load saved messages + schedule when opening a semester (saved or fresh multi plan)
 	useEffect(() => {
-		if (!semester?.plan_id) return;
-		setPlanName(semester.name || "My Plan");
+		if (!semester) return;
+		// Only run once per ChatUI mount — skip subsequent updates that only patch in DB ids
+		if (semesterInitializedRef.current) return;
+		semesterInitializedRef.current = true;
+
+		setPlanName(semester.name || semester._planTitle || "My Plan");
 		if (semester.messages && semester.messages.length > 0) {
 			setMessages(semester.messages);
 		} else {
@@ -151,16 +160,166 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 		}
 	}, [semester]);
 
-	// isAutosaveMode: true only for semesters from a saved multi-semester plan
-	const isAutosaveMode = !!(semester?.plan_id && semester?.semester_db_id);
-	console.log("[ChatUI] semester:", semester, "isAutosaveMode:", isAutosaveMode);
+	// Holds plan_id + semester_db_id after a manual save on a single plan.
+	// Must be useState (not useRef) so isAutosaveMode re-evaluates after save.
+	const [savedPlanIds, setSavedPlanIds] = useState(null);
+
+	// isFreshMultiMode: semester has no DB ids yet but belongs to a multi plan context
+	const isFreshMultiMode = !!(semester && !semester.plan_id && (semester._allSemesters || semester._existingPlanId));
+
+	// isAutosaveMode: multi plans (saved or fresh) OR single plans after manual save
+	const isAutosaveMode = !!(semester?.plan_id && semester?.semester_db_id)
+		|| isFreshMultiMode
+		|| !!(savedPlan?.id && savedPlan?.semester_db_id)
+		|| !!(savedPlanIds);
+
+	// When entering a brand-new semester on an already-created plan, eagerly register
+	// it in the DB on mount so autosave has a real semester_db_id immediately —
+	// without waiting for the user to send a message or add a course.
+	useEffect(() => {
+		if (!semester?._existingPlanId || !userData?.id) return;
+		if (createdPlanRef.current) return; // already registered this session
+
+		const registerSemester = async () => {
+			if (isCreatingPlanRef.current) return;
+			isCreatingPlanRef.current = true;
+			try {
+				const res = await fetch(`${BASE_URL}/plans/${semester._existingPlanId}/semesters`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						user_id: userData.id,
+						term_season: semester.term,
+						term_year: semester.year,
+					}),
+				});
+				if (!res.ok) throw new Error(await res.text());
+				const data = await res.json();
+				const ids = { plan_id: semester._existingPlanId, semester_db_id: data.semester_db_id };
+				createdPlanRef.current = ids;
+				if (onPlanCreated) onPlanCreated(ids);
+			} catch (e) {
+				console.error("[ChatUI] failed to register semester on mount:", e);
+			} finally {
+				isCreatingPlanRef.current = false;
+			}
+		};
+
+		registerSemester();
+	}, []); // run once on mount only
+	console.log("[ChatUI] semester:", semester, "isAutosaveMode:", isAutosaveMode, "isFreshMultiMode:", isFreshMultiMode);
+
+	// Holds the live DB ids after a fresh plan is auto-created on first save
+	const createdPlanRef = useRef(null); // { plan_id, semester_db_id }
+	const isCreatingPlanRef = useRef(false); // prevent concurrent creation
+
+	// Resolve the live plan_id / semester_db_id from any source
+	const getActivePlanIds = () => {
+		// Multi-plan: from semester prop
+		if (semester?.plan_id && semester?.semester_db_id) {
+			return { plan_id: semester.plan_id, semester_db_id: semester.semester_db_id };
+		}
+		// Multi-plan: from auto-creation ref
+		if (createdPlanRef.current) {
+			return createdPlanRef.current;
+		}
+		// Single-plan: from manual save ref
+		// Single-plan: from manual save (state so it's always current)
+		if (savedPlanIds) {
+			return savedPlanIds;
+		}
+		// Single-plan: from savedPlan prop (opened from sidebar)
+		if (savedPlan?.id && savedPlan?.semester_db_id) {
+			return { plan_id: savedPlan.id, semester_db_id: savedPlan.semester_db_id };
+		}
+		return null;
+	};
+
+	// Creates the multi plan in the DB for the first time (or adds a new semester
+	// to an already-created plan when _existingPlanId is set)
+	const createFreshMultiPlan = async () => {
+		const allSemesters = semester._allSemesters || [];
+		const planTitle = semester._planTitle || "Multi-Semester Plan";
+		const thisSemesterIndex = allSemesters.findIndex((s) => s.id === semester.id);
+
+		let planId = semester._existingPlanId || null;
+		let semesterDbId = null;
+
+		if (!planId) {
+			// Brand-new plan — POST to create it with all semesters
+			const res = await fetch(`${BASE_URL}/plans/multi`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					user_id: userData.id,
+					name: planTitle,
+					semesters: allSemesters.map((s) => ({
+						term_season: s.term,
+						term_year: s.year,
+						courses: s.courses || [],
+					})),
+				}),
+			});
+			if (!res.ok) throw new Error(await res.text());
+			const created = await res.json();
+			planId = created.id;
+
+			// Resolve this semester's DB id from the full plan detail
+			const detailRes = await fetch(`${BASE_URL}/plans/multi/${planId}?user_id=${userData.id}`);
+			if (!detailRes.ok) throw new Error(await detailRes.text());
+			const detail = await detailRes.json();
+			semesterDbId = detail.semesters[thisSemesterIndex]?.id;
+
+			if (onPlanSaved) onPlanSaved();
+		} else {
+			// Plan already exists — semester may already be registered from the mount effect
+			if (createdPlanRef.current) {
+				return createdPlanRef.current;
+			}
+			// Not registered yet — POST now
+			const res = await fetch(`${BASE_URL}/plans/${planId}/semesters`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					user_id: userData.id,
+					term_season: semester.term,
+					term_year: semester.year,
+				}),
+			});
+			if (!res.ok) throw new Error(await res.text());
+			const data = await res.json();
+			semesterDbId = data.semester_db_id;
+		}
+
+		if (!semesterDbId) throw new Error("Could not resolve semester DB id");
+
+		const ids = { plan_id: planId, semester_db_id: semesterDbId };
+		createdPlanRef.current = ids;
+
+		if (onPlanCreated) onPlanCreated({ plan_id: planId, semester_db_id: semesterDbId });
+
+		return ids;
+	};
 
 	// Called with fresh data explicitly to avoid stale closure issues
 	const autosave = async (msgs, vizData) => {
 		if (!isAutosaveMode) return;
-		if (!userData?.id || !semester?.plan_id || !semester?.semester_db_id) return;
+		if (!userData?.id) return;
+
 		setAutosaveStatus("saving");
 		try {
+			// Resolve or create plan ids
+			let ids = getActivePlanIds();
+			if (!ids) {
+				if (isCreatingPlanRef.current) return; // already being created, skip
+				isCreatingPlanRef.current = true;
+				try {
+					ids = await createFreshMultiPlan();
+				} finally {
+					isCreatingPlanRef.current = false;
+				}
+			}
+
 			const courseSelections = [];
 			const seen = new Set();
 			(vizData?.data || []).forEach((item) => {
@@ -170,14 +329,17 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			});
 			const payload = {
 				user_id: userData.id,
+				plan_name: (semester && (semester._planTitle || semester.name)) || planName || null,
 				courseSelections,
 				messages: msgs.map((m) => ({ role: m.role, content: m.content })),
 				schedule: (vizData?.data || []).map((item) => ({ class_: item.class_ || "", day: item.day || "", startTime: item.startTime || "", endTime: item.endTime || "", room: item.room || "", course_id: item.course_id || null, class_section_id: item.class_section_id || null })),
 			};
-			const res = await fetch(`${BASE_URL}/plans/${semester.plan_id}/semesters/${semester.semester_db_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+			const res = await fetch(`${BASE_URL}/plans/${ids.plan_id}/semesters/${ids.semester_db_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 			if (!res.ok) throw new Error(await res.text());
 			setAutosaveStatus("saved");
 			setTimeout(() => setAutosaveStatus(null), 2000);
+			// Notify parent so sidebar re-fetches and moves this plan to the top
+			if (onPlanSaved) onPlanSaved();
 		} catch (err) {
 			console.error("[autosave] error:", err);
 			setAutosaveStatus("error");
@@ -303,14 +465,29 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 				method: "GET",
 			});
 
-			if (!res.ok) throw new Error("Failed to fetch course sections");
+			if (!res.ok) {
+				let detail = `HTTP ${res.status}`;
+				try {
+					const errBody = await res.json();
+					detail = errBody.detail || JSON.stringify(errBody);
+				} catch (_) {
+					detail = await res.text() || detail;
+				}
+				throw new Error(detail);
+			}
 
 			const sections = await res.json();
+
+			if (sections.length === 0) {
+				alert(`No sections found for course code "${class_code}". Make sure you're entering just the number (e.g. 1410).`);
+				return;
+			}
+
 			setAvailableSections(sections);
 			setShowSectionModal(true);
 			
 		} catch (err) {
-			console.error(err);
+			console.error("handleAddCourse error:", err);
 			alert(`Failed to add course: ${err.message}`);
 		}
 	};
@@ -524,6 +701,13 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 				throw new Error(errText);
 			}
 
+			const data = await res.json();
+
+			// Activate autosave for all future interactions on this plan
+			if (data.id && data.semester_db_id) {
+				setSavedPlanIds({ plan_id: data.id, semester_db_id: data.semester_db_id });
+			}
+
 			alert("Plan saved successfully");
 			if (onPlanSaved) onPlanSaved();
 		} catch (err) {
@@ -595,10 +779,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 					style={{ backgroundColor: "#BE0000" }}
 				>
 					<div className="flex items-center gap-3">
-						{isAutosaveMode && (
+						{(isAutosaveMode || isFreshMultiMode) && (
 							<button
 								type="button"
-								onClick={() => onBack({ messages, schedule: visualizationData?.data || [] })}
+								onClick={() => onBack({ messages, schedule: visualizationData?.data || [], planName: semester?._planTitle || planName })}
 								className="flex items-center gap-1 text-white opacity-80 hover:opacity-100 transition-opacity"
 								title="Back to semester overview"
 							>

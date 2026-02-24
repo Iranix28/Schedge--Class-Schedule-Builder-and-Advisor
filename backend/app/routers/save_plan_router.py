@@ -25,6 +25,9 @@ def get_db():
     db = SessionLocal()
     try:
         yield db
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()
 
@@ -91,6 +94,7 @@ class MultiPlanCreateRequest(BaseModel):
 
 class SemesterUpdateRequest(BaseModel):
     user_id: int
+    plan_name: Optional[str] = None  # if provided, update the plan's name too
     courseSelections: List[CourseSelectionInput] = []
     messages: List[ChatMessageInput] = []
     schedule: List[ScheduleItemInput] = []
@@ -100,12 +104,13 @@ class PlanSummaryResponse(BaseModel):
     id: int
     name: str
     created_at: datetime
+    semester_db_id: Optional[int] = None
 
 
 class PlanListResponse(BaseModel):
     id: int
     name: str
-    created_at: datetime
+    updated_at: datetime
     term_season: str
     term_year: int
     total_courses: int
@@ -116,6 +121,7 @@ class PlanDetailResponse(BaseModel):
     id: int
     name: str
     mode: str
+    semester_db_id: Optional[int] = None
     semester: SemesterInput
     courseSelections: List[CourseSelectionInput]
     messages: List[ChatMessageInput]
@@ -145,115 +151,39 @@ class MultiPlanDetailResponse(BaseModel):
 
 @router.post("", response_model=PlanSummaryResponse)
 def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
+    try:
+        user = db.query(User).filter(User.id == payload.user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
 
-    user = db.query(User).filter(User.id == payload.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    new_plan = Plan(
-        user_id=payload.user_id,
-        name=payload.name,
-        mode="single",
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
-        settings={
-            "schedule": [
-                item.model_dump() if hasattr(item, 'model_dump') else item.dict()
-                for item in payload.schedule
-            ]
-        } if payload.schedule else None,
-    )
-
-    db.add(new_plan)
-    db.flush()
-
-    new_semester = PlanSemester(
-        plan_id=new_plan.id,
-        term_season=payload.semester.term_season,
-        term_year=payload.semester.term_year,
-        position=0,
-    )
-
-    db.add(new_semester)
-    db.flush()
-
-    for selection in payload.courseSelections:
-        course = db.query(Course).filter(Course.id == selection.course_id).first()
-        if not course:
-            continue
-        db.add(PlanCourseSelection(
-            plan_semester_id=new_semester.id,
-            course_id=selection.course_id,
-            class_section_id=selection.class_section_id,
-            status="planned",
-            added_by="user",
-        ))
-
-    new_conversation = ChatConversation(
-        user_id=payload.user_id,
-        plan_id=new_plan.id,
-        plan_semester_id=new_semester.id,
-        title=payload.name,
-        created_at=datetime.now(timezone.utc),
-        last_message_at=datetime.now(timezone.utc),
-    )
-
-    db.add(new_conversation)
-    db.flush()
-
-    for idx, msg in enumerate(payload.messages):
-        db.add(ChatMessage(
-            conversation_id=new_conversation.id,
-            seq=idx,
-            role=msg.role,
-            content=msg.content,
+        new_plan = Plan(
+            user_id=payload.user_id,
+            name=payload.name,
+            mode="single",
             created_at=datetime.now(timezone.utc),
-        ))
+            updated_at=datetime.now(timezone.utc),
+            settings={
+                "schedule": [
+                    item.model_dump() if hasattr(item, 'model_dump') else item.dict()
+                    for item in payload.schedule
+                ]
+            } if payload.schedule else None,
+        )
 
-    db.commit()
-    db.refresh(new_plan)
+        db.add(new_plan)
+        db.flush()
 
-    return PlanSummaryResponse(
-        id=new_plan.id,
-        name=new_plan.name,
-        created_at=new_plan.created_at,
-    )
-
-
-# ----------------------------
-# POST /plans/multi  — save multi-semester plan
-# NOTE: must be before GET /{plan_id}
-# ----------------------------
-
-@router.post("/multi", response_model=PlanSummaryResponse)
-def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_db)):
-
-    user = db.query(User).filter(User.id == payload.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    new_plan = Plan(
-        user_id=payload.user_id,
-        name=payload.name,
-        mode="multi",
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
-    )
-
-    db.add(new_plan)
-    db.flush()
-
-    for position, sem_input in enumerate(payload.semesters):
         new_semester = PlanSemester(
             plan_id=new_plan.id,
-            term_season=sem_input.term_season,
-            term_year=sem_input.term_year,
-            position=position,
+            term_season=payload.semester.term_season,
+            term_year=payload.semester.term_year,
+            position=0,
         )
+
         db.add(new_semester)
         db.flush()
 
-        for selection in sem_input.courses:
+        for selection in payload.courseSelections:
             course = db.query(Course).filter(Course.id == selection.course_id).first()
             if not course:
                 continue
@@ -265,14 +195,104 @@ def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_d
                 added_by="user",
             ))
 
-    db.commit()
-    db.refresh(new_plan)
+        new_conversation = ChatConversation(
+            user_id=payload.user_id,
+            plan_id=new_plan.id,
+            plan_semester_id=new_semester.id,
+            title=payload.name,
+            created_at=datetime.now(timezone.utc),
+            last_message_at=datetime.now(timezone.utc),
+        )
 
-    return PlanSummaryResponse(
-        id=new_plan.id,
-        name=new_plan.name,
-        created_at=new_plan.created_at,
-    )
+        db.add(new_conversation)
+        db.flush()
+
+        for idx, msg in enumerate(payload.messages):
+            db.add(ChatMessage(
+                conversation_id=new_conversation.id,
+                seq=idx,
+                role=msg.role,
+                content=msg.content,
+                created_at=datetime.now(timezone.utc),
+            ))
+
+        db.commit()
+        db.refresh(new_plan)
+        db.refresh(new_semester)
+
+        return PlanSummaryResponse(
+            id=new_plan.id,
+            name=new_plan.name,
+            created_at=new_plan.created_at,
+            semester_db_id=new_semester.id,
+        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to save plan: {str(e)}")
+
+
+# ----------------------------
+# POST /plans/multi  — save multi-semester plan
+# NOTE: must be before GET /{plan_id}
+# ----------------------------
+
+@router.post("/multi", response_model=PlanSummaryResponse)
+def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_db)):
+    try:
+        user = db.query(User).filter(User.id == payload.user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        new_plan = Plan(
+            user_id=payload.user_id,
+            name=payload.name,
+            mode="multi",
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+
+        db.add(new_plan)
+        db.flush()
+
+        for position, sem_input in enumerate(payload.semesters):
+            new_semester = PlanSemester(
+                plan_id=new_plan.id,
+                term_season=sem_input.term_season,
+                term_year=sem_input.term_year,
+                position=position,
+            )
+            db.add(new_semester)
+            db.flush()
+
+            for selection in sem_input.courses:
+                course = db.query(Course).filter(Course.id == selection.course_id).first()
+                if not course:
+                    continue
+                db.add(PlanCourseSelection(
+                    plan_semester_id=new_semester.id,
+                    course_id=selection.course_id,
+                    class_section_id=selection.class_section_id,
+                    status="planned",
+                    added_by="user",
+                ))
+
+        db.commit()
+        db.refresh(new_plan)
+
+        return PlanSummaryResponse(
+            id=new_plan.id,
+            name=new_plan.name,
+            created_at=new_plan.created_at,
+        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to save multi plan: {str(e)}")
 
 
 # ----------------------------
@@ -370,6 +390,46 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
 
 
 # ----------------------------
+# POST /plans/{plan_id}/semesters  — add a new semester to an existing plan
+# ----------------------------
+
+class AddSemesterRequest(BaseModel):
+    user_id: int
+    term_season: str
+    term_year: int
+
+class AddSemesterResponse(BaseModel):
+    semester_db_id: int
+
+@router.post("/{plan_id}/semesters", response_model=AddSemesterResponse, status_code=201)
+def add_semester(plan_id: int, payload: AddSemesterRequest, db: Session = Depends(get_db)):
+    try:
+        plan = db.query(Plan).filter(Plan.id == plan_id, Plan.user_id == payload.user_id).first()
+        if not plan:
+            raise HTTPException(status_code=404, detail="Plan not found")
+
+        # Get next position
+        existing_count = db.query(PlanSemester).filter(PlanSemester.plan_id == plan_id).count()
+
+        new_semester = PlanSemester(
+            plan_id=plan_id,
+            term_season=payload.term_season,
+            term_year=payload.term_year,
+            position=existing_count,
+        )
+        db.add(new_semester)
+        db.commit()
+        db.refresh(new_semester)
+        return AddSemesterResponse(semester_db_id=new_semester.id)
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to add semester: {str(e)}")
+
+
+# ----------------------------
 # PUT /plans/{plan_id}/semesters/{semester_id}  — autosave a semester
 # NOTE: must be before GET /{plan_id}
 # ----------------------------
@@ -381,94 +441,111 @@ def update_semester(
     payload: SemesterUpdateRequest,
     db: Session = Depends(get_db),
 ):
-    plan = (
-        db.query(Plan)
-        .filter(Plan.id == plan_id, Plan.user_id == payload.user_id)
-        .first()
-    )
-    if not plan:
-        raise HTTPException(status_code=404, detail="Plan not found")
-
-    semester = (
-        db.query(PlanSemester)
-        .filter(PlanSemester.id == semester_id, PlanSemester.plan_id == plan_id)
-        .first()
-    )
-    if not semester:
-        raise HTTPException(status_code=404, detail="Semester not found")
-
-    # Replace course selections
-    db.query(PlanCourseSelection).filter(
-        PlanCourseSelection.plan_semester_id == semester_id
-    ).delete()
-
-    seen = set()
-    for sel in payload.courseSelections:
-        key = (sel.course_id, sel.class_section_id)
-        if key in seen:
-            continue
-        seen.add(key)
-        course = db.query(Course).filter(Course.id == sel.course_id).first()
-        if not course:
-            continue
-        db.add(PlanCourseSelection(
-            plan_semester_id=semester_id,
-            course_id=sel.course_id,
-            class_section_id=sel.class_section_id,
-            status="planned",
-            added_by="user",
-        ))
-
-    # Replace conversation messages
-    conversation = (
-        db.query(ChatConversation)
-        .filter(
-            ChatConversation.plan_id == plan_id,
-            ChatConversation.plan_semester_id == semester_id,
+    try:
+        plan = (
+            db.query(Plan)
+            .filter(Plan.id == plan_id, Plan.user_id == payload.user_id)
+            .first()
         )
-        .first()
-    )
+        if not plan:
+            raise HTTPException(status_code=404, detail="Plan not found")
 
-    if not conversation:
-        conversation = ChatConversation(
-            user_id=payload.user_id,
-            plan_id=plan_id,
-            plan_semester_id=semester_id,
-            title=plan.name,
-            created_at=datetime.now(timezone.utc),
-            last_message_at=datetime.now(timezone.utc),
+        # Update plan name if the user renamed it
+        if payload.plan_name and payload.plan_name.strip() and payload.plan_name.strip() != plan.name:
+            plan.name = payload.plan_name.strip()
+
+        semester = (
+            db.query(PlanSemester)
+            .filter(PlanSemester.id == semester_id, PlanSemester.plan_id == plan_id)
+            .first()
         )
-        db.add(conversation)
+        if not semester:
+            raise HTTPException(status_code=404, detail="Semester not found")
+
+        # Replace course selections — flush the DELETE before inserting new rows
+        # to avoid unique-constraint collisions on uq_plan_sem_course
+        db.query(PlanCourseSelection).filter(
+            PlanCourseSelection.plan_semester_id == semester_id
+        ).delete(synchronize_session=False)
         db.flush()
 
-    db.query(ChatMessage).filter(
-        ChatMessage.conversation_id == conversation.id
-    ).delete()
+        seen = set()
+        for sel in payload.courseSelections:
+            key = (sel.course_id, sel.class_section_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            course = db.query(Course).filter(Course.id == sel.course_id).first()
+            if not course:
+                continue
+            db.add(PlanCourseSelection(
+                plan_semester_id=semester_id,
+                course_id=sel.course_id,
+                class_section_id=sel.class_section_id,
+                status="planned",
+                added_by="user",
+            ))
 
-    for idx, msg in enumerate(payload.messages):
-        db.add(ChatMessage(
-            conversation_id=conversation.id,
-            seq=idx,
-            role=msg.role,
-            content=msg.content,
-            created_at=datetime.now(timezone.utc),
-        ))
+        # Replace conversation messages
+        conversation = (
+            db.query(ChatConversation)
+            .filter(
+                ChatConversation.plan_id == plan_id,
+                ChatConversation.plan_semester_id == semester_id,
+            )
+            .first()
+        )
 
-    conversation.last_message_at = datetime.now(timezone.utc)
+        if not conversation:
+            conversation = ChatConversation(
+                user_id=payload.user_id,
+                plan_id=plan_id,
+                plan_semester_id=semester_id,
+                title=plan.name,
+                created_at=datetime.now(timezone.utc),
+                last_message_at=datetime.now(timezone.utc),
+            )
+            db.add(conversation)
+            db.flush()
 
-    # Store schedule in plan settings keyed by semester_id
-    settings = plan.settings or {}
-    semester_schedules = settings.get("semester_schedules", {})
-    semester_schedules[str(semester_id)] = [
-        item.model_dump() if hasattr(item, "model_dump") else item.dict()
-        for item in payload.schedule
-    ]
-    settings["semester_schedules"] = semester_schedules
-    plan.settings = settings
-    plan.updated_at = datetime.now(timezone.utc)
+        # DELETE old messages first and flush before inserting new ones
+        # to avoid unique-constraint collisions on uq_chat_msg_seq
+        db.query(ChatMessage).filter(
+            ChatMessage.conversation_id == conversation.id
+        ).delete(synchronize_session=False)
+        db.flush()
 
-    db.commit()
-    return {"ok": True}
+        for idx, msg in enumerate(payload.messages):
+            db.add(ChatMessage(
+                conversation_id=conversation.id,
+                seq=idx,
+                role=msg.role,
+                content=msg.content,
+                created_at=datetime.now(timezone.utc),
+            ))
+
+        conversation.last_message_at = datetime.now(timezone.utc)
+
+        # Store schedule in plan settings keyed by semester_id
+        settings = dict(plan.settings) if plan.settings else {}
+        semester_schedules = dict(settings.get("semester_schedules", {}))
+        semester_schedules[str(semester_id)] = [
+            item.model_dump() if hasattr(item, "model_dump") else item.dict()
+            for item in payload.schedule
+        ]
+        settings["semester_schedules"] = semester_schedules
+        plan.settings = settings
+        plan.updated_at = datetime.now(timezone.utc)
+
+        db.commit()
+        return {"ok": True}
+
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to save semester: {str(e)}")
 
 
 # ----------------------------
@@ -482,7 +559,7 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
         db.query(
             Plan.id,
             Plan.name,
-            Plan.created_at,
+            Plan.updated_at,
             Plan.mode,
             PlanSemester.term_season,
             PlanSemester.term_year,
@@ -495,7 +572,7 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
         )
         .filter(Plan.user_id == user_id)
         .group_by(Plan.id, PlanSemester.id)
-        .order_by(Plan.created_at.desc())
+        .order_by(Plan.updated_at.desc())
         .all()
     )
 
@@ -652,6 +729,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
         id=plan.id,
         name=plan.name,
         mode=plan.mode,
+        semester_db_id=semester.id,
         semester=SemesterInput(
             term_season=semester.term_season,
             term_year=semester.term_year,

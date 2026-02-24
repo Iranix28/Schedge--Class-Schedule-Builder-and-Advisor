@@ -1,9 +1,15 @@
 const { useState, useEffect } = React;
 
-function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPlanSaved }) {
-	const [plannerTitle, setPlannerTitle] = useState("");
+function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPlanSaved, initialTitle, onTitleChange, planId }) {
+	const [plannerTitle, setPlannerTitle] = useState(initialTitle || "");
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+
+	// Sync title up to parent whenever it changes so it survives navigation
+	const handleTitleChange = (val) => {
+		setPlannerTitle(val);
+		if (onTitleChange) onTitleChange(val);
+	};
 
     // Function to get the next semester based on current date
 	const getNextSemester = () => {
@@ -52,7 +58,7 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 
 	useEffect(() => {
 		if (savedPlan) {
-			setPlannerTitle(savedPlan.name || "");
+			handleTitleChange(savedPlan.name || "");
 		}
 	}, [savedPlan]);
 
@@ -166,7 +172,7 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 							type="text"
 							value={plannerTitle}
 							autoFocus
-							onChange={(e) => setPlannerTitle(e.target.value)}
+							onChange={(e) => handleTitleChange(e.target.value)}
 							onBlur={() => setIsEditingTitle(false)}
 							onKeyDown={(e) => {
 								if (e.key === "Enter") setIsEditingTitle(false);
@@ -226,8 +232,16 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 							<div
 								key={semester.id}
 								onClick={() => {
-								console.log("[MultiSemesterUI] clicking semester:", JSON.stringify(semester));
-								onSelectSemester(semester);
+								const activePlanId = planId || savedPlan?.id || null;
+								const semesterWithContext = {
+									...semester,
+									_planTitle: plannerTitle.trim() || "Multi-Semester Plan",
+									_allSemesters: semesters,
+									// Always inject the plan id so ChatUI never creates a duplicate plan
+									...(activePlanId && !semester.plan_id ? { _existingPlanId: activePlanId } : {}),
+								};
+								console.log("[MultiSemesterUI] clicking semester:", JSON.stringify(semesterWithContext));
+								onSelectSemester(semesterWithContext);
 							}}
 								className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group hover:scale-105 border-2 border-transparent hover:border-red-700"
 							>
