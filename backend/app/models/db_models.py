@@ -27,6 +27,7 @@ class CourseBase(BaseModel):
     name: str    # Software Practice
     units: int  
     description: Optional[str] = None
+    prereq_conditions: Optional[list] = None   # list of prereq conditions as strings, e.g. ["CS 2500 or CS 2501", "MATH 1550"]
 
 
 class CourseCreate(CourseBase):
@@ -143,6 +144,7 @@ class CourseRead(BaseModel):
     department_id: int
     number: str
     name: str
+    prereq_conditions: Optional[list]
 
     model_config = ConfigDict(from_attributes=True)
 
