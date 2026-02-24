@@ -37,8 +37,12 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
     lines = []
 
     for req in requirements:
+        # print("Scraper")
+        print(req["title"])
+        # print(req["needsCount"])
+        # print(req["needsCredits"])
         # DB
-        reqId = add_requirement(db, auditId, req["title"], needs_credits = req["needsCredits"] or None) #also pass in the needsCount for the requirement
+        reqId = add_requirement(db, auditId, req["title"], needs_count = req["needsCount"] or None, needs_credits = req["needsCredits"] or None)
 
         lines.append("=" * 60)
         lines.append(f"Requirement: {req['title']}")
@@ -46,7 +50,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
 
         for sub in req["subrequirements"]:
             # DB
-            subReqId = add_subrequirement(db, auditId, reqId, sub['title'] or "[No Title]", sub["needsCount"] or None, req["needsCredits"] or None) # change this req to sub later
+            subReqId = add_subrequirement(db, auditId, reqId, sub['title'] or "[No Title]", sub["needsCount"] or None, sub["needsCredits"] or None)
 
             lines.append(f"  Subrequirement: {sub['title'] or '[No Title]'}")
 

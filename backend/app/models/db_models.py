@@ -176,6 +176,8 @@ class AuditRequirementRead(BaseModel):
     title: str
     sort_order: int
     subrequirements: List[AuditSubrequirementRead] = []
+    needs_count: Optional[int] = None
+    needs_credits: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 

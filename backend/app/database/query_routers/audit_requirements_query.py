@@ -277,6 +277,8 @@ def get_audit_tree(db: Session, audit_id: int,) -> UserAuditRead:
                 id=r.id,
                 title=r.title,
                 sort_order=r.sort_order,
+                needs_count=r.needs_count,
+                needs_credits=r.needs_credits,
                 subrequirements=sub_out,
             )
         )

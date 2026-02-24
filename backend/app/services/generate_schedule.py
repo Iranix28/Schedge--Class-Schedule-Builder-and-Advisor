@@ -206,27 +206,34 @@ def generate_schedule(audit_id):
             continue
 
         # UNCOMMENT THIS
-        # needs_class_count = req.needs_count
-        # needs_credits = req.needs_credits
+        needs_class_count = req.needs_count
+        needs_credits = req.needs_credits
 
+        # print("Schedule")
+        print(req.title)
+        print(req.needs_count)
+        print(req.needs_credits)
+
+
+        
         for subreq in req.subrequirements:
             # UNCOMMENT THIS
-            # if needs_class_count is None:
-            #     needs_class_count = subreq.needs_count
+            if needs_class_count is None:
+                needs_class_count = subreq.needs_count
 
-            # if needs_credits is None:
-            #     needs_credits = subreq.needs_credits
+            if needs_credits is None:
+                needs_credits = subreq.needs_credits
 
-            # # Last reasource
+            # # Last reasource (maybe unnecessary)
             # if needs_credits is None:
             #     needs_credits = req["totalCredits"]
 
-            # DELETE THIS
-            needs_class_count = subreq.needs_count
-            needs_credits = subreq.needs_credits
+            # # DELETE THIS
+            # needs_class_count = subreq.needs_count
+            # needs_credits = subreq.needs_credits
 
-            #print("Needs Count: " + needs_class_count)
-            #print("Needs Credits: " + needs_credits)
+            # print("Needs Count: " + str(needs_class_count))
+            # print("Needs Credits: " + str(needs_credits))
 
             for course in subreq.select_from:
                 # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
