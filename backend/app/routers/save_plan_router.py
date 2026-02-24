@@ -114,6 +114,7 @@ class PlanListResponse(BaseModel):
     term_season: str
     term_year: int
     total_courses: int
+    semester_count: int
     mode: str
 
 
@@ -293,6 +294,81 @@ def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_d
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to save multi plan: {str(e)}")
+
+
+# ----------------------------
+# PUT /plans/multi/{plan_id}  — update existing multi-semester plan
+# NOTE: must be before GET /{plan_id}
+# ----------------------------
+
+@router.put("/multi/{plan_id}", response_model=PlanSummaryResponse)
+def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session = Depends(get_db)):
+    try:
+        plan = db.query(Plan).filter(Plan.id == plan_id, Plan.user_id == payload.user_id).first()
+        if not plan:
+            raise HTTPException(status_code=404, detail="Plan not found")
+
+        # Update name
+        plan.name = payload.name
+        plan.updated_at = datetime.now(timezone.utc)
+
+        # Get existing semesters ordered by position
+        existing_semesters = (
+            db.query(PlanSemester)
+            .filter(PlanSemester.plan_id == plan_id)
+            .order_by(PlanSemester.position)
+            .all()
+        )
+
+        # Update existing semesters or add new ones
+        for position, sem_input in enumerate(payload.semesters):
+            if position < len(existing_semesters):
+                # Update existing semester term (preserve its id so chat history stays intact)
+                existing_semesters[position].term_season = sem_input.term_season
+                existing_semesters[position].term_year = sem_input.term_year
+                existing_semesters[position].position = position
+            else:
+                # Add new semester
+                new_semester = PlanSemester(
+                    plan_id=plan_id,
+                    term_season=sem_input.term_season,
+                    term_year=sem_input.term_year,
+                    position=position,
+                )
+                db.add(new_semester)
+
+        # Remove extra semesters if user deleted some
+        if len(existing_semesters) > len(payload.semesters):
+            for sem in existing_semesters[len(payload.semesters):]:
+                db.query(PlanCourseSelection).filter(
+                    PlanCourseSelection.plan_semester_id == sem.id
+                ).delete(synchronize_session=False)
+                db.query(ChatMessage).filter(
+                    ChatMessage.conversation_id.in_(
+                        db.query(ChatConversation.id).filter(
+                            ChatConversation.plan_semester_id == sem.id
+                        )
+                    )
+                ).delete(synchronize_session=False)
+                db.query(ChatConversation).filter(
+                    ChatConversation.plan_semester_id == sem.id
+                ).delete(synchronize_session=False)
+                db.delete(sem)
+
+        db.commit()
+        db.refresh(plan)
+
+        return PlanSummaryResponse(
+            id=plan.id,
+            name=plan.name,
+            created_at=plan.created_at,
+        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update multi plan: {str(e)}")
 
 
 # ----------------------------
@@ -555,36 +631,68 @@ def update_semester(
 @router.get("", response_model=List[PlanListResponse])
 def list_plans(user_id: int, db: Session = Depends(get_db)):
 
+    # Get all plans for user, ordered by most recently updated
     plans = (
-        db.query(
-            Plan.id,
-            Plan.name,
-            Plan.updated_at,
-            Plan.mode,
-            PlanSemester.term_season,
-            PlanSemester.term_year,
-            func.count(PlanCourseSelection.id).label("total_courses"),
-        )
-        .join(PlanSemester, PlanSemester.plan_id == Plan.id)
-        .outerjoin(
-            PlanCourseSelection,
-            PlanCourseSelection.plan_semester_id == PlanSemester.id,
-        )
+        db.query(Plan)
         .filter(Plan.user_id == user_id)
-        .group_by(Plan.id, PlanSemester.id)
         .order_by(Plan.updated_at.desc())
         .all()
     )
 
-    # Deduplicate — multi plans have multiple semester rows, only show once
-    seen_plan_ids = set()
     result = []
-    for p in plans:
-        if p.id not in seen_plan_ids:
-            seen_plan_ids.add(p.id)
-            result.append(p)
+    for plan in plans:
+        semesters = (
+            db.query(PlanSemester)
+            .filter(PlanSemester.plan_id == plan.id)
+            .all()
+        )
+        semester_count = len(semesters)
+        total_courses = sum(
+            db.query(func.count(PlanCourseSelection.id))
+            .filter(PlanCourseSelection.plan_semester_id == sem.id)
+            .scalar() or 0
+            for sem in semesters
+        )
+        first_sem = semesters[0] if semesters else None
+        result.append(PlanListResponse(
+            id=plan.id,
+            name=plan.name,
+            updated_at=plan.updated_at,
+            mode=plan.mode,
+            term_season=first_sem.term_season if first_sem else "",
+            term_year=first_sem.term_year if first_sem else 0,
+            total_courses=total_courses,
+            semester_count=semester_count,
+        ))
 
     return result
+
+
+
+# ----------------------------
+# PATCH /plans/{plan_id}/name  — update plan name only
+# ----------------------------
+
+class PlanNameUpdateRequest(BaseModel):
+    user_id: int
+    name: str
+
+@router.patch("/{plan_id}/name", status_code=200)
+def update_plan_name(plan_id: int, payload: PlanNameUpdateRequest, db: Session = Depends(get_db)):
+    try:
+        plan = db.query(Plan).filter(Plan.id == plan_id, Plan.user_id == payload.user_id).first()
+        if not plan:
+            raise HTTPException(status_code=404, detail="Plan not found")
+        plan.name = payload.name.strip()
+        plan.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        return {"id": plan.id, "name": plan.name}
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update plan name: {str(e)}")
 
 
 # ----------------------------

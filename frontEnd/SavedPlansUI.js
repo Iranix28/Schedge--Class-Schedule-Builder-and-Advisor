@@ -227,9 +227,26 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted 
 															{isMulti ? "Multi-semester plan" : `${plan.term_season} ${plan.term_year}`}
 														</span>
 														<span className="text-slate-300">·</span>
-														<span>{plan.total_courses || 0} courses</span>
+														<span>
+									{isMulti
+										? `${plan.semester_count || 0} semester${(plan.semester_count || 0) !== 1 ? "s" : ""}`
+										: `${plan.total_courses || 0} course${(plan.total_courses || 0) !== 1 ? "s" : ""}`
+									}
+								</span>
 														<span className="text-slate-300">·</span>
-														<span>{new Date(plan.created_at).toLocaleDateString()}</span>
+														<span>
+									{plan.updated_at
+										? (() => {
+											const raw = plan.updated_at;
+											const d = new Date(raw.endsWith("Z") ? raw : raw + "Z");
+											if (isNaN(d.getTime())) return "—";
+											return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+												+ " · "
+												+ d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+										})()
+										: "—"
+									}
+								</span>
 													</div>
 												</div>
 

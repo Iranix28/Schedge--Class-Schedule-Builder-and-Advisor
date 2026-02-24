@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.models.models import ScheduleItem, CourseItem
@@ -33,38 +33,17 @@ def get_courses(db: Session = Depends(get_session)) -> List[CourseItem]:
 # THIS COMES SECOND - after specific routes
 @router.get("/{class_code}", response_model=List[ScheduleItem])
 def get_classes_from_code(class_code: int, db: Session = Depends(get_session)) -> List[ScheduleItem]:
-    try:
-        list_section = get_class_sections_by_course_number(db, str(class_code))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DB error fetching sections: {str(e)}")
-
+    list_section = get_class_sections_by_course_number(db, str(class_code))
     frontend_sections: list[ScheduleItem] = []
-
     for class_section in list_section:
-        # Skip sections with missing time data
-        if class_section.start_time is None or class_section.end_time is None:
-            print(f"Skipping section {class_section.section_code} — missing start/end time")
-            continue
+        time = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
+        print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time}")
 
-        try:
-            start_str = class_section.start_time.strftime("%H:%M")
-            end_str   = class_section.end_time.strftime("%H:%M")
-
-            start_display = datetime.strptime(start_str, "%H:%M").strftime("%-I:%M %p")
-            end_display   = datetime.strptime(end_str,   "%H:%M").strftime("%-I:%M %p")
-
-            print(f"\nid: {class_section.id}, section: {class_section.section_code}, "
-                  f"days: {class_section.days}, time: {start_str} {end_str}")
-
-            frontend_sections.append(ScheduleItem(
-                day=class_section.days,
-                startTime=start_display,
-                endTime=end_display,
-                class_=str(class_code) + " - " + str(class_section.section_code),
-                room=class_section.location if class_section.location else "TBD",
-            ))
-        except Exception as e:
-            print(f"Skipping section {class_section.section_code} — error: {e}")
-            continue
-
+        frontend_sections.append(ScheduleItem(
+            day=class_section.days,
+            startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"),
+            endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
+            class_=str(class_code) + " - " + str(class_section.section_code),
+            room="TBD",
+        ))
     return frontend_sections

@@ -80,9 +80,18 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	};
 
+	const planNameMountedRef = useRef(false);
 	useEffect(() => {
-		scrollToBottom();
-	}, [messages]);
+		if (!planNameMountedRef.current) {
+			planNameMountedRef.current = true;
+			return; // skip initial mount
+		}
+		if (!isAutosaveMode) return;
+		const timer = setTimeout(() => {
+			autosave(messages, visualizationData);
+		}, 1000);
+		return () => clearTimeout(timer);
+	}, [planName]);
 
 	useEffect(() => {
 		if (textareaRef.current) {
@@ -782,7 +791,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						{(isAutosaveMode || isFreshMultiMode) && (
 							<button
 								type="button"
-								onClick={() => onBack({ messages, schedule: visualizationData?.data || [], planName: semester?._planTitle || planName })}
+								onClick={() => onBack({ messages, schedule: visualizationData?.data || [], planName: semester?._planTitle || null })}
 								className="flex items-center gap-1 text-white opacity-80 hover:opacity-100 transition-opacity"
 								title="Back to semester overview"
 							>
