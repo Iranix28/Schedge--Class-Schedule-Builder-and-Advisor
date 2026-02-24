@@ -43,6 +43,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
 	const [planName, setPlanName] = useState("My Plan");
+	const [autosaveStatus, setAutosaveStatus] = useState(null); // null | "saving" | "saved" | "error"
 
 	const openCourseDetails = (course) => {
 		setSelectedCourse(course);
@@ -134,6 +135,55 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 
 	}, [savedPlan]);
 
+	// Load saved messages + schedule when opening a semester from a saved multi plan
+	useEffect(() => {
+		if (!semester?.plan_id) return;
+		setPlanName(semester.name || "My Plan");
+		if (semester.messages && semester.messages.length > 0) {
+			setMessages(semester.messages);
+		} else {
+			setMessages([{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" }]);
+		}
+		if (semester.schedule && semester.schedule.length > 0) {
+			setVisualizationData({ type: "schedule", data: semester.schedule });
+		} else {
+			setVisualizationData(null);
+		}
+	}, [semester]);
+
+	// isAutosaveMode: true only for semesters from a saved multi-semester plan
+	const isAutosaveMode = !!(semester?.plan_id && semester?.semester_db_id);
+	console.log("[ChatUI] semester:", semester, "isAutosaveMode:", isAutosaveMode);
+
+	// Called with fresh data explicitly to avoid stale closure issues
+	const autosave = async (msgs, vizData) => {
+		if (!isAutosaveMode) return;
+		if (!userData?.id || !semester?.plan_id || !semester?.semester_db_id) return;
+		setAutosaveStatus("saving");
+		try {
+			const courseSelections = [];
+			const seen = new Set();
+			(vizData?.data || []).forEach((item) => {
+				if (!item.course_id) return;
+				const key = `${item.course_id}-${item.class_section_id || "null"}`;
+				if (!seen.has(key)) { seen.add(key); courseSelections.push({ course_id: item.course_id, class_section_id: item.class_section_id || null }); }
+			});
+			const payload = {
+				user_id: userData.id,
+				courseSelections,
+				messages: msgs.map((m) => ({ role: m.role, content: m.content })),
+				schedule: (vizData?.data || []).map((item) => ({ class_: item.class_ || "", day: item.day || "", startTime: item.startTime || "", endTime: item.endTime || "", room: item.room || "", course_id: item.course_id || null, class_section_id: item.class_section_id || null })),
+			};
+			const res = await fetch(`${BASE_URL}/plans/${semester.plan_id}/semesters/${semester.semester_db_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+			if (!res.ok) throw new Error(await res.text());
+			setAutosaveStatus("saved");
+			setTimeout(() => setAutosaveStatus(null), 2000);
+		} catch (err) {
+			console.error("[autosave] error:", err);
+			setAutosaveStatus("error");
+		}
+	};
+
 	const handleFileUpload = async (e) => {
 		const file = e.target.files[0];
 		if (!file) return;
@@ -189,8 +239,13 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			});
 		};
 
+		let finalMessages = [];
 		try {
 			await sendMessageLLM(userMessage, appendToken);
+			await new Promise((resolve) => {
+				setMessages((prev) => { finalMessages = prev; resolve(); return prev; });
+			});
+			if (isAutosaveMode) autosave(finalMessages, visualizationData);
 		} catch (err) {
 			setMessages((prev) => [
 				...prev,
@@ -287,16 +342,17 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			class_section_id: null         // until backend returns real section ids
 		}));
 
+		let newVizData;
 		if (visualizationData) {
-			setVisualizationData({
-				...visualizationData,
-				data: [...visualizationData.data, ...newEntries],
-			});
+			newVizData = { ...visualizationData, data: [...visualizationData.data, ...newEntries] };
 		} else {
-			setVisualizationData({
-				type: "schedule",
-				data: newEntries,
-			});
+			newVizData = { type: "schedule", data: newEntries };
+		}
+		setVisualizationData(newVizData);
+		if (isAutosaveMode) {
+			let latestMsgs = [];
+			setMessages((prev) => { latestMsgs = prev; return prev; });
+			setTimeout(() => autosave(latestMsgs, newVizData), 0);
 		}
 
 		setShowSectionModal(false);
@@ -387,13 +443,12 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			item => item.class_ !== scheduleItem.class_
 		);
 
-		if (updatedData.length === 0) {
-			setVisualizationData(null);
-		} else {
-			setVisualizationData({
-				...visualizationData,
-				data: updatedData,
-			});
+		const newVizData = updatedData.length === 0 ? null : { ...visualizationData, data: updatedData };
+		setVisualizationData(newVizData);
+		if (isAutosaveMode) {
+			let latestMsgs = [];
+			setMessages((prev) => { latestMsgs = prev; return prev; });
+			setTimeout(() => autosave(latestMsgs, newVizData), 0);
 		}
 	};
 
@@ -539,7 +594,20 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
 				>
-					<div className="flex items-center gap-3">					
+					<div className="flex items-center gap-3">
+						{isAutosaveMode && (
+							<button
+								type="button"
+								onClick={() => onBack({ messages, schedule: visualizationData?.data || [] })}
+								className="flex items-center gap-1 text-white opacity-80 hover:opacity-100 transition-opacity"
+								title="Back to semester overview"
+							>
+								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+								</svg>
+								<span className="text-sm font-medium">Back</span>
+							</button>
+						)}
 						<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
 					</div>
 				</header>
@@ -706,14 +774,23 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
 							</svg>
 						</div>
-						<button
-							type="button"
-							onClick={handleSavePlan}
-							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
-							style={{ color: "#BE0000" }}
-						>
-							SAVE PLAN
-						</button>
+						{isAutosaveMode ? (
+							<div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white bg-opacity-20">
+								{autosaveStatus === "saving" && (<><svg className="w-3.5 h-3.5 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span className="text-white text-xs">Saving...</span></>)}
+								{autosaveStatus === "saved" && (<><svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/></svg><span className="text-white text-xs">Saved</span></>)}
+								{autosaveStatus === "error" && (<><svg className="w-3.5 h-3.5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span className="text-yellow-200 text-xs">Save failed</span></>)}
+								{autosaveStatus === null && (<span className="text-white text-xs opacity-60">Autosave on</span>)}
+							</div>
+						) : (
+							<button
+								type="button"
+								onClick={handleSavePlan}
+								className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
+								style={{ color: "#BE0000" }}
+							>
+								SAVE PLAN
+							</button>
+						)}
 					</div>
 					<div className="flex items-center gap-3">
 						<button

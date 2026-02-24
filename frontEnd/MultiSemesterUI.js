@@ -1,40 +1,62 @@
-const { useState } = React;
+const { useState, useEffect } = React;
 
-function MultiSemesterUI({ userData, onLogout, onSelectSemester}) {
-	
+function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPlanSaved }) {
+	const [plannerTitle, setPlannerTitle] = useState("");
+	const [isEditingTitle, setIsEditingTitle] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+
     // Function to get the next semester based on current date
 	const getNextSemester = () => {
 		const now = new Date();
 		const month = now.getMonth();
 		const year = now.getFullYear();
 		
-		// Spring: Jan-Apr (months 0-3)
-		// Summer: May-Jul (months 4-6)
-		// Fall: Aug-Dec (months 7-11)
-		
 		if (month >= 0 && month <= 3) {
-			// Currently in Spring, next is Summer
 			return { term: "Summer", year: year };
 		} else if (month >= 4 && month <= 6) {
-			// Currently in Summer, next is Fall
 			return { term: "Fall", year: year };
 		} else {
-			// Currently in Fall, next is Spring of next year
 			return { term: "Spring", year: year + 1 };
 		}
 	};
 
-	const initialSemester = getNextSemester();
-	const [semesters, setSemesters] = useState([
-		{ 
-			id: 1, 
-			name: `${initialSemester.term} ${initialSemester.year}`, 
-			year: initialSemester.year, 
-			term: initialSemester.term, 
-			credits: 0, 
-			courses: [] 
-		},
-	]);
+	const buildInitialSemesters = () => {
+		if (savedPlan && savedPlan.semesters && savedPlan.semesters.length > 0) {
+			return savedPlan.semesters.map((sem, idx) => ({
+				id: idx + 1,
+				name: `${sem.term_season} ${sem.term_year}`,
+				year: sem.term_year,
+				term: sem.term_season,
+				credits: 0,
+				courses: sem.courses || [],
+				// DB identifiers so ChatUI can autosave back to the right rows
+				plan_id: savedPlan.id,
+				semester_db_id: sem.id,
+				// Saved chat + schedule so ChatUI can restore them
+				messages: sem.messages || [],
+				schedule: sem.schedule || [],
+			}));
+		}
+		const initialSemester = getNextSemester();
+		return [
+			{ 
+				id: 1, 
+				name: `${initialSemester.term} ${initialSemester.year}`, 
+				year: initialSemester.year, 
+				term: initialSemester.term, 
+				credits: 0, 
+				courses: [] 
+			},
+		];
+	};
+
+	useEffect(() => {
+		if (savedPlan) {
+			setPlannerTitle(savedPlan.name || "");
+		}
+	}, [savedPlan]);
+
+	const [semesters, setSemesters] = useState(buildInitialSemesters);
 
 	// Add keyframes for the pulsing border animation
 	const pulseStyle = `
@@ -87,6 +109,47 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester}) {
 		setSemesters(semesters.filter(sem => sem.id !== semesterId));
 	};
 
+	const handleSavePlan = async () => {
+		if (!userData?.id) {
+			alert("User not loaded");
+			return;
+		}
+
+		const name = plannerTitle.trim() || "Multi-Semester Plan";
+
+		const payload = {
+			user_id: userData.id,
+			name: name,
+			semesters: semesters.map(sem => ({
+				term_season: sem.term,
+				term_year: sem.year,
+				courses: sem.courses || [],
+			})),
+		};
+
+		try {
+			setIsSaving(true);
+			const res = await fetch("http://localhost:8000/plans/multi", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+
+			if (!res.ok) {
+				const errText = await res.text();
+				throw new Error(errText);
+			}
+
+			alert("Multi-semester plan saved!");
+			if (onPlanSaved) onPlanSaved();
+		} catch (err) {
+			console.error("Save error:", err);
+			alert("Error saving plan: " + err.message);
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
 	return (
 		<div className="flex flex-col h-screen bg-slate-100">
 			{/* Inject the pulse animation styles */}
@@ -98,12 +161,41 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester}) {
 				style={{ backgroundColor: "#BE0000" }}
 			>
 				<div className="flex items-center gap-3">
-					<h1 className="text-xl font-semibold text-white">Multi-Semester Planner</h1>
+					{isEditingTitle ? (
+						<input
+							type="text"
+							value={plannerTitle}
+							autoFocus
+							onChange={(e) => setPlannerTitle(e.target.value)}
+							onBlur={() => setIsEditingTitle(false)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") setIsEditingTitle(false);
+							}}
+							placeholder="Multi-Semester Planner"
+							className="text-xl font-semibold bg-transparent border-b border-white text-white outline-none"
+						/>
+					) : (
+						<h1
+							onClick={() => setIsEditingTitle(true)}
+							className="text-xl font-semibold text-white cursor-pointer"
+						>
+							{plannerTitle.trim() !== "" ? plannerTitle : "Multi-Semester Planner"}
+						</h1>
+					)}
 				</div>
 				<div className="flex items-center gap-3">
 					<span className="text-white text-sm">
 						{userData?.username}
 					</span>
+					<button
+						type="button"
+						onClick={handleSavePlan}
+						disabled={isSaving}
+						className="px-3 py-1.5 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm disabled:opacity-60"
+						style={{ color: "#BE0000" }}
+					>
+						{isSaving ? "Saving..." : "Save Plan"}
+					</button>
 					<button
 						type="button"
 						onClick={onLogout}
@@ -133,7 +225,10 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester}) {
 						{semesters.map((semester, index) => (
 							<div
 								key={semester.id}
-								onClick={() => onSelectSemester(semester)}
+								onClick={() => {
+								console.log("[MultiSemesterUI] clicking semester:", JSON.stringify(semester));
+								onSelectSemester(semester);
+							}}
 								className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group hover:scale-105 border-2 border-transparent hover:border-red-700"
 							>
 								<div className="p-6">

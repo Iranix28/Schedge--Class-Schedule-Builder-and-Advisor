@@ -10,3 +10,4 @@ python-multipart
 passlib[argon2]
 argon2-cffi
 python-jose[cryptography]==3.3.0
+itsdangerous

@@ -37,6 +37,7 @@
         const [selectedSemester, setSelectedSemester] = useState(null);
         const [selectedSavedPlan, setSelectedSavedPlan] = useState(null);
         const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+        const [resetKey, setResetKey] = useState(0);
 
         const handlePlanSaved = () => {
           setSidebarRefreshKey((k) => k + 1);
@@ -87,7 +88,11 @@
 
         const handleSelectSavedPlan = (plan) => {
           setSelectedSavedPlan(plan);
-          setSelectedPlan('saved');
+          if (plan.mode === "multi") {
+            setSelectedPlan("saved-multi");
+          } else {
+            setSelectedPlan('saved');
+          }
         };
 
         const handleBackToSavedPlans = () => {
@@ -95,10 +100,26 @@
         };
 
         const handleSelectSemester = (semester) => {
+          console.log("[handleSelectSemester] semester received:", JSON.stringify(semester));
           setSelectedSemester(semester);
         };
 
-        const handleBackToMultiSemester = () => {
+        const handleBackToMultiSemester = (updatedSemesterData) => {
+          // Patch the updated messages + schedule back into selectedSavedPlan
+          // so MultiSemesterUI re-renders with fresh data without needing a full reload
+          if (updatedSemesterData && selectedSemester?.semester_db_id) {
+            setSelectedSavedPlan((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                semesters: prev.semesters.map((sem) =>
+                  sem.id === selectedSemester.semester_db_id
+                    ? { ...sem, messages: updatedSemesterData.messages, schedule: updatedSemesterData.schedule }
+                    : sem
+                ),
+              };
+            });
+          }
           setSelectedSemester(null);
         };
 
@@ -106,6 +127,7 @@
           setSelectedSavedPlan(null);
           setSelectedSemester(null);
           setSelectedPlan(mode);
+          setResetKey((k) => k + 1); // force fresh remount of target UI
         };
 
         const handleSidebarNewChat = () => {
@@ -116,7 +138,11 @@
 
         const handleSidebarSelectPlan = (plan) => {
           setSelectedSavedPlan(plan);
-          setSelectedPlan('saved');
+          if (plan.mode === "multi") {
+            setSelectedPlan("saved-multi");
+          } else {
+            setSelectedPlan('saved');
+          }
         };
 
         return (
@@ -155,6 +181,23 @@
                   onSelectPlan={handleSelectSavedPlan}
                   onPlanDeleted={handlePlanSaved}
                 />
+              ) : selectedPlan === 'saved-multi' && selectedSavedPlan && !selectedSemester ? (
+                <MultiSemesterUI
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onSelectSemester={handleSelectSemester}
+                  savedPlan={selectedSavedPlan}
+                  onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
+                />
+              ) : selectedPlan === 'saved-multi' && selectedSemester ? (
+                <ChatUI
+                  userData={userData}
+                  onLogout={handleLogout}
+                  semester={selectedSemester}
+                  onBack={handleBackToMultiSemester}
+                  onPlanSaved={handlePlanSaved}
+                />
               ) : selectedPlan === 'saved' && selectedSavedPlan ? (
                 <ChatUI 
                   userData={userData} 
@@ -165,6 +208,7 @@
                 />
               ) : selectedPlan === 'single' ? (
                 <ChatUI 
+                  key={resetKey}
                   userData={userData} 
                   onLogout={handleLogout}
                   onBack={handleBackToPlanSelection}
@@ -172,10 +216,12 @@
                 />
               ) : selectedPlan === 'multi' && !selectedSemester ? (
                 <MultiSemesterUI 
+                  key={resetKey}
                   userData={userData} 
                   onLogout={handleLogout}
                   onSelectSemester={handleSelectSemester}
                   onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
                 />
               ) : (
                 <ChatUI 
