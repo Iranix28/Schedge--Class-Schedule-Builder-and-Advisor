@@ -48,17 +48,6 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 				style={{ backgroundColor: "#BE0000" }}
 			>
 				<h1 className="text-xl font-semibold text-white">Saved Plans</h1>
-				<div className="flex items-center gap-3">
-					<span className="text-white text-sm">{userData?.username}</span>
-					<button
-						type="button"
-						onClick={onLogout}
-						className="px-3 py-1.5 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
-						style={{ color: "#BE0000" }}
-					>
-						Logout
-					</button>
-				</div>
 			</header>
 
 			<div className="flex-1 overflow-y-auto p-6">

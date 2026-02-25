@@ -3,7 +3,6 @@ const { useState, useEffect, useRef } = React;
 function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPlanSaved, onPlanCreated, onPlanIdSaved, initialTitle, onTitleChange, planId }) {
 	const BASE_URL = "http://localhost:8000";
 	const [plannerTitle, setPlannerTitle] = useState(initialTitle || "");
-	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	// Track the plan id once created/saved so semester clicks get _existingPlanId injected
 	const [activePlanId, setActivePlanId] = useState(null);
@@ -114,6 +113,20 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 			50% { border-color: #BE0000; }
 		}
 		.pulse-border { animation: pulseBorder 2s ease-in-out infinite; }
+		.plan-title-input:-webkit-autofill,
+		.plan-title-input:-webkit-autofill:hover,
+		.plan-title-input:-webkit-autofill:focus {
+			-webkit-box-shadow: 0 0 0px 1000px #BE0000 inset !important;
+			-webkit-text-fill-color: white !important;
+			transition: background-color 5000s ease-in-out 0s;
+		}
+		.plan-title-input::selection {
+			background: rgba(255,255,255,0.3);
+			color: white;
+		}
+		.plan-title-input:focus {
+			background: transparent !important;
+		}
 	`;
 
 	const handleAddSemester = () => {
@@ -214,28 +227,24 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 
 			<header className="px-6 py-4 flex items-center justify-between shadow-sm" style={{ backgroundColor: "#BE0000" }}>
 				<div className="flex items-center gap-3">
-					{isEditingTitle ? (
+					<div className="relative group">
 						<input
 							type="text"
 							value={plannerTitle}
-							autoFocus
 							onChange={(e) => handleTitleChange(e.target.value)}
-							onBlur={() => setIsEditingTitle(false)}
-							onKeyDown={(e) => { if (e.key === "Enter") setIsEditingTitle(false); }}
 							placeholder="Multi-Semester Planner"
-							className="text-xl font-semibold bg-transparent border-b border-white text-white outline-none"
+							className="plan-title-input bg-transparent text-white font-semibold text-xl border-none focus:outline-none focus:ring-0 transition-all pr-8"
+							style={{ minWidth: "150px", caretColor: "white", WebkitAppearance: "none", boxShadow: "none" }}
 						/>
-					) : (
-						<h1 onClick={() => setIsEditingTitle(true)} className="text-xl font-semibold text-white cursor-pointer">
-							{plannerTitle.trim() !== "" ? plannerTitle : "Multi-Semester Planner"}
-						</h1>
-					)}
-				</div>
-				<div className="flex items-center gap-3">
-					<span className="text-white text-sm">{userData?.username}</span>
-					<button type="button" onClick={onLogout} className="px-3 py-1.5 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm" style={{ color: "#BE0000" }}>
-						Logout
-					</button>
+						<svg
+							className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+						</svg>
+					</div>
 				</div>
 			</header>
 

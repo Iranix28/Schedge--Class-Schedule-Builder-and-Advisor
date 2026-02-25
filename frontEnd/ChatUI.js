@@ -2,6 +2,7 @@ const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
 const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
+const REGISTRATION_URL = "https://www.stu.utah.edu/psc/heprod/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=HEUU_REGISTRATION&PTPPB_GROUPLET_ID=UUHE_REGISTRATION_TILE&CRefName=UUHE_REGISTRATION_TILE";
 
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {
@@ -44,6 +45,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const fileInputRef = useRef(null);
 	const [planName, setPlanName] = useState("My Plan");
 	const [autosaveStatus, setAutosaveStatus] = useState(null); // null | "saving" | "saved" | "error"
+	const [savedFlash, setSavedFlash] = useState(false); // turns button red on save
+	const [selectedDepartment, setSelectedDepartment] = useState("");
 
 	const openCourseDetails = (course) => {
 		setSelectedCourse(course);
@@ -467,9 +470,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 
 		try {
-			const res = await fetch(`${BASE_URL}/schedule/${class_code}`, {
-				method: "GET",
-			});
+			const url = selectedDepartment
+				? `${BASE_URL}/schedule/${class_code}?department=${encodeURIComponent(selectedDepartment)}`
+				: `${BASE_URL}/schedule/${class_code}`;
+			const res = await fetch(url, { method: "GET" });
 
 			if (!res.ok) {
 				let detail = `HTTP ${res.status}`;
@@ -616,16 +620,20 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const handleScheduleItemClick = (scheduleItem) => {
 		const courseCodeMatch = scheduleItem.class_.match(/(\d+)/);
 		if (!courseCodeMatch) return;
-		
+
 		const courseCode = courseCodeMatch[1];
-		
+
+		// Try to extract department from the class_ string e.g. "CS 1410 - 001"
+		const deptMatch = scheduleItem.class_.match(/^([A-Z]+)\s/);
+		const dept = deptMatch ? deptMatch[1] : selectedDepartment || "Unknown";
+
 		const course = allCourses.find(c => c.course_code.toString() === courseCode);
-		
+
 		if (course) {
 			openCourseDetails(course);
 		} else {
 			openCourseDetails({
-				department: "CS",
+				department: dept,
 				course_code: courseCode,
 				course_name: scheduleItem.class_,
 				credits: "N/A",
@@ -730,6 +738,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			}
 
 			alert("Plan saved successfully");
+			setSavedFlash(true);
+			setTimeout(() => setSavedFlash(false), 2000);
 			if (onPlanSaved) onPlanSaved();
 		} catch (err) {
 			console.error("Save error:", err);
@@ -787,8 +797,26 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	};
 
 
+	const titleInputStyle = `
+		.plan-title-input:-webkit-autofill,
+		.plan-title-input:-webkit-autofill:hover,
+		.plan-title-input:-webkit-autofill:focus {
+			-webkit-box-shadow: 0 0 0px 1000px #BE0000 inset !important;
+			-webkit-text-fill-color: white !important;
+			transition: background-color 5000s ease-in-out 0s;
+		}
+		.plan-title-input::selection {
+			background: rgba(255,255,255,0.3);
+			color: white;
+		}
+		.plan-title-input:focus {
+			background: transparent !important;
+		}
+	`;
+
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
+		<style>{titleInputStyle}</style>
 			{/* Left Side - Chat Interface */}
 			<div
 				className={`flex flex-col border-r border-slate-300 bg-white transition-all duration-500 ease-in-out overflow-hidden ${
@@ -966,8 +994,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	type="text"
 	value={planName}
 	onChange={(e) => { userEditedNameRef.current = true; setPlanName(e.target.value); }}
-	className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
-	style={{ minWidth: "150px" }}
+	className="plan-title-input bg-transparent text-white font-semibold text-xl border-none focus:outline-none focus:ring-0 transition-all pr-8"
+	style={{ minWidth: "150px", caretColor: "white", WebkitAppearance: "none", boxShadow: "none" }}
 	placeholder="Enter plan name"
 />
 							<svg 
@@ -979,38 +1007,17 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
 							</svg>
 						</div>
-						{isAutosaveMode ? (
-							<div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white bg-opacity-20">
-								{autosaveStatus === "saving" && (<><svg className="w-3.5 h-3.5 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span className="text-white text-xs">Saving...</span></>)}
-								{autosaveStatus === "saved" && (<><svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/></svg><span className="text-white text-xs">Saved</span></>)}
-								{autosaveStatus === "error" && (<><svg className="w-3.5 h-3.5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span className="text-yellow-200 text-xs">Save failed</span></>)}
-								{autosaveStatus === null && (<span className="text-white text-xs opacity-60">Autosave on</span>)}
-							</div>
-						) : (
-							<button
-								type="button"
-								onClick={handleSavePlan}
-								className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
-								style={{ color: "#BE0000" }}
-							>
-								SAVE PLAN
-							</button>
-						)}
-					</div>
-					<div className="flex items-center gap-3">
 						<button
 							type="button"
-							onClick={() => {
-								onLogout();
-								console.log("Logout clicked");
-							}}
-							className="px-2 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm"
-							style={{ color: "#BE0000", fontSize: "10px" }}
-						>
-							Logout
+							onClick={() => window.open(REGISTRATION_URL, "_blank", "noopener,noreferrer")}
+							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
+							style={{ color: "#BE0000" }}
+							>
+							University Registration
 						</button>
-					</div>
-				</header>
+						</div>
+					</header>
+
 				<div className="flex-1 overflow-y-auto pl-4 pr-6 py-6 space-y-6 relative overflow-hidden">
 					{/* Courses Panel */}
 					<div
@@ -1235,24 +1242,62 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 							</div>
 						</div>
 					)}
-					
+
+					{/* Save button */}
+					<button
+						type="button"
+						onClick={isAutosaveMode ? undefined : handleSavePlan}
+						disabled={isAutosaveMode && autosaveStatus === "saving"}
+						className="w-full py-3 rounded-xl font-semibold text-sm shadow-sm border transition-all duration-300 flex items-center justify-center gap-2"
+						style={{
+							backgroundColor: (savedFlash || autosaveStatus === "saved") ? "#BE0000" : "white",
+							color: (savedFlash || autosaveStatus === "saved") ? "white" : "#BE0000",
+							borderColor: "#BE0000",
+							cursor: isAutosaveMode ? "default" : "pointer",
+						}}
+					>
+						{autosaveStatus === "saving" ? (
+							<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Saving...</>
+						) : autosaveStatus === "saved" || savedFlash ? (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/></svg>Saved</>
+						) : autosaveStatus === "error" ? (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Save Failed</>
+						) : (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>{isAutosaveMode ? "Autosave On" : "Save Plan"}</>
+						)}
+					</button>
+
 					<div className="mt-4 flex justify-center items-center gap-3">
+						<select
+							value={selectedDepartment}
+							onChange={(e) => setSelectedDepartment(e.target.value)}
+							className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800 bg-white"
+						>
+							<option value="">All Depts</option>
+							{[...new Set(allCourses.map(c => c.department).filter(Boolean))].sort().map(dept => (
+								<option key={dept} value={dept}>{dept}</option>
+							))}
+						</select>
 						<input
 							type="text"
 							value={class_code}
 							onChange={(e) => setClass_code(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handleAddCourse();
-								}
-							}}
-							placeholder="Enter class code (e.g., 1410)"
-							className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800"
+							onKeyDown={(e) => { if (e.key === "Enter") handleAddCourse(); }}
+							disabled={!selectedDepartment}
+							placeholder={selectedDepartment ? "Enter class code (e.g., 1410)" : "Select a department first"}
+							className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all ${
+								selectedDepartment
+									? "border-slate-300 text-slate-800 bg-white"
+									: "border-slate-200 text-slate-400 bg-slate-100 cursor-not-allowed"
+							}`}
 						/>
 						<button
 							type="button"
 							onClick={handleAddCourse}
-							className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+							disabled={!selectedDepartment}
+							className={`px-6 py-2 text-white font-semibold rounded-lg transition-all shadow-md flex items-center gap-2 ${
+								selectedDepartment ? "hover:opacity-90 hover:shadow-lg" : "opacity-40 cursor-not-allowed"
+							}`}
 							style={{ backgroundColor: '#BE0000' }}
 						>
 							<span>+</span>
@@ -1401,9 +1446,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			<button
 				type="button"
 				onClick={toggleRightPanel}
-				className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
+				className="absolute w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
 				style={{
-					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 12px)",
+					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 16px)",
+					top: "60%",
 					borderColor: "#BE0000",
 					transition: "left 0.5s ease-in-out",
 				}}
