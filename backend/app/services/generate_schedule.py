@@ -176,7 +176,7 @@ def generate_schedule(audit_id):
 
     # First get Major specific classes
     for req in audit.requirements:
-        if "Pre-Major" in req.title or "Major" in req.title:
+        if "Pre-Major" in req.title or "Major" in req.title or "Core" in req.title:
 
             for subreq in req.subrequirements:
 
@@ -196,15 +196,13 @@ def generate_schedule(audit_id):
                         if not conflict:
                             add_class_to_schedule(course=course, section=section, schedule=schedule)
 
+                            print("Core")
+
                             major_classes -= 1
                             total_classes -= 1
 
     # Then fill out other requirements
     for req in audit.requirements:
-        # Don't double check major requirements
-        if "Pre-Major" in req.title or "Major" in req.title:
-            continue
-
         # UNCOMMENT THIS
         needs_class_count = req.needs_count
         needs_credits = req.needs_credits
@@ -278,15 +276,15 @@ def generate_schedule(audit_id):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
                             if not conflict:
-                                print(rangeCourse.number)
-                                print(rangeCourse.name)
-                                print(rangeCourse.description)
-                                print(section.section_code)
-                                print(f"{section.start_time} - {section.end_time}")
-                                print("\n")
+                                # print(rangeCourse.number)
+                                # print(rangeCourse.name)
+                                # print(rangeCourse.description)
+                                # print(section.section_code)
+                                # print(f"{section.start_time} - {section.end_time}")
+                                # print("\n")
 
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
-                               
+                                
                                 total_classes -= 1
 
                                 if needs_class_count is not None:
