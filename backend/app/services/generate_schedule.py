@@ -53,8 +53,8 @@ def add_class_to_schedule(course: str, section: ClassSection, schedule: list[Sch
                     day=day, 
                     startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"), 
                     endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
-                    class_=course, 
-                    room="TBD")
+                    class_=course + " - " + section.section_code, 
+                    room=location)
             )
 
 def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
