@@ -45,6 +45,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [planName, setPlanName] = useState("My Plan");
 	const [autosaveStatus, setAutosaveStatus] = useState(null); // null | "saving" | "saved" | "error"
 	const [savedFlash, setSavedFlash] = useState(false); // turns button red on save
+	const [selectedDepartment, setSelectedDepartment] = useState("");
 
 	const openCourseDetails = (course) => {
 		setSelectedCourse(course);
@@ -468,9 +469,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 
 		try {
-			const res = await fetch(`${BASE_URL}/schedule/${class_code}`, {
-				method: "GET",
-			});
+			const url = selectedDepartment
+				? `${BASE_URL}/schedule/${class_code}?department=${encodeURIComponent(selectedDepartment)}`
+				: `${BASE_URL}/schedule/${class_code}`;
+			const res = await fetch(url, { method: "GET" });
 
 			if (!res.ok) {
 				let detail = `HTTP ${res.status}`;
@@ -617,16 +619,20 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const handleScheduleItemClick = (scheduleItem) => {
 		const courseCodeMatch = scheduleItem.class_.match(/(\d+)/);
 		if (!courseCodeMatch) return;
-		
+
 		const courseCode = courseCodeMatch[1];
-		
+
+		// Try to extract department from the class_ string e.g. "CS 1410 - 001"
+		const deptMatch = scheduleItem.class_.match(/^([A-Z]+)\s/);
+		const dept = deptMatch ? deptMatch[1] : selectedDepartment || "Unknown";
+
 		const course = allCourses.find(c => c.course_code.toString() === courseCode);
-		
+
 		if (course) {
 			openCourseDetails(course);
 		} else {
 			openCourseDetails({
-				department: "CS",
+				department: dept,
 				course_code: courseCode,
 				course_name: scheduleItem.class_,
 				credits: "N/A",
@@ -1252,22 +1258,36 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 					</button>
 
 					<div className="mt-4 flex justify-center items-center gap-3">
+						<select
+							value={selectedDepartment}
+							onChange={(e) => setSelectedDepartment(e.target.value)}
+							className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800 bg-white"
+						>
+							<option value="">All Depts</option>
+							{[...new Set(allCourses.map(c => c.department).filter(Boolean))].sort().map(dept => (
+								<option key={dept} value={dept}>{dept}</option>
+							))}
+						</select>
 						<input
 							type="text"
 							value={class_code}
 							onChange={(e) => setClass_code(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handleAddCourse();
-								}
-							}}
-							placeholder="Enter class code (e.g., 1410)"
-							className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800"
+							onKeyDown={(e) => { if (e.key === "Enter") handleAddCourse(); }}
+							disabled={!selectedDepartment}
+							placeholder={selectedDepartment ? "Enter class code (e.g., 1410)" : "Select a department first"}
+							className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all ${
+								selectedDepartment
+									? "border-slate-300 text-slate-800 bg-white"
+									: "border-slate-200 text-slate-400 bg-slate-100 cursor-not-allowed"
+							}`}
 						/>
 						<button
 							type="button"
 							onClick={handleAddCourse}
-							className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+							disabled={!selectedDepartment}
+							className={`px-6 py-2 text-white font-semibold rounded-lg transition-all shadow-md flex items-center gap-2 ${
+								selectedDepartment ? "hover:opacity-90 hover:shadow-lg" : "opacity-40 cursor-not-allowed"
+							}`}
 							style={{ backgroundColor: '#BE0000' }}
 						>
 							<span>+</span>
