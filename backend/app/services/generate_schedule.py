@@ -68,7 +68,7 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     for section in sections:
         # print("class check")
         # print(section.section_type)
-        if section.section_type != "Lecture":
+        if (section.section_type or "").strip().lower() != "lecture":
             continue
 
         # Skip sections with no time or days and prioritizes in person courses rather than online
@@ -119,7 +119,7 @@ def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
     for section in sections:
         # print("Lab Check")
         # print(section.section_type)
-        if section.section_type != "Laboratory":
+        if (section.section_type or "").strip().lower() != "laboratory":
             continue
 
         # Skip sections with no time or days and prioritizes in person courses rather than online
@@ -306,6 +306,12 @@ def generate_schedule(audit_id):
     major_classes = 2
     total_classes = 4
 
+    comp_courses = []
+    for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
+        department = get_department(db=db, dept_id=comp.department_id)
+
+        comp_courses.append(department.subject + comp.number)
+
     # First get Major specific classes
     for req in audit.requirements:
         if "Pre-Major" in req.title or "Major" in req.title or "Core" in req.title:
@@ -325,12 +331,6 @@ def generate_schedule(audit_id):
                     course_object = get_course_by_code(db=db, subject=dept, number=num)
 
                     prereqs = course_object.prereq_conditions
-                    comp_courses = []
-
-                    for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
-                        department = get_department(db=db, dept_id=comp.department_id)
-
-                        comp_courses.append(department.subject + comp.number)
 
                     # print(prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs))
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
@@ -401,7 +401,8 @@ def generate_schedule(audit_id):
                         normalized_course = course_code.replace(" ", "").upper()
 
                         for item in schedule:
-                            if item.class_.replace(" ", "").upper() == normalized_course:
+                            scheduled_code = item.class_.split("-")[0].replace(" ", "").upper()
+                            if scheduled_code == normalized_course:
                                 already_in_schedule = True
                                 break
 
@@ -409,12 +410,6 @@ def generate_schedule(audit_id):
                             continue
 
                         prereqs = rangeCourse.prereq_conditions
-                        comp_courses = []
-
-                        for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
-                            department = get_department(db=db, dept_id=comp.department_id)
-
-                            comp_courses.append(department.subject + comp.number)
 
                         # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
                         if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
@@ -424,9 +419,9 @@ def generate_schedule(audit_id):
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
                                 
                                 # Check if class has a lab and add it to the schedule if so
-                                lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
+                                lab_scheduled, lab_section = schedule_lab(db=db, course=course_code, schedule=schedule)
                                 if lab_scheduled:
-                                    add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+                                    add_class_to_schedule(course=course_code, section=lab_section, schedule=schedule)
 
                                 total_classes -= 1
 
@@ -453,7 +448,8 @@ def generate_schedule(audit_id):
                     normalized_course = course.replace(" ", "").upper()
 
                     for item in schedule:
-                        if item.class_.replace(" ", "").upper() == normalized_course:
+                        scheduled_code = item.class_.split("-")[0].replace(" ", "").upper()
+                        if scheduled_code == normalized_course:
                             already_in_schedule = True
                             break
 
@@ -461,26 +457,12 @@ def generate_schedule(audit_id):
                         continue
                     
                     prereqs = course_object.prereq_conditions
-                    comp_courses = []
-
-                    for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
-                        department = get_department(db=db, dept_id=comp.department_id)
-
-                        comp_courses.append(department.subject + comp.number)
 
                     # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
                         if not conflict:
-                            # print(dept)
-                            # print(course_object.number)
-                            # print(course_object.name)
-                            # print(course_object.description)
-                            # print(section.section_code)
-                            # print(f"{section.start_time} - {section.end_time}")
-                            # print("\n")
-
                             add_class_to_schedule(course=course, section=section, schedule=schedule)
                             # Check if class has a lab and add it to the schedule if so
                             lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
