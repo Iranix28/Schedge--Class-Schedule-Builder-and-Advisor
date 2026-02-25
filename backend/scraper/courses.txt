@@ -1,155 +1,1884 @@
-course_id: MDCH5220
-course_name: Organic Med Chem II
+course_id: CS1400
+course_name: Intro Comp Programming
 section: 001
-units: 2.0
-instructor: Schmidt, Eric W
+units: 4.0
+instructor: De St Germain, H. James 'Jim'
 component: Lecture
-available_seats: 65
-schedule: MoWe/09:00AM-09:50AM
-location: SK H AUD
-description: Continuation of MD CH 5210. Chemical and physical properties, structure-activity relationships of organic medicinal compounds.
+available_seats: 101
+schedule: MoWe/03:00PM-04:20PM
+location: S BEH AUD .
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7890
-course_name: Research Seminar
-section: 001
-units: 1.0
-instructor: Franzini, Raphael
-component: Seminar
-available_seats: 50
-schedule: Th/03:00PM-06:00PM
-location: EHSEB 2600
-description: Formal seminar on personal research or selected literature surveys.  Informal presentation of current research results.  Includes a tutorial in presentation methods.  Required for graduate study.
+course_id: CS1400
+course_name: Intro Comp Programming
+section: 002
+units: --
+instructor: De St Germain, H. James 'Jim'
+component: Laboratory
+available_seats: 9
+schedule: Tu/08:35AM-09:25AM
+location: MEB 3225
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 001
-units: 1.0 -  12.0
-instructor: Diehl, Katharine
-component: Thesis Research
-available_seats: 22
-schedule: 
-location: 
-description: 
-prerequisites: []
---------------------------------------------------------------------------------
-
-course_id: MDCH7970
-course_name: Thesis Research-PhD
+course_id: CS1400
+course_name: Intro Comp Programming
 section: 003
-units: 1.0 -  12.0
-instructor: Balagurunathan, Kuberan
-component: Thesis Research
-available_seats: 25
-schedule: 
-location: 
-description: 
+units: --
+instructor: De St Germain, H. James 'Jim'
+component: Laboratory
+available_seats: 0
+schedule: Tu/09:40AM-10:30AM
+location: MEB 3225
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
+course_id: CS1400
+course_name: Intro Comp Programming
+section: 004
+units: --
+instructor: De St Germain, H. James 'Jim'
+component: Laboratory
+available_seats: 0
+schedule: Tu/10:45AM-11:35AM
+location: MEB 3225
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS1400
+course_name: Intro Comp Programming
 section: 005
-units: 1.0 -  12.0
-instructor: Winter, Jackie
-component: Thesis Research
-available_seats: 24
-schedule: 
-location: 
-description: 
+units: --
+instructor: De St Germain, H. James 'Jim'
+component: Laboratory
+available_seats: 2
+schedule: Tu/11:50AM-12:40PM
+location: MEB 3225
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 009
-units: 1.0 -  12.0
-instructor: Davis, Darrell R
-component: Thesis Research
-available_seats: 25
-schedule: 
-location: 
-description: 
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 001
+units: 4.0
+instructor: Parker, Erin
+component: Lecture
+available_seats: 98
+schedule: MoWe/03:00PM-04:20PM
+location: GC 1900
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 003
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 3
+schedule: Th/09:40AM-10:30AM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 004
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 0
+schedule: Th/10:45AM-11:35AM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 005
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 3
+schedule: Th/11:50AM-12:40PM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 006
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 2
+schedule: Th/12:55PM-01:45PM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 007
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 0
+schedule: Th/02:00PM-02:50PM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1410
+course_name: Object-Oriented Prog
+section: 008
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 6
+schedule: Th/03:05PM-03:55PM
+location: MEB 3225
+description: This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.
+prerequisites: ["CS1400"]
+--------------------------------------------------------------------------------
+
+course_id: CS1420
+course_name: Accel Obj-Orient Prog
+section: 001
+units: 4.0
+instructor: Jones, Ben
+component: Lecture
+available_seats: 120
+schedule: MoWe/03:00PM-04:20PM
+location: WEB L104
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 010
-units: 1.0 -  12.0
-instructor: Cheatham, Thomas E
-component: Thesis Research
-available_seats: 24
-schedule: 
-location: 
-description: 
+course_id: CS1420
+course_name: Accel Obj-Orient Prog
+section: 004
+units: --
+instructor: Jones, Ben
+component: Laboratory
+available_seats: 1
+schedule: Tu/10:45AM-11:35AM
+location: WEB L130
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 011
-units: 1.0 -  12.0
-instructor: Franzini, Raphael
-component: Thesis Research
-available_seats: 24
-schedule: 
-location: 
-description: 
+course_id: CS1420
+course_name: Accel Obj-Orient Prog
+section: 005
+units: --
+instructor: Jones, Ben
+component: Laboratory
+available_seats: 1
+schedule: Tu/11:50AM-12:40PM
+location: WEB L130
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 012
-units: 1.0 -  12.0
-instructor: Schmidt, Eric W
-component: Thesis Research
-available_seats: 22
-schedule: 
-location: 
-description: 
+course_id: CS1420
+course_name: Accel Obj-Orient Prog
+section: 006
+units: --
+instructor: Jones, Ben
+component: Laboratory
+available_seats: 1
+schedule: Tu/12:55PM-01:45PM
+location: WEB L130
+description: This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7970
-course_name: Thesis Research-PhD
-section: 014
-units: 1.0 -  12.0
-instructor: Barrios, Amy
-component: Thesis Research
+course_id: CS1810
+course_name: Intro to Comp Systems
+section: 001
+units: 3.0
+instructor: Jones, Ben
+component: Lecture
+available_seats: 35
+schedule: MoWe/11:50AM-12:40PM
+location: WEB L114
+description: This course provides an elementary look at the systems and machinery that form the foundation of computing. The course takes a bottom-up approach, tracing computation from bits to gates and the underlying structure of a computer to programming at the machine-, assembly-, and abstract language-level.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS1810
+course_name: Intro to Comp Systems
+section: 002
+units: --
+instructor: Jones, Ben
+component: Laboratory
+available_seats: 14
+schedule: Fr/10:45AM-11:35AM
+location: WEB 1248
+description: This course provides an elementary look at the systems and machinery that form the foundation of computing. The course takes a bottom-up approach, tracing computation from bits to gates and the underlying structure of a computer to programming at the machine-, assembly-, and abstract language-level.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS1810
+course_name: Intro to Comp Systems
+section: 003
+units: --
+instructor: Jones, Ben
+component: Laboratory
+available_seats: 1
+schedule: Fr/11:50AM-12:40PM
+location: WEB 1248
+description: This course provides an elementary look at the systems and machinery that form the foundation of computing. The course takes a bottom-up approach, tracing computation from bits to gates and the underlying structure of a computer to programming at the machine-, assembly-, and abstract language-level.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 001
+units: 3.0
+instructor: Wood, Aaron
+component: Lecture
+available_seats: 39
+schedule: TuTh/09:10AM-10:30AM
+location: MEK 3550
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 003
+units: --
+instructor: Wood, Aaron
+component: Discussion
+available_seats: -1
+schedule: Fr/09:40AM-10:30AM
+location: WEB L126
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 004
+units: --
+instructor: Wood, Aaron
+component: Discussion
+available_seats: 0
+schedule: Fr/10:45AM-11:35AM
+location: WEB L126
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 020
+units: 3.0
+instructor: Yang, Yin
+component: Lecture
+available_seats: 57
+schedule: MoWe/08:05AM-09:25AM
+location: WEB L103
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 022
+units: --
+instructor: Yang, Yin
+component: Discussion
+available_seats: 14
+schedule: Fr/09:40AM-10:30AM
+location: GC 3680
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2100
+course_name: Discrete Structures
+section: 023
+units: --
+instructor: Yang, Yin
+component: Discussion
+available_seats: 3
+schedule: Fr/10:45AM-11:35AM
+location: GC 3680
+description: Introduction to propositional logic, predicate logic, formal logical arguments, finite sets, functions, relations, inductive proofs, recurrence relations, graphs, probability, and their applications to Computer Science.
+prerequisites: [["CS1410", "CS1420"], ["MATH1210", "MATH1220", "MATH1250", "MATH1310", "MATH1311"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 001
+units: 4.0
+instructor: Parker, Erin
+component: Lecture
+available_seats: 136
+schedule: MoWe/08:05AM-09:25AM
+location: GC 1900
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 003
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 5
+schedule: Fr/09:40AM-10:30AM
+location: MEB 3225
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 004
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 0
+schedule: Fr/10:45AM-11:35AM
+location: MEB 3225
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 005
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 2
+schedule: Fr/11:50AM-12:40PM
+location: MEB 3225
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 006
+units: --
+instructor: Parker, Erin
+component: Laboratory
+available_seats: 9
+schedule: Fr/12:55PM-01:45PM
+location: MEB 3225
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 020
+units: 4.0
+instructor: Heisler, Eric
+component: Lecture
+available_seats: 97
+schedule: TuTh/09:10AM-10:30AM
+location: WEB L104
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 022
+units: --
+instructor: Heisler, Eric
+component: Laboratory
+available_seats: 1
+schedule: Fr/09:40AM-10:30AM
+location: WEB L130
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 023
+units: --
+instructor: Heisler, Eric
+component: Laboratory
+available_seats: 3
+schedule: Fr/10:45AM-11:35AM
+location: WEB L130
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 024
+units: --
+instructor: Heisler, Eric
+component: Laboratory
+available_seats: 2
+schedule: Fr/11:50AM-12:40PM
+location: WEB L130
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS2420
+course_name: Intro Alg & Data Struct
+section: 025
+units: --
+instructor: Heisler, Eric
+component: Laboratory
+available_seats: 1
+schedule: Fr/12:55PM-01:45PM
+location: WEB L130
+description: This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.
+prerequisites: [["CS1410", "CS1420"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3090
+course_name: Ethics in Computing
+section: 001
+units: 3.0
+instructor: Martin, Travis
+component: Lecture
+available_seats: 2
+schedule: TuTh/03:40PM-05:00PM
+location: WEB L105
+description: In this course, we will explore the moral, social, and ethical ramifications of the choices we make as computing professionals. Through class discussions, case studies, exercises, and projects, students will learn the basics of ethical thinking in science, understand a representative sample of current ethical dilemmas in computing, and study the distinct challenges associated with ethics in computing.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3100
+course_name: Models Of Computation
+section: 001
+units: 3.0
+instructor: Henderson, Thomas
+component: Lecture
+available_seats: 124
+schedule: MoWe/04:35PM-05:55PM
+location: WEB L101
+description: This course covers different models of computation and how they relate to the understanding and better design of real-world computer programs. As examples, we will study Turing machines that help define the fundamental limits of computing, Push-down Automata that help build language parsers, and Finite Automata that help build string pattern matchers. This course also covers the basics of designing correctly functioning programs, and introduces the use of mathematical logic through Boolean satisfiability methods. The course will involve the use of hands-on programming exercises written at a sufficiently high level of abstraction that the connections between theory and practice are apparent.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3130
+course_name: Eng Prob Stats
+section: 001
+units: 3.0
+instructor: Bhaskara, Aditya
+component: Lecture
+available_seats: 59
+schedule: TuTh/09:10AM-10:30AM
+location: GC 1900
+description: An introduction to probability theory and statistics, with an emphasis on solving problems in electrical and computer engineering.  Topics in probability include discrete and continuous random variables, probability distributions, sums and functions of random variables, the law of large numbers, and the central limit theorem. Topics in statistics include sample mean and variance, estimating distributions, correlation, regression, and hypothesis testing.  Engineering applications include failure analysis, process control, communication systems, and speech recognition.
+prerequisites: [["MATH1220", "MATH1320", "MATH1321"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3190
+course_name: Found. of Data Analysis
+section: 001
+units: 3.0
+instructor: Phillips, Jeff
+component: Lecture
+available_seats: 95
+schedule: MoWe/03:00PM-04:20PM
+location: WEB L101
+description: This class will be an introduction to computational data analysis, focusing on the mathematical foundations. The goal will be to carefully develop and explore several core topics that form the backbone of modern data analysis topics, including Machine Learning, Data Mining, Artificial Intelligence, and Visualization. This will include some background in probability and linear algebra, and then various topics including Bayes' rule and connection to inference, gradient descent, linear regression and its polynomial and high dimensional extensions, principal component analysis and dimensionality reduction, as well as classification and clustering. We will also focus on modern models like PAC (probably approximately correct) and cross-validation for algorithm evaluation.
+prerequisites: [["CS2100", "MATH2200"], ["MATH2270", "MATH2271"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3200
+course_name: Intro Sci Comp
+section: 001
+units: 3.0
+instructor: Shankar, Varun
+component: Lecture
+available_seats: 16
+schedule: MoWe/03:00PM-04:20PM
+location: LNCO 1110
+description: Scientific and data computation relevant to computational science and engineering, with emphasis on the process of modeling, simulation, visualization and evaluation.This is an introduction to classical and modern computational and data science methods, with a focus on their theoretical and algorithmic development as well as their implementation. Topics may include numerical linear algebra, numerical approximation methods such as interpolation and linear regression, solving and linear and non-linear systems, and optimization. Basic knowledge of programming, matrices, and calculus is assumed. Recommended programming experience at the level of CS 2420 and Mathematical background at the level of integral calculus.
+prerequisites: [["MATH2270", "MATH2271"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3350
+course_name: Intro to Practical ML
+section: 001
+units: 3.0
+instructor: Tao, Guanhong
+component: Lecture
+available_seats: 2
+schedule: TuTh/03:40PM-05:00PM
+location: ASB 220
+description: This course is designed to provide a groundwork for both machine learning and deep learning early on in undergraduate studies.  Each lecture covers fundamental topics in Machine Learning interleaved with their practical application in code, using machine learning libraries such as PyTorch to implement and experiment with the discussed concepts. Topics include training paradigms, loss functions, optimization, evaluation, hyperparameter tuning, generalization, simple neural networks, CNNs and Transformers, backpropagation, featurization, and more. This course also applies concepts from probability and linear algebra to these topics. By the end of the course, students will be prepared to take more advanced courses to deepen their theoretical and applied knowledge of machine learning and deep learning.
+prerequisites: [["CS2100", "MATH2200"], ["MATH2250", "MATH2270", "MATH2271"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3390
+course_name: Ethics in Data Science
+section: 001
+units: 3.0
+instructor: Kirby, Mike
+component: Lecture
+available_seats: 6
+schedule: MoWe/01:25PM-02:45PM
+location: LNCO 1110
+description: In this course, we will explore the technical, social, and ethical ramifications of the choices we make at the different stages of the data analysis pipeline, from data collection and storage to understanding feedback loops in analysis. Through class discussions, case studies and exercises, students will learn the basics of ethical thinking in science, understand the history of ethical dilemmas in scientific work, and study the distinct challenges associated with ethics in modern data science.
+prerequisites: [["CS2420", "DS2500"]]
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 001
+units: 4.0
+instructor: Martin, Travis
+component: Lecture
+available_seats: 53
+schedule: TuTh/12:25PM-01:45PM
+location: WEB L101
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 003
+units: --
+instructor: Martin, Travis
+component: Laboratory
+available_seats: -2
+schedule: We/09:40AM-10:30AM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 004
+units: --
+instructor: Martin, Travis
+component: Laboratory
+available_seats: -3
+schedule: We/10:45AM-11:35AM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 005
+units: --
+instructor: Martin, Travis
+component: Laboratory
+available_seats: -2
+schedule: We/12:55PM-01:45PM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 020
+units: 4.0
+instructor: Alsaleem, Ahmad
+component: Lecture
+available_seats: 36
+schedule: TuTh/02:00PM-03:20PM
+location: GC 1900
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 021
+units: --
+instructor: Alsaleem, Ahmad
+component: Laboratory
+available_seats: 3
+schedule: We/11:50AM-12:40PM
+location: WEB L226
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 025
+units: --
+instructor: Alsaleem, Ahmad
+component: Laboratory
+available_seats: 1
+schedule: We/02:00PM-02:50PM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 026
+units: --
+instructor: Alsaleem, Ahmad
+component: Laboratory
+available_seats: 0
+schedule: We/03:05PM-03:55PM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3500
+course_name: Software Practice
+section: 027
+units: --
+instructor: Alsaleem, Ahmad
+component: Laboratory
+available_seats: 2
+schedule: We/04:10PM-05:00PM
+location: MEB 3225
+description: Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 001
+units: 3.0
+instructor: Heisler, Eric
+component: Lecture
+available_seats: 79
+schedule: TuTh/12:25PM-01:45PM
+location: WEB L104
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 002
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 14
+schedule: We/08:35AM-09:25AM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 003
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 0
+schedule: We/09:40AM-10:30AM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 004
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 0
+schedule: We/10:45AM-11:35AM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 006
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 1
+schedule: We/12:55PM-01:45PM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 007
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 0
+schedule: We/02:00PM-02:50PM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3505
+course_name: Software Practice II
+section: 008
+units: --
+instructor: Heisler, Eric
+component: Discussion
+available_seats: 0
+schedule: We/03:05PM-03:55PM
+location: WEB L130
+description: An in-depth study of traditional software development (using UML) from inception through implementation. The entire class is team-based, and will include a project that uses an agile process.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3540
+course_name: Design Human Center Sys
+section: 001
+units: 3.0
+instructor: Wiese, Eliane
+component: Lecture
+available_seats: 35
+schedule: TuTh/10:45AM-12:05PM
+location: JTB 140
+description: In this course, students are introduced to the fundamentals of the field of Human-Centered Computing. Over the course of the semester, students are exposed to human-centered concepts including iterative design, prototyping designs and interactions, visual design, methods for evaluating systems from a human-centered perspective, accessibility, and input and output. The course requires applying these concepts through a range of assignments, including designing and implementing interactive prototypes to address design challenges. Programming is required.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3550
+course_name: Web Software Dev I
+section: 001
+units: 3.0
+instructor: Johnson, David
+component: Lecture
+available_seats: 23
+schedule: MoWe/11:50AM-01:10PM
+location: CTIHB 109
+description: This course provides an introduction to web software development. Students will first learn about the fundamental protocols and systems that make the modern web possible. They will then explore the full stack of web software technology from the back end to the front end, including fundamental web security issues, database integration, and client-side page manipulation. Using modern software architectures, programming models, and languages, students will create a complete web application.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS3700
+course_name: Digital System Design
+section: 001
+units: 4.0
+instructor: Garcia, Luis
+component: Lecture
+available_seats: 4
+schedule: TuTh/02:00PM-03:20PM
+location: WEB L103
+description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
+prerequisites: [["PHYS2220", ["ECE1240", "ECE1245", "ECE1050"]]]
+--------------------------------------------------------------------------------
+
+course_id: CS3700
+course_name: Digital System Design
+section: 002
+units: --
+instructor: Garcia, Luis
+component: Laboratory
 available_seats: 4
 schedule: 
 location: 
-description: 
-prerequisites: []
+description: Techniques for reasoning about, designing, minimizing, and implementing digital circuits and systems.  Combinational (logic and arithmetic) and sequential circuits are covered in detail leading up to the design of complete small digital systems using finite state machine controllers. Use of computer-aided tools for design, minimization, and simulation of circuits.  Laboratory is included involving circuit implementation with MSI, LSI, and field programmable gate arrays.
+prerequisites: [["PHYS2220", ["ECE1240", "ECE1245", "ECE1050"]]]
 --------------------------------------------------------------------------------
 
-course_id: MDCH7980
-course_name: Faculty Consult PhD
+course_id: CS3810
+course_name: Computer Organization
 section: 001
 units: 3.0
-instructor: Davis, Darrell R
-component: Independent Study
-available_seats: 25
-schedule: 
-location: 
+instructor: Balasubramonian, Rajeev
+component: Lecture
+available_seats: 11
+schedule: TuTh/10:45AM-12:05PM
+location: WEB L104
+description: An in-depth study of computer architecture and design, including topics such as RISC and CISC instruction set architectures, CPU organizations, pipelining, memory systems, input/output, and parallel machines.  Emphasis is placed on performance measures and compilation issues.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3960
+course_name: Human-Centered Data Management
+section: 001
+units: 3.0
+instructor: Fariha, Anna
+component: Special Topics
+available_seats: 0
+schedule: MoWe/04:35PM-05:55PM
+location: WEB 1230
+description: Content changes each semester. In-depth exploration of topics of special interest.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3960
+course_name: Vibe Coding
+section: 003
+units: 3.0
+instructor: Regehr, John
+component: Special Topics
+available_seats: 0
+schedule: MoWe/03:00PM-04:20PM
+location: WEB L110
+description: Content changes each semester. In-depth exploration of topics of special interest.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS3992
+course_name: Pre-Thesis/Clinic/Proj
+section: 001
+units: 3.0
+instructor: Fayazi, Morteza
+component: Seminar
+available_seats: 1
+schedule: TuTh/03:40PM-05:00PM
+location: WEB L112
+description: This is the first course in a 2 or 3 semester series.  The purpose of this course is to form teams and propose either a self-selected senior project to be completed in CS/ECE 4710, or an ECE clinic which will be completed in the subsequent 2 semesters.  The individual option is to find a thesis advisor, and write a thesis proposal.  The thesis work will be in CS/ECE 4991 and 4992.  During the first half of the course while teams are being formed and while project ideas are being selected the instructor will lecture on the, fundamentals of project planning: scoping, group selection, risk assessment, scheduling, backup planning, strategy, etc.  The second half of the course involves student presentations and critique of the written proposals that are in progress. The final result of the course will be an approved project, clinic, or thesis proposal.
+prerequisites: [["ECE3710", "CS3710"], ["CS3991", "ECE3991"]]
+--------------------------------------------------------------------------------
+
+course_id: CS4000
+course_name: Senior Capstone Design
+section: 001
+units: 3.0
+instructor: Rosen, Paul
+component: Lecture
+available_seats: 6
+schedule: MoWeFr/09:40AM-10:30AM
+location: CTIHB 109
+description: During their last two semesters, senior Computer Science students form teams to develop significant software projects. This class is the first semester in the sequence. Seniors will work on team formation, project identification, project planning (including UI design, software architecture, testing methods, scheduling, etc.), and completion of a system prototype. This course will provide teams with time and guidance to effectively plan their projects, as well as emphasizing the written and oral communications necessary to succeed in industry. Projects formed in this course must be completed during the following semester in CS 4500. Students should have four or less CS electives/required courses left when signing up for this course and should be graduating during the following semester.
+prerequisites: ["CS3505", ["WRTG3014", "WRTG3015", "HONOR3200"]]
+--------------------------------------------------------------------------------
+
+course_id: CS4150
+course_name: Algorithms
+section: 001
+units: 3.0
+instructor: Wang, Haitao
+component: Lecture
+available_seats: 2
+schedule: MoWe/11:50AM-01:10PM
+location: WEB L101
+description: Study of algorithms, data structures, and complexity analysis beyond the introductory treatment from CS 2420. Balanced trees, heaps, hash tables, string matching, graph algorithms, external sorting and searching. Dynamic programming, exhaustive search. Space and time complexity, derivation and solution of recurrence relations, complexity hierarchies, reducibility, NP completeness. Laboratory practice.
+prerequisites: [["CS2100", "MATH2200"], "CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 001
+units: 3.0
+instructor: Kopta, Daniel
+component: Lecture
+available_seats: 37
+schedule: MoWe/01:25PM-02:45PM
+location: WEB L104
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 003
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 0
+schedule: Th/09:40AM-10:30AM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 004
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 1
+schedule: Th/10:45AM-11:35AM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 005
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 1
+schedule: Th/12:55PM-01:45PM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 006
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 1
+schedule: Th/02:00PM-02:50PM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 007
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 0
+schedule: Th/03:05PM-03:55PM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4400
+course_name: Computer Systems
+section: 009
+units: --
+instructor: Kopta, Daniel
+component: Laboratory
+available_seats: 1
+schedule: Th/11:50AM-12:40PM
+location: WEB L130
+description: Introduction to computer systems from a programmer's point of view. Machine level representations of programs, optimizing program performance, memory hierarchy, linking, exceptional control flow, measuring program performance, virtual memory, concurrent programming with threads, network programming.
+prerequisites: ["CS3810"]
+--------------------------------------------------------------------------------
+
+course_id: CS4500
+course_name: Senior Capstone Project
+section: 001
+units: 3.0
+instructor: Van Der Merwe, Jacobus
+component: Lecture
+available_seats: 16
+schedule: MoWeFr/09:40AM-10:30AM
+location: WEB L101
+description: This course is the capstone experience for graduating Computer Science seniors. It involves the development of significant software systems by small, self-selected student teams, with emphasis on applying sound, disciplined software engineering practice. Projects are defined and selected at the beginning of the semester, after which progress is demonstrated through documentation, meetings, and demos. The class culminates in a Demo Day at which students present their projects to faculty, students and project sponsors.
+prerequisites: ["CS4000"]
+--------------------------------------------------------------------------------
+
+course_id: CS4530
+course_name: Mobile App Programming
+section: 001
+units: 3.0
+instructor: Makarem, Nabil
+component: Lecture
+available_seats: 38
+schedule: TuTh/12:25PM-01:45PM
+location: HEB 2008
+description: An introduction to the theory and practice of application development for mobile phones and tablets, including a focus on general program organizational techniques. Topics include native language foundations, automatic UI layout techniques, custom views and controls, data persistence, data driven user interfaces, application lifecycle, application architectural models like Model-View-Adapter, internet service interaction, RESTful web services, and 2D OpenGL rendering. Students will complete several programming projects during the course to explore these topics. A final project of the student's own design will make up a large part of the class.
+prerequisites: ["CS3505"]
+--------------------------------------------------------------------------------
+
+course_id: CS4550
+course_name: Web Software Dev II
+section: 001
+units: 3.0
+instructor: Wood, Aaron
+component: Lecture
+available_seats: 28
+schedule: MoWe/03:00PM-04:20PM
+location: JWB 335
+description: This course explores advanced topics in web software development including REST APIs, testing infrastructure, cloud deployment, certificates, secure sessions, user accounts and permissions, authentication, and ethical considerations in web software. Students will create an advanced web application utilizing these topics.
+prerequisites: ["CS3550"]
+--------------------------------------------------------------------------------
+
+course_id: CS4961
+course_name: AI for HCC
+section: 001
+units: 3.0
+instructor: Jiang, Yue
+component: Special Topics
+available_seats: 1
+schedule: TuTh/02:00PM-03:20PM
+location: MEB 3105
 description: 
 prerequisites: []
 --------------------------------------------------------------------------------
 
-course_id: MDCH7990
-course_name: Cont Reg PhD
+course_id: CS4964
+course_name: Manage Data for & with ML
 section: 001
-units: 0.0
-instructor: Davis, Darrell R
-component: Continuing Registration
-available_seats: 25
+units: 3.0
+instructor: Rezig, El Kindi
+component: Special Topics
+available_seats: 1
+schedule: TuTh/12:25PM-01:45PM
+location: WEB 1230
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS4992
+course_name: CE Senior Thesis II
+section: 001
+units: 2.0
+instructor: Kalla, Priyank
+component: Special Projects
+available_seats: 20
 schedule: 
 location: 
+description: Students work on original senior thesis project under the direction of their approved thesis advisor, make an oral presentation at the annual student technical conference, and prepare and submit their senior thesis for approval.  This course along with ECE/CS 4991 substitute for ECE/CS 4710 (Computer Engineering Senior Project) for students who have chosen to do a thesis.
+prerequisites: [["ECE4991", "CS4991"]]
+--------------------------------------------------------------------------------
+
+course_id: CS5110
+course_name: Software Verification
+section: 001
+units: 3.0
+instructor: Greenman, Benjamin
+component: Lecture
+available_seats: 9
+schedule: TuTh/02:00PM-03:20PM
+location: WEB L112
+description: The main goal of the course is to teach students how to rigorously verify and analyze (complex) software systems. We will study theoretical foundations underlying this task, and solve exercises and homework assignments based around actually proving example programs correct. We will also explore practical techniques behind popular verification and analysis tools, such as systematic test generation, symbolic execution, and static analysis. Students completing the course will gain a solid understanding of practical design, specification, and verification techniques and the underlying theory. Furthermore, students will leave with significant hands-on experience.
+prerequisites: ["CS3100", "CS3500", "CS4150"]
+--------------------------------------------------------------------------------
+
+course_id: CS5460
+course_name: Operating Systems
+section: 001
+units: 3.0
+instructor: Burtsev, Anton
+component: Lecture
+available_seats: 12
+schedule: TuTh/09:10AM-10:30AM
+location: WEB L101
+description: Characteristics, objectives, and issues concerning computer operating systems. Hardware-software interactions, process management, memory management, protection, synchronization, resource allocation, file systems, security, and distributed systems. Extensive systems programming.
+prerequisites: ["CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5493
+course_name: Applied S/W Secur Test
+section: 001
+units: 3.0
+instructor: Nagy, Stefan
+component: Lecture
+available_seats: 4
+schedule: MoWe/01:25PM-02:45PM
+location: WEB L114
+description: This course dives into today’s state-of-the-art techniques for uncovering hidden logical bugs and security vulnerabilities in software. Introductory fuzzing exercises provide hands-on experience with industry-popular security tools for testing and diagnosing software errors, culminating in a final project where you’ll work to hunt down, analyze, and report bugs in a real-world application of your choice. This class is open to graduate students and upper-level undergraduates. It is recommended you have a solid grasp over topics like software security, systems programming, and C/C++.
+prerequisites: ["CS3505", "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5530
+course_name: Database Systems
+section: 090
+units: 3.0
+instructor: Kopta, Daniel
+component: Lecture
+available_seats: 63
+schedule: 
+location: 
+description: Representing information about real world enterprises using important data models including the entity-relationship, relational, and object-oriented approaches. Database design criteria, including normalization and integrity constraints. Implementation techniques using commercial database management system software and database connector APIs. Selected advanced topics such as query and transaction processing and index data structures.
+prerequisites: ["CS3500"]
+--------------------------------------------------------------------------------
+
+course_id: CS5610
+course_name: Interactive Comp Graph
+section: 001
+units: 3.0
+instructor: Yuksel, Cem
+component: Lecture
+available_seats: 5
+schedule: TuTh/03:40PM-05:00PM
+location: WEB 1230
+description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
+prerequisites: ["CS3500", ["MATH2250", "MATH2270"]]
+--------------------------------------------------------------------------------
+
+course_id: CS5635
+course_name: Vis for Scientific Data
+section: 001
+units: 3.0
+instructor: Johnson, Chris
+component: Lecture
+available_seats: 9
+schedule: MoWe/01:25PM-02:45PM
+location: WEB 1230
+description: Introduction to the principles, methods, and techniques for effective visual analysis of scientific data. Students will explore many aspects of visualization, including techniques for scalar, vector, and tensor field data; surface and volume geometry representations and scientific animation. Students will acquire hands-on experience using visualization software to study applications including but not limited to those that arise in science, engineering, and medicine. A complementary course - CS 5630/6630 Visualization for Data Science - that focuses on visualization related to tabular data (e.g., graphs, text, and maps), will be taught each Fall Semester.
+prerequisites: ["CS3500", [["MATH1210", "MATH1220"], ["MATH1310", "MATH1320"], ["MATH1311", "MATH1321"]]]
+--------------------------------------------------------------------------------
+
+course_id: CS5740
+course_name: CAD of Digital Circuits
+section: 001
+units: 3.0
+instructor: Kalla, Priyank
+component: Lecture
+available_seats: 4
+schedule: MoWeFr/10:45AM-11:35AM
+location: MEB 2325
+description: Introduction to theory and algorithms used for computer-aided synthesis of digital integrated circuits. Topics include algorithms and representations for Boolean optimization, hardware modeling, combinational logic optimization, sequential logic optimization, and technology mapping. Undergraduate students only.
+prerequisites: [["CS3700", "ECE3700"]]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 001
+units: 4.0
+instructor: Gaillardon, Pierre-Emmanuel
+component: Lecture
+available_seats: 5
+schedule: TuTh/12:25PM-01:45PM
+location: GC 1900
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 002
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 0
+schedule: We/07:30AM-10:30AM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 003
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 0
+schedule: We/03:05PM-06:05PM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 004
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 0
+schedule: Fr/07:30AM-10:30AM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 005
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 2
+schedule: Mo/07:30AM-10:30AM
+location: MEB 2267
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5780
+course_name: Embedded Sys Design
+section: 006
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 3
+schedule: Tu/07:30AM-10:30AM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software.
+prerequisites: [["CS3810", "ECE3810"], "CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS5955
+course_name: Adv Artificial Intelligence
+section: 001
+units: 3.0
+instructor: Brown, Daniel
+component: Special Topics
+available_seats: 2
+schedule: MoWe/11:50AM-01:10PM
+location: ASB 210
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS5962
+course_name: Auto Speech Recog & Accent
+section: 001
+units: 3.0
+instructor: Patwari, Neal
+component: Special Topics
+available_seats: 0
+schedule: TuTh/02:00PM-03:20PM
+location: CRCC 215
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS5965
+course_name: Social Computing
+section: 001
+units: 3.0
+instructor: Kogan, Marina
+component: Special Topics
+available_seats: 0
+schedule: MoWe/01:25PM-02:45PM
+location: WEB L110
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS5966
+course_name: Interpretability of LLMs
+section: 001
+units: 3.0
+instructor: Marasovic, Ana
+component: Special Topics
+available_seats: 5
+schedule: TuTh/10:45AM-12:05PM
+location: WEB L112
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS5967
+course_name: Critical HCI and Visualization
+section: 001
+units: 3.0
+instructor: Mcnutt, Andrew
+component: Special Topics
+available_seats: 2
+schedule: TuTh/02:00PM-03:20PM
+location: BU C 302
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6013
+course_name: MSD: Computer Systems
+section: 001
+units: 4.0
+instructor: De St Germain, John
+component: Lecture
+available_seats: 19
+schedule: MoWeFr/10:50AM-11:40AM
+location: MEB 3255
+description: This course covers (i) an introduction to modern commodity hardware architecture and Operating Systems with an emphasis on their co-design; (ii) concurrent and efficient code for modern machines; (iii) reasoning about concurrent performance including context switch, cache coherence, and non-uniform memory access costs; (iv) The process abstraction, protection, and isolation; (v) Controlling devices through the operating system – device drivers;  (vi) System calls;  (vii) Virtualization.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6013
+course_name: MSD: Computer Systems
+section: 002
+units: --
+instructor: De St Germain, John
+component: Laboratory
+available_seats: 19
+schedule: Mo/11:50AM-12:40PM
+location: MEB 3225
+description: This course covers (i) an introduction to modern commodity hardware architecture and Operating Systems with an emphasis on their co-design; (ii) concurrent and efficient code for modern machines; (iii) reasoning about concurrent performance including context switch, cache coherence, and non-uniform memory access costs; (iv) The process abstraction, protection, and isolation; (v) Controlling devices through the operating system – device drivers;  (vi) System calls;  (vii) Virtualization.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6014
+course_name: MSD: Netwrks & Security
+section: 001
+units: 4.0
+instructor: Flatt, Matthew
+component: Lecture
+available_seats: 20
+schedule: MoWeFr/09:00AM-09:50AM
+location: MEB 3255
+description: This course covers (i) Internet software and hardware components, protocols (e.g., TCP/IP), Internet performance metrics; (ii) Mobile and wireless networking; (iii) Socket programming and applications; (iv) Software defined networking, network function virtualization; (v) Causes and effects of computer and network vulnerabilities (e.g., poor code, limited access control); (vi) Solutions for securing computer and networked systems through cryptography, security-aware programming/coding, and careful protocol design; (vii) DDoS prevention, end-to-end analysis of spam-value chain; (viii) concepts of indirection and randomization in network architectures.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6014
+course_name: MSD: Netwrks & Security
+section: 002
+units: --
+instructor: Flatt, Matthew
+component: Laboratory
+available_seats: 20
+schedule: We/11:00AM-12:00PM
+location: MEB 3225
+description: This course covers (i) Internet software and hardware components, protocols (e.g., TCP/IP), Internet performance metrics; (ii) Mobile and wireless networking; (iii) Socket programming and applications; (iv) Software defined networking, network function virtualization; (v) Causes and effects of computer and network vulnerabilities (e.g., poor code, limited access control); (vi) Solutions for securing computer and networked systems through cryptography, security-aware programming/coding, and careful protocol design; (vii) DDoS prevention, end-to-end analysis of spam-value chain; (viii) concepts of indirection and randomization in network architectures.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6015
+course_name: MSD: Software Engineer
+section: 001
+units: 4.0
+instructor: Makarem, Nabil
+component: Lecture
+available_seats: 18
+schedule: TuTh/09:00AM-09:50AM
+location: MEB 3255
+description: This course develops skills in developing and maintaining complex applications. Skills will be developed in (i) creating and interpreting specifications for software, both formal and informal, (ii) using version control systems and continuous integration systems, (iii) creating test cases, creating testable software, and assessing the effectiveness of a testing campaign, (iv), using static and dynamic analysis tools to find and eliminate software defects, (v) refactoring applications, and (vi) writing solid, secure code using techniques such as defensive programming and assertions.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6015
+course_name: MSD: Software Engineer
+section: 002
+units: --
+instructor: Makarem, Nabil
+component: Laboratory
+available_seats: 18
+schedule: Th/10:00AM-10:50AM
+location: MEB 3225
+description: This course develops skills in developing and maintaining complex applications. Skills will be developed in (i) creating and interpreting specifications for software, both formal and informal, (ii) using version control systems and continuous integration systems, (iii) creating test cases, creating testable software, and assessing the effectiveness of a testing campaign, (iv), using static and dynamic analysis tools to find and eliminate software defects, (v) refactoring applications, and (vi) writing solid, secure code using techniques such as defensive programming and assertions.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6019
+course_name: MSD Project
+section: 001
+units: 4.0
+instructor: Shankar, Varun
+component: Lecture
+available_seats: 46
+schedule: Tu-Th/09:00AM-11:00AM
+location: MEB 3105
+description: Students will apply the knowledge of software development to specific disciplines/application domains for a significant capstone project. Examples include design and development of a substantial finance software package, design and development of security protocols or tools, design and development of software for data collection and analysis, etc. Students will acquire deeper knowledge in the domains they choose to work in.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6020
+course_name: Early-Career Research
+section: 001
+units: 3.0
+instructor: Phillips, Bei Wang
+component: Lecture
+available_seats: 5
+schedule: 
+location: 
+description: This is an independent study offering designed to encourage beginning graduate students to conduct, publish, and present original research early in their graduate careers. A graduate student can earn credit for CS 6020 by having a first-authored paper accepted for publication in a top-tier journal or conference and by subsequently presenting the published work in a one-hour departmental research colloquium. The research must be conducted while a graduate student at Utah; the paper must be accepted within two years of enrolling in the graduate program; the journal or conference must be approved by the student's graduate committee; the colloquium must be presented as soon as possible after the acceptance of the paper; and the student must complete these requirements and register for CS 6020 within three years of enrolling in the graduate program. CS 6020 may not be repeated for credit.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6110
+course_name: Software Verification
+section: 001
+units: 3.0
+instructor: Greenman, Benjamin
+component: Lecture
+available_seats: 5
+schedule: TuTh/02:00PM-03:20PM
+location: WEB L112
+description: The main goal of the course is to teach students how to rigorously verify and analyze (complex) software systems. We will study theoretical foundations underlying this task, and solve exercises and homework assignments based around actually proving example programs correct. We will also explore practical techniques behind popular verification and analysis tools, such as systematic test generation, symbolic execution, and static analysis. Students completing the course will gain a solid understanding of practical design, specification, and verification techniques and the underlying theory. Furthermore, students will leave with significant hands-on experience.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6170
+course_name: Computational Topology
+section: 001
+units: 3.0
+instructor: Phillips, Bei Wang
+component: Lecture
+available_seats: 10
+schedule: TuTh/03:40PM-05:00PM
+location: MEB 2325
+description: This course provides a gentle introduction to topology-based techniques for the analysis and visualization of geometric models. Students will learn about fundamental topological invariants (connectedness, Euler characteristic, orientability, etc...) and constructs (Reed graphs, Morse-Smale complexes, etc...). Special emphasis will be given to the analysis of their computation algorithms with respect to: (i) asymptotic complexity, (ii) robustness, and (iii) data structures and implementation issues. Successful completion of the course will enable the students to pursue new research directions in this field and/or apply the most recent topological techniques to related areas such as computer graphics, geometric modeling, mesh generation, data analysis, and scientific visualization.
+prerequisites: ["CS4150"]
+--------------------------------------------------------------------------------
+
+course_id: CS6330
+course_name: Robotics II: Control
+section: 001
+units: 3.0
+instructor: Mascaro, Stephen
+component: Lecture
+available_seats: 9
+schedule: MoWe/01:25PM-02:45PM
+location: WEB 2250
+description: Control of serial robot manipulators is examined.  Topics include control system fundamentals, sensors and actuators, joint level control, centralized control, operational space control, and force control.  Projects provide hands on experience controlling a serial link manipulator.
+prerequisites: ["CS6130", "MEEN6200"]
+--------------------------------------------------------------------------------
+
+course_id: CS6370
+course_name: Motion Planning
+section: 001
+units: 3.0
+instructor: Hermans, Tucker
+component: Lecture
+available_seats: 17
+schedule: MoWe/03:00PM-04:20PM
+location: WEB 1230
+description: Motion planning stands as a central pillar in robotics and a powerful tool in a number of other fields. Motion planning enables robots and autonomous agents to move themselves and other parts of the world to a desired goal by choosing a sequence of appropriate actions. This course will cover the theoretical and algorithmic underpinnings of motion planning as well as practical issues in applying algorithms to real world problems. Applications will be examined across robotics ranging from obstacle avoidance in autonomous cars to rearrangement of furniture by humanoid robots. Examples from fields beyond robotics may also be examined such as bioinformatics, video games, or computer-aided design.
+prerequisites: ["MATH2250"]
+--------------------------------------------------------------------------------
+
+course_id: CS6460
+course_name: Operating Systems
+section: 001
+units: 3.0
+instructor: Burtsev, Anton
+component: Lecture
+available_seats: 58
+schedule: TuTh/09:10AM-10:30AM
+location: WEB L101
+description: Characteristics, objectives, and issues concerning computer operating systems. Hardware-software interactions, process management, memory management, protection, synchronization, resource allocation, file systems, security, and distributed systems. Extensive systems programming.
+prerequisites: ["CS4400"]
+--------------------------------------------------------------------------------
+
+course_id: CS6491
+course_name: Software & Sys Security
+section: 001
+units: 3.0
+instructor: Zhang, MU
+component: Lecture
+available_seats: 41
+schedule: MoWe/03:00PM-04:20PM
+location: WEB 2250
+description: This is a graduate-level research-oriented course, which covers both classic and cutting-edge topics in the area of software security. It provides the students with a good understanding of software problems in not only traditional binary executables but also emerging mobile applications, cyber-physical systems, and Blockchain platforms.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6493
+course_name: Applied S/W Secur Test
+section: 001
+units: 3.0
+instructor: Nagy, Stefan
+component: Lecture
+available_seats: 2
+schedule: MoWe/01:25PM-02:45PM
+location: WEB L114
+description: This course dives into today’s state-of-the-art techniques for uncovering hidden logical bugs and security vulnerabilities in software. Introductory fuzzing exercises provide hands-on experience with industry-popular security tools for testing and diagnosing software errors, culminating in a final project where you’ll work to hunt down, analyze, and report bugs in a real-world application of your choice. This class is open to graduate students and upper-level undergraduates. It is recommended you have a solid grasp over topics like software security, systems programming, and C/C++.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6545
+course_name: HCI Origin&Perspectives
+section: 001
+units: 3.0
+instructor: Wiese, Jason
+component: Lecture
+available_seats: 4
+schedule: MoWe/03:00PM-04:20PM
+location: ARCH 229
+description: Human-Computer Interaction (HCI) is a unique multidisciplinary field that emerged from multiple academic contexts: social science, cognitive science, Design, and computer science. Each of these disciplines continues to train experts within HCI research and practice. However, an expert in human-computer interaction needs to maintain expertise in one and sometimes several of these different fields, and to be knowledgeable across all of these areas. This course is designed for graduate students to develop skills for doing rigorous work in the field of HCI, with a goal of applying these skills in either an industry or academic context. While there are important differences between working in academia and working in industry, the core skills developed in this course are essential in both contexts.
+prerequisites: [["CS3540", "CS6540"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6610
+course_name: Interactive Comp Graph
+section: 001
+units: 3.0
+instructor: Yuksel, Cem
+component: Lecture
+available_seats: 7
+schedule: TuTh/03:40PM-05:00PM
+location: WEB 1230
+description: This course covers the fundamental concepts of interactive and real-time rendering. The topics covered in this course are directly related to any application domain that displays 3D information, ranging from video games to interactive visualization. Interactive rendering often relies on the GPU hardware, so this course mainly covers topics related to GPU programming for interactive rendering, including shader programming, rendering transformations, shading, textures, shadows, tessellation, and advanced rendering techniques for interactive graphics applications. This is a project-based course with multiple programming assignments.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6635
+course_name: Vis for Scientific Data
+section: 001
+units: 3.0
+instructor: Johnson, Chris
+component: Lecture
+available_seats: 11
+schedule: MoWe/01:25PM-02:45PM
+location: WEB 1230
+description: Introduction to the principles, methods, and techniques for effective visual analysis of scientific data. Students will explore many aspects of visualization, including techniques for scalar, vector, and tensor field data; surface and volume geometry representations and scientific animation. Students will acquire hands-on experience using visualization software to study applications including but not limited to those that arise in science, engineering, and medicine. A complementary course - CS 5630/6630 Visualization for Data Science - that focuses on visualization related to tabular data (e.g., graphs, text, and maps), will be taught each Fall Semester.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6740
+course_name: CAD of Digital Circuits
+section: 001
+units: 3.0
+instructor: Kalla, Priyank
+component: Lecture
+available_seats: 4
+schedule: MoWeFr/10:45AM-11:35AM
+location: MEB 2325
+description: Graduate students only. Extra work required.
+prerequisites: [["ECE3700", "CS3700"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6780
+course_name: Embed Sys Design
+section: 001
+units: 4.0
+instructor: Gaillardon, Pierre-Emmanuel
+component: Lecture
+available_seats: 3
+schedule: TuTh/12:25PM-01:45PM
+location: GC 1900
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
+prerequisites: [["ECE3810", "CS3810"], ["CS2000", "CS4400"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6780
+course_name: Embed Sys Design
+section: 002
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 1
+schedule: We/07:30AM-10:30AM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
+prerequisites: [["ECE3810", "CS3810"], ["CS2000", "CS4400"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6780
+course_name: Embed Sys Design
+section: 004
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 1
+schedule: Fr/07:30AM-10:30AM
+location: MEB 2555
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
+prerequisites: [["ECE3810", "CS3810"], ["CS2000", "CS4400"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6780
+course_name: Embed Sys Design
+section: 005
+units: --
+instructor: Gaillardon, Pierre-Emmanuel
+component: Laboratory
+available_seats: 1
+schedule: Mo/07:30AM-10:30AM
+location: MEB 2267
+description: Introduction to issues in embedded system design using microcontrollers.  Topics include: microcontroller architecture, memory interfacing, serial and parallel I/O interfacing, analog interfacing, interrupt synchronization, and embedded software. Graduate students only.  Extra work required.
+prerequisites: [["ECE3810", "CS3810"], ["CS2000", "CS4400"]]
+--------------------------------------------------------------------------------
+
+course_id: CS6800
+course_name: MSD Capstone Internship
+section: 001
+units: 4.0
+instructor: Shankar, Varun
+component: Practicum
+available_seats: 14
+schedule: 
+location: 
+description: Students will apply knowledge of software development to specific applications while working with a local industry or institutional partner. As a result of real-world, practical experience, students will acquire deeper knowledge in the domains that they choose to work in. As part of the course, students produce a written report and oral presentation.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6953
+course_name: Deep Learning Capstone
+section: 001
+units: 3.0
+instructor: Henderson, Thomas
+component: Practicum
+available_seats: 5
+schedule: Tu/01:00PM-03:00PM
+location: MEB 3515
+description: supervised by Deep Learning faculty and involves working on an industry related problem in a team setting (e.g., real-time road situational analysis [Blyncsy, UDOT]; large-scale problem solving [Nvidia]; trajectory analysis [Cognitech]; autonomous vehicle perceptual analysis [Kairos Autonomi]; where these industry partners will provide specific problems, related course material, and intern/extern feedback/dialog) using the requested pooled GPU deep learning hardware
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6955
+course_name: Adv Artificial Intelligence
+section: 001
+units: 3.0
+instructor: Brown, Daniel
+component: Special Topics
+available_seats: 8
+schedule: MoWe/11:50AM-01:10PM
+location: ASB 210
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6958
+course_name: Advanced Computer Vision
+section: 001
+units: 3.0
+instructor: Al Halah, Ziad
+component: Special Topics
+available_seats: 12
+schedule: MoWe/04:35PM-05:55PM
+location: WEB L126
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6959
+course_name: Human-Centered Data Management
+section: 001
+units: 3.0
+instructor: Fariha, Anna
+component: Special Topics
+available_seats: 23
+schedule: MoWe/04:35PM-05:55PM
+location: WEB 1230
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6960
+course_name: Multimodal LLM Agents
+section: 001
+units: 3.0
+instructor: Marino, Kenneth
+component: Special Topics
+available_seats: 4
+schedule: TuTh/03:40PM-05:00PM
+location: WEB L110
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6961
+course_name: AI for HCC
+section: 001
+units: 3.0
+instructor: Jiang, Yue
+component: Special Topics
+available_seats: 14
+schedule: TuTh/02:00PM-03:20PM
+location: MEB 3105
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6962
+course_name: Auto Speech Recog & Accent
+section: 001
+units: 3.0
+instructor: Patwari, Neal
+component: Special Topics
+available_seats: 3
+schedule: TuTh/02:00PM-03:20PM
+location: CRCC 215
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6964
+course_name: Manage Data for & with ML
+section: 001
+units: 3.0
+instructor: Rezig, El Kindi
+component: Special Topics
+available_seats: 5
+schedule: TuTh/12:25PM-01:45PM
+location: WEB 1230
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6965
+course_name: Social Computing
+section: 001
+units: 3.0
+instructor: Kogan, Marina
+component: Special Topics
+available_seats: 2
+schedule: MoWe/01:25PM-02:45PM
+location: WEB L110
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6966
+course_name: Interpretability of LLMs
+section: 001
+units: 3.0
+instructor: Marasovic, Ana
+component: Special Topics
+available_seats: 7
+schedule: TuTh/10:45AM-12:05PM
+location: WEB L112
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6967
+course_name: Critical HCI and Visualization
+section: 001
+units: 3.0
+instructor: Mcnutt, Andrew
+component: Special Topics
+available_seats: 12
+schedule: TuTh/02:00PM-03:20PM
+location: BU C 302
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS6969
+course_name: Fast and Verified GPU Code
+section: 001
+units: 3.0
+instructor: Gopalakrishnan, Ganesh
+component: Special Topics
+available_seats: 2
+schedule: MoWe/01:25PM-02:45PM
+location: WEB 1248
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7520
+course_name: Program Lang Semantics
+section: 001
+units: 3.0
+instructor: Flatt, Matthew
+component: Lecture
+available_seats: 16
+schedule: MoWe/03:00PM-04:20PM
+location: WBB 820
+description: Examination of the formal and pragmatic ideas behind programming language design. Imperative, functional, logic, object-oriented, and multi-paradigm languages. Lambda calculus, fixpoints, type systems, and predicate logic. Denotational semantics and models of concurrency.
+prerequisites: ["CS3100", "CS5510"]
+--------------------------------------------------------------------------------
+
+course_id: CS7640
+course_name: Adv Image Processing
+section: 001
+units: 3.0
+instructor: Elhabian, Shireen
+component: Lecture
+available_seats: 22
+schedule: TuTh/03:40PM-05:00PM
+location: WEB L122
+description: In-depth study of advanced methods and research topics of current interest in image processing and analysis. Covers PDEs, shape representations, deformable models (snakes, level sets), statistical shape analysis, scale-space and registration. Focus and list of topics might change from semester to semester.
+prerequisites: ["CS6640"]
+--------------------------------------------------------------------------------
+
+course_id: CS7810
+course_name: Adv Computer Arch
+section: 001
+units: 3.0
+instructor: Nagarajan, Vijayanand
+component: Lecture
+available_seats: 4
+schedule: TuTh/03:40PM-05:00PM
+location: WBB 617
+description: Investigation of issues in the design of modern microprocessors, with an in-depth treatment of current research topics in the field.  The course is driven by the discussion of seminal papers in the fields.
+prerequisites: [["CS6810", "ECE6810"]]
+--------------------------------------------------------------------------------
+
+course_id: CS7933
+course_name: Graphics Seminar
+section: 001
+units: 1.0
+instructor: Lin, Jenny
+component: Seminar
+available_seats: 13
+schedule: Tu/12:15PM-01:45PM
+location: MEB 3515
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7934
+course_name: Computer Systems Seminar
+section: 001
+units: 1.0
+instructor: Eide, Eric N
+component: Seminar
+available_seats: 5
+schedule: Fr/02:00PM-03:30PM
+location: MEB 3485
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7936
+course_name: Type Theory Foundations
+section: 001
+units: 1.0
+instructor: Greenman, Benjamin
+component: Seminar
+available_seats: 9
+schedule: Mo/01:25PM-02:45PM
+location: WEB 2460
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7937
+course_name: Arch/VLSI
+section: 001
+units: 1.0
+instructor: Nagarajan, Vijayanand
+component: Seminar
+available_seats: 6
+schedule: Fr/09:30AM-11:00AM
+location: MEB RM TBA
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7939
+course_name: Robotics Seminar
+section: 001
+units: 1.0
+instructor: Leang, Kam
+component: Seminar
+available_seats: 8
+schedule: We/09:40AM-10:30AM
+location: WEB 2230
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7941
+course_name: Data Science Seminar
+section: 001
+units: 1.0
+instructor: Rezig, El Kindi
+component: Seminar
+available_seats: 0
+schedule: Fr/01:25PM-02:45PM
+location: WEB L112
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: CS7942
+course_name: Visualization Seminar
+section: 001
+units: 1.0
+instructor: Mcnutt, Andrew
+component: Seminar
+available_seats: 6
+schedule: We/12:00PM-01:00PM
+location: WEB 3780
 description: 
 prerequisites: []
 --------------------------------------------------------------------------------

@@ -617,17 +617,25 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	// FIX: Match on both department AND course_code to avoid cross-department collisions
 	const handleScheduleItemClick = (scheduleItem) => {
 		const courseCodeMatch = scheduleItem.class_.match(/(\d+)/);
 		if (!courseCodeMatch) return;
 
 		const courseCode = courseCodeMatch[1];
 
-		// Try to extract department from the class_ string e.g. "CS 1410 - 001"
+		// Extract department from class_ string e.g. "CS 2420 - 001"
 		const deptMatch = scheduleItem.class_.match(/^([A-Z]+)\s/);
 		const dept = deptMatch ? deptMatch[1] : selectedDepartment || "Unknown";
 
-		const course = allCourses.find(c => c.course_code.toString() === courseCode);
+		// First try matching both department AND course_code
+		const course =
+			allCourses.find(c =>
+				c.course_code.toString() === courseCode &&
+				c.department.toUpperCase() === dept.toUpperCase()
+			) ||
+			// Fallback to code-only if no department match found
+			allCourses.find(c => c.course_code.toString() === courseCode);
 
 		if (course) {
 			openCourseDetails(course);
@@ -658,9 +666,12 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	// FIX: Also check combined "DEPT CODE" string so "cs 2420" finds CS 2420
 	const filteredCourses = allCourses.filter(course => {
-		const searchLower = courseSearchQuery.toLowerCase();
+		const searchLower = courseSearchQuery.toLowerCase().trim();
+		const combined = `${course.department} ${course.course_code}`.toLowerCase();
 		return (
+			combined.includes(searchLower) ||
 			course.department.toLowerCase().includes(searchLower) ||
 			course.course_code.toString().includes(searchLower) ||
 			course.course_name.toLowerCase().includes(searchLower) ||
