@@ -66,8 +66,8 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     onlineSection = None
 
     for section in sections:
-        print("class check")
-        print(section.section_type)
+        # print("class check")
+        # print(section.section_type)
         if section.section_type != "Lecture":
             continue
 
@@ -117,8 +117,8 @@ def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
     onlineSection = None
 
     for section in sections:
-        print("Lab Check")
-        print(section.section_type)
+        # print("Lab Check")
+        # print(section.section_type)
         if section.section_type != "Laboratory":
             continue
 
@@ -343,6 +343,8 @@ def generate_schedule(audit_id):
                             lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
                             if lab_scheduled:
                                 add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+                                print(course)
+                                print("here")
 
                             major_classes -= 1
                             total_classes -= 1
