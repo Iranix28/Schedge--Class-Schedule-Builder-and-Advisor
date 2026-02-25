@@ -59,7 +59,8 @@ def add_class_to_schedule(course: str, section: ClassSection, schedule: list[Sch
 
 def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     dept, num = splitCourse(course)
-    sections = get_class_sections_by_course_number(db, num)
+    # FIX: pass department_subject so we only get sections for the correct department
+    sections = get_class_sections_by_course_number(db, num, department_subject=dept)
 
     onlineSection = None
 
@@ -98,7 +99,8 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
 
     # If every in person section conflicts, add an online one if it exists
     if onlineSection:
-        return False, section
+        # FIX: was incorrectly returning `section` (last loop var) instead of `onlineSection`
+        return False, onlineSection
 
     # If every section conflicts
     return True, None
@@ -262,13 +264,6 @@ def generate_schedule(audit_id):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
                             if not conflict:
-                                # print(rangeCourse.number)
-                                # print(rangeCourse.name)
-                                # print(rangeCourse.description)
-                                # print(section.section_code)
-                                # print(f"{section.start_time} - {section.end_time}")
-                                # print("\n")
-
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
                                 
                                 total_classes -= 1

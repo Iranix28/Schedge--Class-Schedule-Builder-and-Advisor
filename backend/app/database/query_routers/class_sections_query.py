@@ -28,13 +28,17 @@ def get_class_section(db: Session, class_section_id: int) -> Optional[ClassSecti
 def get_class_sections_by_course_number(
     db: Session,
     course_number: str,
+    department_subject: Optional[str] = None,
 ) -> List[ClassSection]:
     stmt = (
         select(ClassSection)
         .join(ClassSection.course)
+        .join(Course.department)
         .where(Course.number == course_number)
         .order_by(ClassSection.id)
     )
+    if department_subject:
+        stmt = stmt.where(Department.subject == department_subject)
     result = db.execute(stmt)
     return result.scalars().all()
 
