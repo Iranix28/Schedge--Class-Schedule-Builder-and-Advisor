@@ -210,9 +210,9 @@ def generate_schedule(audit_id):
         needs_credits = req.needs_credits
 
         # print("Schedule")
-        print(req.title)
-        print(req.needs_count)
-        print(req.needs_credits)
+        # print(req.title)
+        # print(req.needs_count)
+        # print(req.needs_credits)
 
 
         
@@ -278,6 +278,13 @@ def generate_schedule(audit_id):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
                             if not conflict:
+                                print(rangeCourse.number)
+                                print(rangeCourse.name)
+                                print(rangeCourse.description)
+                                print(section.section_code)
+                                print(f"{section.start_time} - {section.end_time}")
+                                print("\n")
+
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
                                
                                 total_classes -= 1
@@ -317,6 +324,14 @@ def generate_schedule(audit_id):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
                         if not conflict:
+                            print(dept)
+                            print(course_object.number)
+                            print(course_object.name)
+                            print(course_object.description)
+                            print(section.section_code)
+                            print(f"{section.start_time} - {section.end_time}")
+                            print("\n")
+
                             add_class_to_schedule(course=course, section=section, schedule=schedule)
 
                             total_classes -= 1

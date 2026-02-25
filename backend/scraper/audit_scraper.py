@@ -8,21 +8,30 @@ import re
 
 db = SessionLocal()
 
+# def splitCourse(course):
+#     splitIndex = 0
+
+#     for i in range(len(course)):
+#         if course[i].isdigit():
+#             splitIndex = i
+#             break
+
+#     # Get the department from the string
+#     dept = course[:splitIndex].strip()
+
+#     # Get the course number from the string
+#     num  = course[splitIndex:splitIndex + 4].strip()        
+
+#     return dept, num
+
 def splitCourse(course):
-    splitIndex = 0
+    for i, ch in enumerate(course):
+        if ch.isdigit():
+            dept = course[:i].strip().replace(" ", "")
+            num = course[i:].strip()
+            return dept, num
 
-    for i in range(len(course)):
-        if course[i].isdigit():
-            splitIndex = i
-            break
-
-    # Get the department from the string
-    dept = course[:splitIndex].strip()
-
-    # Get the course number from the string
-    num  = course[splitIndex:splitIndex + 4].strip()        
-
-    return dept, num
+    return None, None
 
 def outputRequirements(requirements, completedCourses, filename="parsed_audit.txt"):
     """
@@ -38,7 +47,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
 
     for req in requirements:
         # print("Scraper")
-        print(req["title"])
+        # print(req["title"])
         # print(req["needsCount"])
         # print(req["needsCredits"])
         # DB
@@ -243,8 +252,8 @@ def scrapeDegreeAudit(html_file):
 
     # Skip first 8 irrelevant requirements
     for idx, req in enumerate(requirements):
-        if idx < 8:
-            continue
+        # if idx < 8:
+        #     continue
 
         titleTag = req.find("div", class_="reqTitle")
         statusTag = req.find("div", class_="status")
