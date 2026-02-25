@@ -209,6 +209,16 @@
                 onNavigate={handleSidebarNavigate}
                 refreshKey={sidebarRefreshKey}
                 onLogout={handleLogout}
+                onPlanDeleted={(deletedPlanId) => {
+                  // If the deleted plan is the one currently being viewed, go home
+                  const activeId = selectedSavedPlan?.id || createdMultiPlanId || savedPlan?.id;
+                  if (activeId && String(activeId) === String(deletedPlanId)) {
+                    setSelectedPlan(null);
+                    setSelectedSavedPlan(null);
+                    resetMultiState();
+                  }
+                  setSidebarRefreshKey((k) => k + 1);
+                }}
               />
             )}
 
