@@ -65,6 +65,7 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     onlineSection = None
 
     for section in sections:
+        print("class check")
         print(section.section_type)
         if section.section_type != "Lecture":
             continue
@@ -115,6 +116,7 @@ def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
     onlineSection = None
 
     for section in sections:
+        print("Lab Check")
         print(section.section_type)
         if section.section_type != "Laboratory":
             continue
