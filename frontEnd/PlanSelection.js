@@ -11,16 +11,6 @@ function PlanSelection({ onSelectPlan, userData, onLogout }) {
 				<div className="flex items-center gap-3">
 					<h1 className="text-xl font-semibold text-white">Plan Selection</h1>
 				</div>
-				<div className="flex items-center gap-3">
-					<button
-						type="button"
-						onClick={onLogout}
-						className="px-3 py-1.5 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
-						style={{ color: "#BE0000" }}
-					>
-						Logout
-					</button>
-				</div>
 			</header>
 
 			{/* Main Content */}
