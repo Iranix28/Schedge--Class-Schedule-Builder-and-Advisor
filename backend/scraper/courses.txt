@@ -1,0 +1,156 @@
+course_id: MDCH5220
+course_name: Organic Med Chem II
+section: 001
+units: 2.0
+instructor: Schmidt, Eric W
+component: Lecture
+available_seats: 65
+schedule: MoWe/09:00AM-09:50AM
+location: SK H AUD
+description: Continuation of MD CH 5210. Chemical and physical properties, structure-activity relationships of organic medicinal compounds.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7890
+course_name: Research Seminar
+section: 001
+units: 1.0
+instructor: Franzini, Raphael
+component: Seminar
+available_seats: 50
+schedule: Th/03:00PM-06:00PM
+location: EHSEB 2600
+description: Formal seminar on personal research or selected literature surveys.  Informal presentation of current research results.  Includes a tutorial in presentation methods.  Required for graduate study.
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 001
+units: 1.0 -  12.0
+instructor: Diehl, Katharine
+component: Thesis Research
+available_seats: 22
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 003
+units: 1.0 -  12.0
+instructor: Balagurunathan, Kuberan
+component: Thesis Research
+available_seats: 25
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 005
+units: 1.0 -  12.0
+instructor: Winter, Jackie
+component: Thesis Research
+available_seats: 24
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 009
+units: 1.0 -  12.0
+instructor: Davis, Darrell R
+component: Thesis Research
+available_seats: 25
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 010
+units: 1.0 -  12.0
+instructor: Cheatham, Thomas E
+component: Thesis Research
+available_seats: 24
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 011
+units: 1.0 -  12.0
+instructor: Franzini, Raphael
+component: Thesis Research
+available_seats: 24
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 012
+units: 1.0 -  12.0
+instructor: Schmidt, Eric W
+component: Thesis Research
+available_seats: 22
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7970
+course_name: Thesis Research-PhD
+section: 014
+units: 1.0 -  12.0
+instructor: Barrios, Amy
+component: Thesis Research
+available_seats: 4
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7980
+course_name: Faculty Consult PhD
+section: 001
+units: 3.0
+instructor: Davis, Darrell R
+component: Independent Study
+available_seats: 25
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+
+course_id: MDCH7990
+course_name: Cont Reg PhD
+section: 001
+units: 0.0
+instructor: Davis, Darrell R
+component: Continuing Registration
+available_seats: 25
+schedule: 
+location: 
+description: 
+prerequisites: []
+--------------------------------------------------------------------------------
+

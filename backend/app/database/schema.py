@@ -76,6 +76,8 @@ class Course(Base):
     units: Mapped[Optional[int]] = mapped_column(Integer, nullable=False)  
     description: Mapped[Optional[str]] = mapped_column(String(5000), nullable=True)
 
+    prereq_conditions: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)   #json for prereq
+
     embedding: Mapped[Optional[List[float]]] = mapped_column(           
         Vector(1024),                                                 # change based embedding model
         nullable=True,
@@ -117,12 +119,12 @@ class ClassSection(Base):
     term_year: Mapped[int] = mapped_column(Integer, nullable=False)       # 2025
     section_code: Mapped[str] = mapped_column(String(16), nullable=False) # "001", "002"
 
-    # section_type: Mapped[str] = mapped_column(String(20), nullable=False, default="lecture")
-    # parent_section_id: Mapped[Optional[int]] = mapped_column(
-    #     ForeignKey("class_sections.id", ondelete="SET NULL"),
-    #     nullable=True,
-    #     index=True,
-    # )
+    section_type: Mapped[Optional[str]] = mapped_column(String(5000), nullable=True)
+    parent_section_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("class_sections.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
 
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MoWe", "TuTh"

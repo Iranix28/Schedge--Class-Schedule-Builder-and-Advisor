@@ -15,12 +15,12 @@ from datetime import datetime
 
 # create the CS department
 db = SessionLocal()
-cs_dept = DepartmentCreate(name="Computer Science", subject="CS")
-cs_department = create_department(db, cs_dept)
+# cs_dept = DepartmentCreate(name="Mathematis", subject="MATH")
+# cs_department = create_department(db, cs_dept)
 
 seen_course_codes = set()
 seen_departments = set()
-seen_departments.add("CS")
+seen_departments.add("MATH")
 
 # === CONFIG ===
 BASE_URL = "https://class-schedule.app.utah.edu/main/1264/"
@@ -70,10 +70,15 @@ COURSE_REGEX = re.compile(
     rf"\b({'|'.join(map(re.escape, SORTED_SUBJECT_KEYS))})\s*(\d{{3,4}})\b"
 )
 
+TOKEN_REGEX = re.compile(
+    rf"\b(?P<op>AND|OR)\b|(?P<subject>{'|'.join(map(re.escape, SORTED_SUBJECT_KEYS))})\s*(?P<number>\d{{3,4}})",
+    re.I
+)
 
-def parse_requirements_to_list(raw_pre, raw_co):
 
-    def parse_line(text, kind):
+def parse_requirements(raw_pre, raw_co):
+
+    def parse_line(text):
         if not text or text.strip() in ("N/A", ""):
             return []
 
@@ -84,45 +89,42 @@ def parse_requirements_to_list(raw_pre, raw_co):
             .replace(".", "")
         )
 
-        results = []
-
-        # extract grade once
-        m = GRADE_PATTERN.search(clean)
-        last_grade = m.group(1).upper() if m else None
-
-        # token stream: operators + courses, in order
-        token_pattern = re.compile(
-            rf"\b(AND|OR)\b|{COURSE_REGEX.pattern}"
-        )
-
+        groups = []
+        current_or_group = []
         pending_op = None
 
-        for match in token_pattern.finditer(clean):
-            if match.group(1):  # AND / OR
-                pending_op = match.group(1).lower()
+        for m in TOKEN_REGEX.finditer(clean):
+            if m.group("op"):
+                pending_op = m.group("op").upper()
                 continue
 
-            # course match
-            subj_key = match.group(2)
-            num = match.group(3)
-
+            subj_key = m.group("subject")
+            num = m.group("number")
             subject = NORMALIZED_SUBJECTS[subj_key]
             course = subject.replace(" ", "") + num
 
-            prefix = f"{pending_op} " if pending_op else ""
+            if pending_op == "OR":
+                current_or_group.append(course)
+            else:
+                # flush any previous OR group
+                if current_or_group:
+                    groups.append(current_or_group)
+                    current_or_group = []
+
+                groups.append(course)
+
             pending_op = None
 
-            grade = f"{last_grade} " if last_grade else ""
+        # flush trailing OR group
+        if current_or_group:
+            groups.append(current_or_group)
 
-            results.append(f"{prefix}{kind} {grade}{course}")
+        return groups
 
-        return results
+    prereq_list = parse_line(raw_pre)
+    coreq_list = parse_line(raw_co)
 
-
-    final = []
-    final.extend(parse_line(raw_pre, "pre"))
-    final.extend(parse_line(raw_co, "co"))
-    return final
+    return prereq_list, coreq_list
 
 
 
@@ -330,7 +332,7 @@ for idx, card in enumerate(course_cards, start=1):
             prereqs_raw, coreqs_raw = split_prereq_core_from_enrollment_blob(enrollment_blob)
 
             # parse structured prereq list (this isnt quiet working yet)
-            prereq_list = parse_requirements_to_list(prereqs_raw, coreqs_raw)
+            prereq_list, coreq_list = parse_requirements(prereqs_raw, coreqs_raw)
 
             # description
             desc = extract_label_value(d_soup, r"Description")
@@ -361,58 +363,60 @@ for idx, card in enumerate(course_cards, start=1):
         "components": components,
         "prerequisites_raw": prereqs_raw,
         "corequisites_raw": coreqs_raw,
-        "prereq_list": prereq_list,
+        "prerequisites": prereq_list,
+        "corequisites": coreq_list,
         "description": full_desc
     })
 
 
+
     # add this course to the database
 
-    if course_code not in seen_course_codes:
-        new_course = CourseCreate(
-            department_id=1,  # link to CS department
-            number=course_code.split()[1],
-            name=title,
-            units=units,
-            description=full_desc
-        )
+    # if course_code not in seen_course_codes:
+    #     new_course = CourseCreate(
+    #         department_id=1,  # link to CS department
+    #         number=course_code.split()[1],
+    #         name=title,
+    #         units=units,
+    #         description=full_desc
+    #     )
 
-        cs_course = create_course(db, new_course)
+    #     cs_course = create_course(db, new_course)
 
-        seen_course_codes.add(course_code)
+    #     seen_course_codes.add(course_code)
 
     
-    if schedule != "N/A":
+    # if schedule != "N/A":
 
-        new_class = ClassSectionCreateByCourseCode(
-            department_subject=course_code.split()[0],  
-            course_number=course_code.split()[1],         
-            term_season="Spring",         
-            term_year="2026",           
-            section_code=section,        
-            # location: Optional[str] = None
-            days=schedule.split()[0],
-            start_time=datetime.strptime(schedule.split()[1].split("-")[0], "%I:%M%p").time(),
-            end_time=datetime.strptime(schedule.split()[1].split("-")[1], "%I:%M%p").time(),
-            professor_name=instructor
-        )
+    #     new_class = ClassSectionCreateByCourseCode(
+    #         department_subject=course_code.split()[0],  
+    #         course_number=course_code.split()[1],         
+    #         term_season="Spring",         
+    #         term_year="2026",           
+    #         section_code=section,        
+    #         # location: Optional[str] = None
+    #         days=schedule.split()[0],
+    #         start_time=datetime.strptime(schedule.split()[1].split("-")[0], "%I:%M%p").time(),
+    #         end_time=datetime.strptime(schedule.split()[1].split("-")[1], "%I:%M%p").time(),
+    #         professor_name=instructor
+    #     )
     
-    else:
-        new_class = ClassSectionCreateByCourseCode(
-        department_subject=course_code.split()[0],  
-        course_number=course_code.split()[1],         
-        term_season="Spring",         
-        term_year="2026",           
-        section_code=section,        
-        # location: Optional[str] = None
-        days=schedule.split()[0],
-        professor_name=instructor
-        )
+    # else:
+    #     new_class = ClassSectionCreateByCourseCode(
+    #     department_subject=course_code.split()[0],  
+    #     course_number=course_code.split()[1],         
+    #     term_season="Spring",         
+    #     term_year="2026",           
+    #     section_code=section,        
+    #     # location: Optional[str] = None
+    #     days=schedule.split()[0],
+    #     professor_name=instructor
+    #     )
 
 
-    cs_class = create_class_section_by_course_code(db, new_class)
+    # cs_class = create_class_section_by_course_code(db, new_class)
 
-    #add prereq classes
+    # add prereq classes
     # for requisite in prereq_list:
     #     if "pre" in requisite.split(): 
     #         match = re.search(r"([A-Z]{2,4})(\d{3,4})", requisite)
@@ -447,7 +451,8 @@ with OUTPUT_FILE.open("w", encoding="utf-8") as f:
         f.write(f"Description: {c['description']}\n")
         f.write(f"Prerequisites Raw: {c['prerequisites_raw']}\n")
         f.write(f"Corequisites Raw: {c['corequisites_raw']}\n")
-        f.write(f"Prerequisite list: {c['prereq_list']}\n")
+        f.write(f"Prerequisite list: {c['prerequisites']}\n")
+        f.write(f"Corequisite list: {c['corequisites']}\n")
         f.write("-" * 70 + "\n")
 
 print(f"\nSaved detailed info for {len(courses)} courses to {OUTPUT_FILE.resolve()}")
