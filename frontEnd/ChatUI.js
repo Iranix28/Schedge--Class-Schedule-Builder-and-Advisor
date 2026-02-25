@@ -76,8 +76,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		if (minMin === Infinity) return { startHour: 8, endHour: 18 };
 		// Tight bounds: floor start to nearest hour below, ceil end to nearest hour above — no extra padding rows
 		return {
-			startHour: Math.floor(minMin / 60),
-			endHour: Math.ceil(maxMin / 60),
+			startHour: Math.max(0, Math.floor(minMin / 60) - 1),
+			endHour: Math.ceil(maxMin / 60) + 1,
 		};
 	};
 	// ─────────────────────────────────────────────────────────────────────────
@@ -509,7 +509,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 	// Hour labels: inclusive start, exclusive end (no phantom row beyond grid boundary)
 	const hourLabels = [];
-	for (let h = scheduleStartHour; h < scheduleEndHour; h++) hourLabels.push(h);
+	for (let h = scheduleStartHour; h <= scheduleEndHour; h++) hourLabels.push(h);
 	// ─────────────────────────────────────────────────────────────────────────
 
 	return (
@@ -664,7 +664,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 									<div className="absolute inset-0">
 										{hourLabels.map((hour, i) => (
 											<div key={hour} className="flex gap-1 absolute w-full" style={{ top: `${i * rowHeight}px`, height: `${rowHeight}px` }}>
-												<div className="text-slate-400 text-right pr-3 leading-none whitespace-nowrap" style={{ fontSize: "10px", marginTop: "-5px", width: "45px", flexShrink: 0 }}>
+												<div className="text-slate-400 text-right pr-3 leading-none whitespace-nowrap" style={{ fontSize: "10px", marginTop: "0px", width: "45px", flexShrink: 0 }}>
 													{formatHourLabel(hour)}
 												</div>
 												{["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
