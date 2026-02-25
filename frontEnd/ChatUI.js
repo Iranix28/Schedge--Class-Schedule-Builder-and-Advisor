@@ -20,7 +20,7 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
-function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) {
+function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
 	const [messages, setMessages] = useState([
 		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
 	]);
@@ -43,6 +43,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
 	const [planName, setPlanName] = useState("My Plan");
+	const [autosaveStatus, setAutosaveStatus] = useState(null); // null | "saving" | "saved" | "error"
+	const [savedFlash, setSavedFlash] = useState(false); // turns button red on save
 
 	const openCourseDetails = (course) => {
 		setSelectedCourse(course);
@@ -79,9 +81,15 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	};
 
+	const userEditedNameRef = useRef(false);
 	useEffect(() => {
-		scrollToBottom();
-	}, [messages]);
+		if (!userEditedNameRef.current) return; // only autosave when user actually typed
+		if (!isAutosaveMode) return;
+		const timer = setTimeout(() => {
+			autosave(messages, visualizationData);
+		}, 1000);
+		return () => clearTimeout(timer);
+	}, [planName]);
 
 	useEffect(() => {
 		if (textareaRef.current) {
@@ -133,6 +141,217 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 
 
 	}, [savedPlan]);
+
+	// Track whether we've already initialized from this semester so that patching
+	// plan_id / semester_db_id into the semester prop (after auto-creation) does NOT
+	// re-run this effect and wipe the user's in-progress messages.
+	const semesterInitializedRef = useRef(false);
+
+	// Load saved messages + schedule when opening a semester (saved or fresh multi plan)
+	useEffect(() => {
+		if (!semester) return;
+		// Only run once per ChatUI mount — skip subsequent updates that only patch in DB ids
+		if (semesterInitializedRef.current) return;
+		semesterInitializedRef.current = true;
+
+		setPlanName(semester.name || semester._planTitle || "My Plan");
+		if (semester.messages && semester.messages.length > 0) {
+			setMessages(semester.messages);
+		} else {
+			setMessages([{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" }]);
+		}
+		if (semester.schedule && semester.schedule.length > 0) {
+			setVisualizationData({ type: "schedule", data: semester.schedule });
+		} else {
+			setVisualizationData(null);
+		}
+	}, [semester]);
+
+	// Holds plan_id + semester_db_id after a manual save on a single plan.
+	// Must be useState (not useRef) so isAutosaveMode re-evaluates after save.
+	const [savedPlanIds, setSavedPlanIds] = useState(null);
+
+	// isFreshMultiMode: semester has no DB ids yet but belongs to a multi plan context
+	const isFreshMultiMode = !!(semester && !semester.plan_id && (semester._allSemesters || semester._existingPlanId));
+
+	// isAutosaveMode: multi plans (saved or fresh) OR single plans after manual save
+	const isAutosaveMode = !!(semester?.plan_id && semester?.semester_db_id)
+		|| isFreshMultiMode
+		|| !!(savedPlan?.id && savedPlan?.semester_db_id)
+		|| !!(savedPlanIds);
+
+	// When entering a brand-new semester on an already-created plan, eagerly register
+	// it in the DB on mount so autosave has a real semester_db_id immediately —
+	// without waiting for the user to send a message or add a course.
+	useEffect(() => {
+		if (!semester?._existingPlanId || !userData?.id) return;
+		if (createdPlanRef.current) return; // already registered this session
+
+		const registerSemester = async () => {
+			if (isCreatingPlanRef.current) return;
+			isCreatingPlanRef.current = true;
+			try {
+				const res = await fetch(`${BASE_URL}/plans/${semester._existingPlanId}/semesters`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						user_id: userData.id,
+						term_season: semester.term,
+						term_year: semester.year,
+					}),
+				});
+				if (!res.ok) throw new Error(await res.text());
+				const data = await res.json();
+				const ids = { plan_id: semester._existingPlanId, semester_db_id: data.semester_db_id };
+				createdPlanRef.current = ids;
+				if (onPlanCreated) onPlanCreated(ids);
+			} catch (e) {
+				console.error("[ChatUI] failed to register semester on mount:", e);
+			} finally {
+				isCreatingPlanRef.current = false;
+			}
+		};
+
+		registerSemester();
+	}, []); // run once on mount only
+	console.log("[ChatUI] semester:", semester, "isAutosaveMode:", isAutosaveMode, "isFreshMultiMode:", isFreshMultiMode);
+
+	// Holds the live DB ids after a fresh plan is auto-created on first save
+	const createdPlanRef = useRef(null); // { plan_id, semester_db_id }
+	const isCreatingPlanRef = useRef(false); // prevent concurrent creation
+
+	// Resolve the live plan_id / semester_db_id from any source
+	const getActivePlanIds = () => {
+		// Multi-plan: from semester prop
+		if (semester?.plan_id && semester?.semester_db_id) {
+			return { plan_id: semester.plan_id, semester_db_id: semester.semester_db_id };
+		}
+		// Multi-plan: from auto-creation ref
+		if (createdPlanRef.current) {
+			return createdPlanRef.current;
+		}
+		// Single-plan: from manual save ref
+		// Single-plan: from manual save (state so it's always current)
+		if (savedPlanIds) {
+			return savedPlanIds;
+		}
+		// Single-plan: from savedPlan prop (opened from sidebar)
+		if (savedPlan?.id && savedPlan?.semester_db_id) {
+			return { plan_id: savedPlan.id, semester_db_id: savedPlan.semester_db_id };
+		}
+		return null;
+	};
+
+	// Creates the multi plan in the DB for the first time (or adds a new semester
+	// to an already-created plan when _existingPlanId is set)
+	const createFreshMultiPlan = async () => {
+		const allSemesters = semester._allSemesters || [];
+		const planTitle = semester._planTitle || "Multi-Semester Plan";
+		const thisSemesterIndex = allSemesters.findIndex((s) => s.id === semester.id);
+
+		let planId = semester._existingPlanId || null;
+		let semesterDbId = null;
+
+		if (!planId) {
+			// Brand-new plan — POST to create it with all semesters
+			const res = await fetch(`${BASE_URL}/plans/multi`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					user_id: userData.id,
+					name: planTitle,
+					semesters: allSemesters.map((s) => ({
+						term_season: s.term,
+						term_year: s.year,
+						courses: s.courses || [],
+					})),
+				}),
+			});
+			if (!res.ok) throw new Error(await res.text());
+			const created = await res.json();
+			planId = created.id;
+
+			// Resolve this semester's DB id from the full plan detail
+			const detailRes = await fetch(`${BASE_URL}/plans/multi/${planId}?user_id=${userData.id}`);
+			if (!detailRes.ok) throw new Error(await detailRes.text());
+			const detail = await detailRes.json();
+			semesterDbId = detail.semesters[thisSemesterIndex]?.id;
+
+			if (onPlanSaved) onPlanSaved();
+		} else {
+			// Plan already exists — semester may already be registered from the mount effect
+			if (createdPlanRef.current) {
+				return createdPlanRef.current;
+			}
+			// Not registered yet — POST now
+			const res = await fetch(`${BASE_URL}/plans/${planId}/semesters`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					user_id: userData.id,
+					term_season: semester.term,
+					term_year: semester.year,
+				}),
+			});
+			if (!res.ok) throw new Error(await res.text());
+			const data = await res.json();
+			semesterDbId = data.semester_db_id;
+		}
+
+		if (!semesterDbId) throw new Error("Could not resolve semester DB id");
+
+		const ids = { plan_id: planId, semester_db_id: semesterDbId };
+		createdPlanRef.current = ids;
+
+		if (onPlanCreated) onPlanCreated({ plan_id: planId, semester_db_id: semesterDbId });
+
+		return ids;
+	};
+
+	// Called with fresh data explicitly to avoid stale closure issues
+	const autosave = async (msgs, vizData) => {
+		if (!isAutosaveMode) return;
+		if (!userData?.id) return;
+
+		setAutosaveStatus("saving");
+		try {
+			// Resolve or create plan ids
+			let ids = getActivePlanIds();
+			if (!ids) {
+				if (isCreatingPlanRef.current) return; // already being created, skip
+				isCreatingPlanRef.current = true;
+				try {
+					ids = await createFreshMultiPlan();
+				} finally {
+					isCreatingPlanRef.current = false;
+				}
+			}
+
+			const courseSelections = [];
+			const seen = new Set();
+			(vizData?.data || []).forEach((item) => {
+				if (!item.course_id) return;
+				const key = `${item.course_id}-${item.class_section_id || "null"}`;
+				if (!seen.has(key)) { seen.add(key); courseSelections.push({ course_id: item.course_id, class_section_id: item.class_section_id || null }); }
+			});
+			const payload = {
+				user_id: userData.id,
+				plan_name: (semester && (semester._planTitle || semester.name)) || planName || null,
+				courseSelections,
+				messages: msgs.map((m) => ({ role: m.role, content: m.content })),
+				schedule: (vizData?.data || []).map((item) => ({ class_: item.class_ || "", day: item.day || "", startTime: item.startTime || "", endTime: item.endTime || "", room: item.room || "", course_id: item.course_id || null, class_section_id: item.class_section_id || null })),
+			};
+			const res = await fetch(`${BASE_URL}/plans/${ids.plan_id}/semesters/${ids.semester_db_id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+			if (!res.ok) throw new Error(await res.text());
+			setAutosaveStatus("saved");
+			setTimeout(() => setAutosaveStatus(null), 2000);
+			// Notify parent so sidebar re-fetches and moves this plan to the top
+			if (onPlanSaved) onPlanSaved();
+		} catch (err) {
+			console.error("[autosave] error:", err);
+			setAutosaveStatus("error");
+		}
+	};
 
 	const handleFileUpload = async (e) => {
 		const file = e.target.files[0];
@@ -189,8 +408,13 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			});
 		};
 
+		let finalMessages = [];
 		try {
 			await sendMessageLLM(userMessage, appendToken);
+			await new Promise((resolve) => {
+				setMessages((prev) => { finalMessages = prev; resolve(); return prev; });
+			});
+			if (isAutosaveMode) autosave(finalMessages, visualizationData);
 		} catch (err) {
 			setMessages((prev) => [
 				...prev,
@@ -248,55 +472,86 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 				method: "GET",
 			});
 
-			if (!res.ok) throw new Error("Failed to fetch course sections");
+			if (!res.ok) {
+				let detail = `HTTP ${res.status}`;
+				try {
+					const errBody = await res.json();
+					detail = errBody.detail || JSON.stringify(errBody);
+				} catch (_) {
+					detail = await res.text() || detail;
+				}
+				throw new Error(detail);
+			}
 
 			const sections = await res.json();
+
+			if (sections.length === 0) {
+				alert(`No sections found for course code "${class_code}". Make sure you're entering just the number (e.g. 1410).`);
+				return;
+			}
+
 			setAvailableSections(sections);
 			setShowSectionModal(true);
 			
 		} catch (err) {
-			console.error(err);
+			console.error("handleAddCourse error:", err);
 			alert(`Failed to add course: ${err.message}`);
 		}
 	};
 
-	const handleSelectSection = (section) => {
+	const handleSelectSection = async (section) => {
 		const days = parseDayAbbreviations(section.day);
 
-		// Extract course number from "1410 - 001"
-		const match = section.class_?.match(/(\d+)\s*-\s*(\d+)/);
-		if (!match) return;
+		// Resolve course_id: try from section directly, then allCourses, then API
+		let courseId = section.course_id || null;
+		let classSectionId = section.class_section_id || section.id || null;
 
-		const courseCode = match[1];
-		const sectionCode = match[2];
+		if (!courseId) {
+			// Try to extract course number from "1410 - 001" or "CS 1410 - 001"
+			const match = section.class_?.match(/(\d+)\s*-\s*(\d+)/);
+			if (match) {
+				const courseCode = match[1];
+				// Look in already-loaded allCourses
+				let course = allCourses.find(c => c.course_code.toString() === courseCode);
+				// If not found (allCourses not loaded yet), fetch it
+				if (!course) {
+					try {
+						const res = await fetch(`${BASE_URL}/schedule/get_courses`);
+						if (res.ok) {
+							const courses = await res.json();
+							setAllCourses(courses);
+							course = courses.find(c => c.course_code.toString() === courseCode);
+						}
+					} catch (e) {
+						console.warn("[handleSelectSection] failed to fetch courses:", e);
+					}
+				}
+				if (course) courseId = course.id;
+			}
+		}
 
-		// Find course from allCourses
-		const course = allCourses.find(
-			c => c.course_code.toString() === courseCode
-		);
-
-		if (!course) {
-			console.warn("Course not found for code:", courseCode);
-			return;
+		if (!courseId) {
+			console.warn("[handleSelectSection] could not resolve course_id for section:", section);
 		}
 
 		const newEntries = days.map(day => ({
 			...section,
 			day: day,
-			course_id: course.id,          // attach real DB id
-			class_section_id: null         // until backend returns real section ids
+			course_id: courseId,
+			class_section_id: classSectionId,
 		}));
 
+		let newVizData;
 		if (visualizationData) {
-			setVisualizationData({
-				...visualizationData,
-				data: [...visualizationData.data, ...newEntries],
-			});
+			newVizData = { ...visualizationData, data: [...visualizationData.data, ...newEntries] };
 		} else {
-			setVisualizationData({
-				type: "schedule",
-				data: newEntries,
-			});
+			newVizData = { type: "schedule", data: newEntries };
+		}
+		setVisualizationData(newVizData);
+		if (isAutosaveMode) {
+			let latestMsgs = [];
+			setMessages((prev) => { latestMsgs = prev; return prev; });
+			setTimeout(() => autosave(latestMsgs, newVizData), 0);
 		}
 
 		setShowSectionModal(false);
@@ -387,13 +642,12 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			item => item.class_ !== scheduleItem.class_
 		);
 
-		if (updatedData.length === 0) {
-			setVisualizationData(null);
-		} else {
-			setVisualizationData({
-				...visualizationData,
-				data: updatedData,
-			});
+		const newVizData = updatedData.length === 0 ? null : { ...visualizationData, data: updatedData };
+		setVisualizationData(newVizData);
+		if (isAutosaveMode) {
+			let latestMsgs = [];
+			setMessages((prev) => { latestMsgs = prev; return prev; });
+			setTimeout(() => autosave(latestMsgs, newVizData), 0);
 		}
 	};
 
@@ -469,7 +723,16 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 				throw new Error(errText);
 			}
 
+			const data = await res.json();
+
+			// Activate autosave for all future interactions on this plan
+			if (data.id && data.semester_db_id) {
+				setSavedPlanIds({ plan_id: data.id, semester_db_id: data.semester_db_id });
+			}
+
 			alert("Plan saved successfully");
+			setSavedFlash(true);
+			setTimeout(() => setSavedFlash(false), 2000);
 			if (onPlanSaved) onPlanSaved();
 		} catch (err) {
 			console.error("Save error:", err);
@@ -527,8 +790,26 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 	};
 
 
+	const titleInputStyle = `
+		.plan-title-input:-webkit-autofill,
+		.plan-title-input:-webkit-autofill:hover,
+		.plan-title-input:-webkit-autofill:focus {
+			-webkit-box-shadow: 0 0 0px 1000px #BE0000 inset !important;
+			-webkit-text-fill-color: white !important;
+			transition: background-color 5000s ease-in-out 0s;
+		}
+		.plan-title-input::selection {
+			background: rgba(255,255,255,0.3);
+			color: white;
+		}
+		.plan-title-input:focus {
+			background: transparent !important;
+		}
+	`;
+
 	return (
 		<div className="flex h-screen bg-slate-100 relative">
+		<style>{titleInputStyle}</style>
 			{/* Left Side - Chat Interface */}
 			<div
 				className={`flex flex-col border-r border-slate-300 bg-white transition-all duration-500 ease-in-out overflow-hidden ${
@@ -539,7 +820,20 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 					className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm"
 					style={{ backgroundColor: "#BE0000" }}
 				>
-					<div className="flex items-center gap-3">					
+					<div className="flex items-center gap-3">
+						{(isAutosaveMode || isFreshMultiMode) && (
+							<button
+								type="button"
+								onClick={() => onBack({ messages, schedule: visualizationData?.data || [], planName: semester?._planTitle || null })}
+								className="flex items-center gap-1 text-white opacity-80 hover:opacity-100 transition-opacity"
+								title="Back to semester overview"
+							>
+								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+								</svg>
+								<span className="text-sm font-medium">Back</span>
+							</button>
+						)}
 						<h1 className="text-xl font-semibold text-white">Advisor Chat</h1>
 					</div>
 				</header>
@@ -692,9 +986,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 							<input
 	type="text"
 	value={planName}
-	onChange={(e) => setPlanName(e.target.value)}
-	className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
-	style={{ minWidth: "150px" }}
+	onChange={(e) => { userEditedNameRef.current = true; setPlanName(e.target.value); }}
+	className="plan-title-input bg-transparent text-white font-semibold text-xl border-none focus:outline-none focus:ring-0 transition-all pr-8"
+	style={{ minWidth: "150px", caretColor: "white", WebkitAppearance: "none", boxShadow: "none" }}
 	placeholder="Enter plan name"
 />
 							<svg 
@@ -706,29 +1000,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
 							</svg>
 						</div>
-						<button
-							type="button"
-							onClick={handleSavePlan}
-							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
-							style={{ color: "#BE0000" }}
-						>
-							SAVE PLAN
-						</button>
-					</div>
-					<div className="flex items-center gap-3">
-						<button
-							type="button"
-							onClick={() => {
-								onLogout();
-								console.log("Logout clicked");
-							}}
-							className="px-2 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm"
-							style={{ color: "#BE0000", fontSize: "10px" }}
-						>
-							Logout
-						</button>
-					</div>
-				</header>
+						</div>
+					</header>
 				<div className="flex-1 overflow-y-auto pl-4 pr-6 py-6 space-y-6 relative overflow-hidden">
 					{/* Courses Panel */}
 					<div
@@ -953,7 +1226,31 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 							</div>
 						</div>
 					)}
-					
+
+					{/* Save button */}
+					<button
+						type="button"
+						onClick={isAutosaveMode ? undefined : handleSavePlan}
+						disabled={isAutosaveMode && autosaveStatus === "saving"}
+						className="w-full py-3 rounded-xl font-semibold text-sm shadow-sm border transition-all duration-300 flex items-center justify-center gap-2"
+						style={{
+							backgroundColor: (savedFlash || autosaveStatus === "saved") ? "#BE0000" : "white",
+							color: (savedFlash || autosaveStatus === "saved") ? "white" : "#BE0000",
+							borderColor: "#BE0000",
+							cursor: isAutosaveMode ? "default" : "pointer",
+						}}
+					>
+						{autosaveStatus === "saving" ? (
+							<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Saving...</>
+						) : autosaveStatus === "saved" || savedFlash ? (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/></svg>Saved</>
+						) : autosaveStatus === "error" ? (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Save Failed</>
+						) : (
+							<><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>{isAutosaveMode ? "Autosave On" : "Save Plan"}</>
+						)}
+					</button>
+
 					<div className="mt-4 flex justify-center items-center gap-3">
 						<input
 							type="text"
@@ -1119,9 +1416,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved}) 
 			<button
 				type="button"
 				onClick={toggleRightPanel}
-				className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
+				className="absolute w-8 h-8 rounded-full bg-white shadow-md border flex items-center justify-center hover:bg-slate-50 z-10"
 				style={{
-					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 12px)",
+					left: isRightPanelExpanded ? "10px" : "calc(33.33% - 16px)",
+					top: "60%",
 					borderColor: "#BE0000",
 					transition: "left 0.5s ease-in-out",
 				}}
