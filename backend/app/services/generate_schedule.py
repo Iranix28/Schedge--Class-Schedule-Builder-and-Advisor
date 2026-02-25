@@ -9,7 +9,6 @@ from app.models.models import ScheduleItem
 from datetime import datetime
 from app.database.schema import ClassSection
 from app.database.schema import Course
-from typing import Iterable, Union, List, Any, Tuple, Set
 
 def convert_days(days, day_string):
     if "Mo" in day_string:
@@ -104,22 +103,22 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     # If every section conflicts
     return True, None
 
-# def course_prereqs_complete(db, course: str):
-#     dept, num = splitCourse(course)
+def course_prereqs_complete(db, course: str):
+    dept, num = splitCourse(course)
 
-#     prereqs = get_course_prerequisites_by_subject(db=db, department_subject=dept, course_number=num)
+    prereqs = get_course_prerequisites_by_subject(db=db, department_subject=dept, course_number=num)
 
-#     for prereq in prereqs:
-#         # Get subject (I believe .subject would return 'CS')
-#         pre_subject = get_department(db=db, dept_id=prereq.department_id).subject
+    for prereq in prereqs:
+        # Get subject (I believe .subject would return 'CS')
+        pre_subject = get_department(db=db, dept_id=prereq.department_id).subject
 
-#         pre_id = get_course_id(db=db, subject=pre_subject, number=prereq.number)
+        pre_id = get_course_id(db=db, subject=pre_subject, number=prereq.number)
 
-#         # Use actual user ID that will be passed in when login is made
-#         if not is_course_completed(db=db, user_id=1, course_id=pre_id):
-#             return False
+        # Use actual user ID that will be passed in when login is made
+        if not is_course_completed(db=db, user_id=1, course_id=pre_id):
+            return False
     
-#     return True
+    return True
 
 def course_not_allowed(db, course: Course, not_from: list[str]):
     for not_course in not_from:
