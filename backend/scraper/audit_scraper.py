@@ -75,16 +75,16 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
             lines.append(f"    Needs Count: {sub['needsCount'] or 'N/A'}")
 
             # DB Not From
-            courseIds = []
+            courseIds = set()
             for course in sub["notFrom"]:
                 dept, num = splitCourse(course)
 
-                courseIds.append(get_course_id(db, dept, num))
+                courseIds.add(get_course_id(db, dept, num))
             
             for course in sub["completedCourses"]:
                 dept, num = splitCourse(course)
 
-                courseIds.append(get_course_id(db, dept, num))
+                courseIds.add(get_course_id(db, dept, num))
 
             if courseIds:
                 add_rules_courses_bulk(db, subReqId, "BLOCK", courseIds)
@@ -97,11 +97,11 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
                 lines.append("    Not From: None")
 
             # DB Select From
-            courseIds = []
+            courseIds = set()
             for course in sub["selectFrom"]:
                 dept, num = splitCourse(course)
 
-                courseIds.append(get_course_id(db, dept, num))
+                courseIds.add(get_course_id(db, dept, num))
 
             for i in range(len(sub["selectFrom"])):
                 if i < len(sub["selectFrom"]) - 1 and sub["selectFrom"][i + 1] == "TO":
