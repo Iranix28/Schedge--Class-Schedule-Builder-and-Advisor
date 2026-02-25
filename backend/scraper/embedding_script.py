@@ -2,6 +2,7 @@ import requests
 from sqlalchemy.orm import Session
 from app.database.session import SessionLocal
 from app.database.schema import Course  # <- make sure this points to your schema file
+from app.database.query_routers.departments_query import get_department
 
 EMBEDDING_MODEL = "mxbai-embed-large"
 OLLAMA_URL = "http://host.docker.internal:11434/api/embeddings"
@@ -16,11 +17,18 @@ def embedding_model(text: str) -> list[float]:
 def update_course_embeddings():
     db: Session = SessionLocal()
 
-    courses = db.query(Course).filter(Course.embedding == None).all()
+    courses = db.query(Course).all()
     print(f"Found {len(courses)} courses to embed.")
 
     for idx, course in enumerate(courses, start=1):
-        text_to_embed = f"CS {course.number}{course.name}.{course.description}"
+        department = get_department(db, course.department_id)
+        text_to_embed = (
+                            f"Course: {department.subject} {course.number}. "
+                            f"Title: {course.name}. "
+                            f"Description: {course.description}. "
+                            f"This course is part of the {department.subject} curriculum. "
+                            f"Students may take this course as part of their degree program."
+                        )
         try:
             emb_vector = embedding_model(text_to_embed)
             if len(emb_vector) != 1024:

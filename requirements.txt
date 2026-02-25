@@ -7,3 +7,7 @@ alembic>=1.13
 pgvector
 beautifulsoup4
 python-multipart
+passlib[argon2]
+argon2-cffi
+python-jose[cryptography]==3.3.0
+itsdangerous

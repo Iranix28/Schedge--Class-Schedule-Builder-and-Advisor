@@ -1,8 +1,9 @@
-from datetime import time
+from datetime import time, datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
+#TODO: need to delete duplicate models course_read and class_section_read ???
 
 #DEPARTMENT db_ models----------------------------------------
 class DepartmentBase(BaseModel):
@@ -135,6 +136,60 @@ class CoursePrerequisiteCreateByCode(BaseModel):
     prerequisite_department_subject: str  
     prerequisite_course_number: str
 
+#AUDIT db models------------------------------------------
+
+class AuditRuleRead(BaseModel):
+    id: int
+    rule_group: str  # "ALLOW" | "BLOCK"
+    kind: str        # "COURSE" | "RANGE" | "SUBJECT_LEVEL"
+
+    # If kind == COURSE
+    course_code: Optional[str] = None # e.g. "CS 3500"
+    course_name: Optional[str] = None 
+
+    # If kind == RANGE/SUBJECT_LEVEL
+    subject: Optional[str] = None # e.g. "CS"
+    number_min: Optional[int] = None
+    number_max: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AuditSubrequirementRead(BaseModel):
+    id: int
+    title: str
+    sort_order: int
+
+    needs_count: Optional[int] = None
+    needs_credits: Optional[int] = None
+    min_grade: Optional[str] = None
+
+    # Convenient “same as text file” lists:
+    not_from: List[str] = []
+    select_from: List[str] = []
+
+    # Full detail:
+    rules: List[AuditRuleRead] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AuditRequirementRead(BaseModel):
+    id: int
+    title: str
+    sort_order: int
+    subrequirements: List[AuditSubrequirementRead] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserAuditRead(BaseModel):
+    id: int
+    user_id: int
+    created_at: datetime
+    raw_text: Optional[str] = None
+
+    requirements: List[AuditRequirementRead] = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 ########## returns models

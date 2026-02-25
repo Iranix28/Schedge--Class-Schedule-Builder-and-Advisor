@@ -23,3 +23,13 @@ def get_department(db: Session, dept_id: int) -> Optional[Department]:
     stmt = select(Department).where(Department.id == dept_id)
     result = db.execute(stmt)
     return result.scalars().first()
+
+def get_department_id(db: Session, subject: str) -> int:
+    stmt = select(Department.id).where(Department.subject == subject)
+    result = db.execute(stmt)
+    dept_id = result.scalar_one_or_none()
+
+    if dept_id is None:
+        raise ValueError(f"Department not found for subject='{subject}'")
+
+    return int(dept_id)

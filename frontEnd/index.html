@@ -2,27 +2,289 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Chat UI</title>
-    <!-- Tailwind (optional; you used Tailwind classes) -->
+    <title>Advisor Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="h-screen">
     <div id="root" class="h-full"></div>
 
-    <!-- React + ReactDOM UMD (global React/ReactDOM objects) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-
-    <!-- Babel so the browser can understand JSX (dev only) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Your component file as JSX -->
+    <script type="text/babel" src="./Sidebar.js"></script>
+    <script type="text/babel" src="./login.js"></script>
+    <script type="text/babel" src="./PlanSelection.js"></script>
+    <script type="text/babel" src="./SavedPlansUI.js"></script>
+    <script type="text/babel" src="./MultiSemesterUI.js"></script>
     <script type="text/babel" src="./ChatUI.js"></script>
 
-    <!-- Render it -->
     <script type="text/babel">
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<ChatUI />);
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [isAuthenticated, setIsAuthenticated]   = useState(false);
+        const [userData, setUserData]                 = useState(null);
+        const [selectedPlan, setSelectedPlan]         = useState(null);
+        const [selectedSemester, setSelectedSemester] = useState(null);
+        const [selectedSavedPlan, setSelectedSavedPlan] = useState(null);
+        const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+        const [resetKey, setResetKey]                 = useState(0);
+        const [multiPlanTitle, setMultiPlanTitle]     = useState("");
+        const [createdMultiPlanId, setCreatedMultiPlanId] = useState(null);
+
+        // ── auth ──────────────────────────────────────────────────────────────
+        useEffect(() => {
+          (async () => {
+            try {
+              const res = await fetch("http://localhost:8000/auth/me", { credentials: "include" });
+              if (!res.ok) return;
+              const user = await res.json();
+              setUserData(user);
+              setIsAuthenticated(true);
+            } catch (e) {}
+          })();
+        }, []);
+
+        const handleLoginSuccess = (user) => { setUserData(user); setIsAuthenticated(true); };
+
+        const handleLogout = async () => {
+          try { await fetch("http://localhost:8000/auth/logout", { method: "POST", credentials: "include" }); } catch (e) {}
+          setIsAuthenticated(false);
+          setUserData(null);
+        };
+
+        // ── plan saved callback ───────────────────────────────────────────────
+        const handlePlanSaved = () => setSidebarRefreshKey((k) => k + 1);
+
+        // ── helpers to fully reset multi-plan navigation state ────────────────
+        const resetMultiState = () => {
+          setSelectedSemester(null);
+          setCreatedMultiPlanId(null);
+          setMultiPlanTitle("");
+          setSemesterChatKey("none");
+        };
+
+        // ── navigation handlers ───────────────────────────────────────────────
+        const handleSelectPlanType = (planType) => setSelectedPlan(planType);
+
+        const handleSelectSavedPlan = (plan) => {
+          resetMultiState();
+          setSelectedSavedPlan(plan);
+          setSelectedPlan(plan.mode === "multi" ? "saved-multi" : "saved");
+        };
+
+        const handleBackToSavedPlans = () => setSelectedSavedPlan(null);
+
+        const [semesterChatKey, setSemesterChatKey] = useState("none");
+
+        const handleMultiPlanIdSaved = (planId) => {
+          setCreatedMultiPlanId(planId);
+          setSidebarRefreshKey((k) => k + 1);
+        };
+
+        const handleSelectSemester = (semester) => {
+          if (semester._planTitle) setMultiPlanTitle(semester._planTitle);
+          const stableKey = "sem-" + String(semester.semester_db_id || semester.id || Date.now());
+          setSemesterChatKey(stableKey);
+          setSelectedSemester(semester);
+        };
+
+        const handlePlanCreated = async (ids) => {
+          if (!ids.plan_id) return;
+          setCreatedMultiPlanId(ids.plan_id);
+          setSelectedSemester((prev) => ({
+            ...prev,
+            plan_id: ids.plan_id,
+            semester_db_id: ids.semester_db_id,
+          }));
+          setSidebarRefreshKey((k) => k + 1);
+          try {
+            const res = await fetch(
+              "http://localhost:8000/plans/multi/" + ids.plan_id + "?user_id=" + userData.id
+            );
+            if (!res.ok) return;
+            const fullPlan = await res.json();
+            setSelectedSavedPlan(fullPlan);
+          } catch (e) {
+            console.error("[handlePlanCreated] failed to fetch full plan:", e);
+          }
+        };
+
+        const handleBackToMultiSemester = async (updatedSemesterData) => {
+          const resolvedName = (updatedSemesterData && updatedSemesterData.planName) || multiPlanTitle;
+
+          if (resolvedName && resolvedName.trim()) setMultiPlanTitle(resolvedName);
+
+          // If this was a fresh multi plan that got saved, switch to saved-multi mode
+          if (createdMultiPlanId && selectedPlan === "multi") {
+            // Always re-fetch to get the latest messages/schedule from autosave
+            let fullPlan = null;
+            try {
+              const res = await fetch(
+                "http://localhost:8000/plans/multi/" + createdMultiPlanId + "?user_id=" + userData.id
+              );
+              if (res.ok) fullPlan = await res.json();
+            } catch (e) {
+              console.error("[handleBackToMultiSemester] failed to fetch plan:", e);
+            }
+            if (fullPlan) setSelectedSavedPlan(fullPlan);
+            setSelectedPlan("saved-multi");
+          } else if (selectedSavedPlan) {
+            // Already in saved-multi — re-fetch to get latest autosaved data
+            const planIdToFetch = selectedSavedPlan.id;
+            try {
+              const res = await fetch(
+                "http://localhost:8000/plans/multi/" + planIdToFetch + "?user_id=" + userData.id
+              );
+              if (res.ok) {
+                const fullPlan = await res.json();
+                setSelectedSavedPlan(fullPlan);
+              }
+            } catch (e) {
+              console.error("[handleBackToMultiSemester] failed to re-fetch plan:", e);
+            }
+          }
+
+          setSelectedSemester(null);
+        };
+
+        const handleSidebarNavigate = (mode) => {
+          setSelectedSavedPlan(null);
+          resetMultiState();
+          setSelectedPlan(mode);
+          setResetKey((k) => k + 1);
+        };
+
+        const handleBackToPlanSelection = () => {
+          setSelectedPlan(null);
+          setSelectedSavedPlan(null);
+          resetMultiState();
+        };
+
+        const handleSidebarNewChat = () => {
+          setSelectedSavedPlan(null);
+          resetMultiState();
+          setSelectedPlan("single");
+        };
+
+        const handleSidebarSelectPlan = (plan) => {
+          resetMultiState();
+          setSelectedSavedPlan(plan);
+          setSelectedPlan(plan.mode === "multi" ? "saved-multi" : "saved");
+        };
+
+        // ── render ────────────────────────────────────────────────────────────
+
+        return (
+          <div className="h-full">
+            {isAuthenticated && (
+              <Sidebar
+                userData={userData}
+                onNewChat={handleSidebarNewChat}
+                onSelectSavedPlan={handleSidebarSelectPlan}
+                onNavigate={handleSidebarNavigate}
+                refreshKey={sidebarRefreshKey}
+                onLogout={handleLogout}
+              />
+            )}
+
+            <div style={{ marginLeft: isAuthenticated ? "260px" : "0px", height: "100%" }}>
+              {!isAuthenticated ? (
+                <LoginPage onLoginSuccess={handleLoginSuccess} />
+
+              ) : !selectedPlan ? (
+                <PlanSelection onSelectPlan={handleSelectPlanType} userData={userData} onLogout={handleLogout} />
+
+              ) : selectedPlan === "saved" && !selectedSavedPlan ? (
+                <SavedPlansUI
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onBack={handleBackToPlanSelection}
+                  onSelectPlan={handleSelectSavedPlan}
+                  onPlanDeleted={handlePlanSaved}
+                  refreshKey={sidebarRefreshKey}
+                />
+
+              ) : selectedPlan === "saved-multi" && selectedSavedPlan && !selectedSemester ? (
+                <MultiSemesterUI
+                  key={selectedSavedPlan.id}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onSelectSemester={handleSelectSemester}
+                  savedPlan={selectedSavedPlan}
+                  onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
+                  initialTitle={multiPlanTitle || selectedSavedPlan.name}
+                  onTitleChange={setMultiPlanTitle}
+                  planId={selectedSavedPlan.id}
+                />
+
+              ) : selectedPlan === "saved-multi" && selectedSemester ? (
+                <ChatUI
+                  key={semesterChatKey}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  semester={selectedSemester}
+                  onBack={handleBackToMultiSemester}
+                  onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
+                />
+
+              ) : selectedPlan === "saved" && selectedSavedPlan ? (
+                <ChatUI
+                  key={selectedSavedPlan.id}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onBack={handleBackToSavedPlans}
+                  savedPlan={selectedSavedPlan}
+                  onPlanSaved={handlePlanSaved}
+                />
+
+              ) : selectedPlan === "single" ? (
+                <ChatUI
+                  key={resetKey}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
+                />
+
+              ) : selectedPlan === "multi" && !selectedSemester ? (
+                <MultiSemesterUI
+                  key={resetKey}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  onSelectSemester={handleSelectSemester}
+                  onBack={handleBackToPlanSelection}
+                  onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
+                  onPlanIdSaved={handleMultiPlanIdSaved}
+                  initialTitle={multiPlanTitle}
+                  onTitleChange={setMultiPlanTitle}
+                  planId={createdMultiPlanId}
+                />
+
+              ) : selectedPlan === "multi" && selectedSemester ? (
+                <ChatUI
+                  key={semesterChatKey}
+                  userData={userData}
+                  onLogout={handleLogout}
+                  semester={selectedSemester}
+                  onBack={handleBackToMultiSemester}
+                  onPlanSaved={handlePlanSaved}
+                  onPlanCreated={handlePlanCreated}
+                />
+
+              ) : null}
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
     </script>
   </body>
 </html>

@@ -1,22 +1,53 @@
 from bs4 import BeautifulSoup
 import os
+from backend.app.database.query_routers.audit_requirements_query import *
+from backend.app.database.query_routers.courses_query import get_course_id
+from backend.app.database.query_routers.departments_query import get_department_id
+from app.database.session import SessionLocal
+import re
 
-def outputRequirements(requirements, filename="parsed_audit.txt"):
+db = SessionLocal()
+
+def splitCourse(course):
+    splitIndex = 0
+
+    for i in range(len(course)):
+        if course[i].isdigit():
+            splitIndex = i
+            break
+
+    # Get the department from the string
+    dept = course[:splitIndex].strip()
+
+    # Get the course number from the string
+    num  = course[splitIndex:splitIndex + 4].strip()        
+
+    return dept, num
+
+def outputRequirements(requirements, completedCourses, filename="parsed_audit.txt"):
     """
     Takes in a list of all the requirements and outputs it
     a readable friendly way to a text file.
     Useful for testing
 
     """
-     
+    
+    auditId = create_audit(db, 1)
+
     lines = []
 
     for req in requirements:
+        # DB
+        reqId = add_requirement(db, auditId, req["title"], needs_credits = req["needsCredits"] or None) #also pass in the needsCount for the requirement
+
         lines.append("=" * 60)
         lines.append(f"Requirement: {req['title']}")
         lines.append("=" * 60)
 
         for sub in req["subrequirements"]:
+            # DB
+            subReqId = add_subrequirement(db, auditId, reqId, sub['title'] or "[No Title]", sub["needsCount"] or None, req["needsCredits"] or None) # change this req to sub later
+
             lines.append(f"  Subrequirement: {sub['title'] or '[No Title]'}")
 
             # Completed courses
@@ -30,12 +61,45 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
             # Needs count
             lines.append(f"    Needs Count: {sub['needsCount'] or 'N/A'}")
 
+            # DB Not From
+            courseIds = []
+            for course in sub["notFrom"]:
+                dept, num = splitCourse(course)
+
+                courseIds.append(get_course_id(db, dept, num))
+            
+            for course in sub["completedCourses"]:
+                dept, num = splitCourse(course)
+
+                courseIds.append(get_course_id(db, dept, num))
+
+            if courseIds:
+                add_rules_courses_bulk(db, subReqId, "BLOCK", courseIds)
+            
             # Not from courses
             if sub["notFrom"]:
                 not_from_str = ", ".join(sub["notFrom"])
                 lines.append(f"    Not From: {not_from_str}")
             else:
                 lines.append("    Not From: None")
+
+            # DB Select From
+            courseIds = []
+            for course in sub["selectFrom"]:
+                dept, num = splitCourse(course)
+
+                courseIds.append(get_course_id(db, dept, num))
+
+            for i in range(len(sub["selectFrom"])):
+                if i < len(sub["selectFrom"]) - 1 and sub["selectFrom"][i + 1] == "TO":
+                    dept1, num1 = splitCourse(sub["selectFrom"][i])
+                    dept2, num2 = splitCourse(sub["selectFrom"][i + 2])
+
+
+                    add_rule_range(db, subReqId, "ALLOW", get_department_id(db, dept1), num1, num2)
+
+            if courseIds:
+                add_rules_courses_bulk(db, subReqId, "ALLOW", courseIds)
 
             # Select from courses
             if sub["selectFrom"]:
@@ -49,13 +113,35 @@ def outputRequirements(requirements, filename="parsed_audit.txt"):
 
         lines.append("\n")
 
-    # Make output file appear next to this .py file
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.join(script_dir, filename)
+    # Add completed courses to DB and output file
+    lines.append("=" * 60)
+    lines.append(f"Total Completed Courses")
+    lines.append("=" * 60)
+    
+    comp_course_ids = []
 
-    # Write file
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
+    for course in completedCourses:
+        lines.append(course + "\n")
+
+        dept, num = splitCourse(course)
+        comp_course_ids.append(get_course_id(db, dept, num))
+
+    if comp_course_ids:
+        add_completed_courses_bulk(db=db, user_id=1, course_ids=comp_course_ids)
+
+    lines.append("\n")
+
+    # # Make output file appear next to this .py file
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # output_path = os.path.join(script_dir, filename)
+
+    # # Write file
+    # with open(output_path, "w", encoding="utf-8") as f:
+    #     f.write("\n".join(lines))
+
+    commit_audit(db)
+
+    return auditId
 
 def extractCourseInfo(element):
     """
@@ -77,6 +163,39 @@ def extractCourseInfo(element):
         name = None
 
     return code, name
+
+def extractCourses(title, courses, soup):
+    header = soup.find(string=re.compile(title))
+    if not header:
+        return
+
+    reqDiv = header.find_parent("div", class_="requirement")
+
+    for table in reqDiv.select("table.completedCourses"):
+        for row in table.select("tr.takenCourse"):
+            courseTd = row.select_one("td.course")
+            creditTD = row.select_one("td.credit")
+
+            if not courseTd or not creditTD:
+                continue
+
+            creditGained = float(creditTD.get_text(strip=True))
+
+            if creditGained <= 0.0:
+                continue
+
+            course = courseTd.get_text(strip=True)
+
+            if "AP" in title:
+                gradeTd = row.select_one("td.grade")
+                grade = gradeTd.get_text(strip=True)
+
+                # Keep AP equivalents only
+                if grade == "AP" and not course.startswith("ACT"):
+                    courses.append(course)
+                    return
+            
+            courses.append(course)
 
 def scrapeDegreeAudit(html_file):
     """
@@ -132,8 +251,24 @@ def scrapeDegreeAudit(html_file):
         title = titleTag.get_text(strip=True)
         status = statusTag.get_text(strip=True)
 
+        match = re.search(r'(\d+)\s*credits', title, re.IGNORECASE)
+
+        credits = int(match.group(1)) if match else None
+
+        needsCreditsTag = req.select_one(".reqNeeds span.hours.number")
+        needsCredits = float(needsCreditsTag.text.strip()) if needsCreditsTag else None
+
+        needsClassesTag = req.select_one(".reqNeeds span.count.number")
+        needsClasses = None
+
+        if needsClassesTag:
+            needsClasses = int(needsClassesTag.text.strip())
+
         requirement_obj = {
             "title": title,
+            "totalCredits": credits,
+            "needsCredits": needsCredits,
+            "needsCount": needsClasses,
             "subrequirements": []
         }
 
@@ -148,19 +283,32 @@ def scrapeDegreeAudit(html_file):
             # Get subrequirement title
             subTitleTag = sub.select_one(".subreqTitle")
             subTitle = None
+            subCredits = None
 
             if subTitleTag:
                 subTitle = subTitleTag.get_text(strip=True)
+                match = re.search(r'(\d+)\s*credits', subTitle, re.IGNORECASE)
+
+                subCredits = int(match.group(1)) if match else None
+
 
             # Completed courses inside the not fully completed requirement
             completedCourses = {}
             completedTag = sub.select(".completedCourses tr.takenCourse")
 
             for course in completedTag:
-                code, name = extractCourseInfo(course)
+                creditTag  = course.select_one("td.credit")
 
-                if code:
-                    completedCourses[code] = name
+                if not creditTag:
+                    continue
+
+                creditGained = float(creditTag.text.strip())
+
+                if creditGained > 0.0:
+                    code, name = extractCourseInfo(course)
+
+                    if code:
+                        completedCourses[code] = name
 
             # Number of courses to take to meet this requirement
             needsTag = sub.select_one(".subreqNeeds .count")
@@ -203,6 +351,8 @@ def scrapeDegreeAudit(html_file):
             selectFromList = []
 
             dept = ""
+            lastWasRangeStart = False
+
             for course in selectCoursesTag:
                 text = course.get_text(strip=True)
 
@@ -219,24 +369,38 @@ def scrapeDegreeAudit(html_file):
                     dept = text[:splitIndex].strip()
 
                     # Get the course number from the string
-                    num  = text[splitIndex:].strip()        
+                    num = text[splitIndex:].strip()
 
                     selectFromList.append(f"{dept} {num}")
+                    lastWasRangeStart = "range" in course.get("class", [])
                     continue
 
-                # If the text if just the course number, add it with the saved department
+                # If the text is just the course number
                 selectFromList.append(f"{dept} {text}")
+
+                # Insert "TO" if this is the start of a range
+                if lastWasRangeStart:
+                    selectFromList.insert(-1, "TO")
+                    lastWasRangeStart = False
+
 
             # Add subrequirement object
             requirement_obj["subrequirements"].append({
                 "title": subTitle,
                 "completedCourses": completedCourses,
                 "needsCount": needsCount,
+                "needsCredits": subCredits,
                 "notFrom": notFromList,
                 "selectFrom": selectFromList
             })
 
         parsedRequirements.append(requirement_obj)
 
-    outputRequirements(parsedRequirements)
-    return parsedRequirements
+    # Get courses related to AP scores, transfer courses and total courses taken at the University of Utah
+    coursesTaken = []
+    extractCourses("SUMMARY OF ALL AP", coursesTaken, soup)
+    extractCourses("SUMMARY OF TRANSFER CREDIT", coursesTaken, soup)
+    extractCourses("SUMMARY OF COURSES TAKEN AT THE UNIVERSITY OF UTAH", coursesTaken, soup)
+
+    # Returns the audit ID to the router
+    return outputRequirements(parsedRequirements, coursesTaken)

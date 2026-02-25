@@ -54,7 +54,7 @@ Requirement: Computer Science ElectivesComplete 7 or more CS electives for at le
       - CS 5353: Deep Learning
     Needs Count: N/A
     Not From: CS 3011, CS 3020, CS 3100, CS 3130, CS 3200, CS 3500, CS 3505, CS 3810, CS 3991, CS 3992, CS 4000, CS 4011, CS 4150, CS 4400, CS 4500, CS 4940, CS 4970, CS 5040, CS 3390, CS 3090
-    Select From: CS 3000, CS 5999
+    Select From: CS 3000, TO, CS 5999
 
   Subrequirement: (Optional) Only one Ethics course may be used as aCS Elective:
     Completed Courses:
@@ -99,5 +99,74 @@ Requirement: Elective Courses
     Needs Count: 1
     Not From: None
     Select From: None
+
+
+
+============================================================
+Total Completed Courses
+============================================================
+POLS 1100
+
+WRTG 1010 WR1
+
+CS   1400
+
+CS   1410
+
+CS   2100
+
+CS   2420
+
+CS   3100 QI
+
+CS   3130 QI
+
+CS   3390
+
+CS   3500
+
+CS   3505
+
+CS   3810 QI
+
+CS   4000
+
+CS   4150 QI
+
+CS   4300
+
+CS   4400 QI
+
+CS   4960
+
+CS   5150
+
+CS   5353
+
+GERM 1010
+
+GERM 1020
+
+GERM 2010
+
+MATH 1210 QR
+
+MATH 1220
+
+MATH 2210
+
+MATH 2270
+
+MATH 3210 QI
+
+MATH 4400
+
+MUSC 1236 DVFF
+
+PHYS 2210 SF
+
+WRTG 2010 WR2
+
+WRTG 3015 CW
 
 
