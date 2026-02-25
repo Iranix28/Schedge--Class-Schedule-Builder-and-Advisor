@@ -112,7 +112,7 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
 
 def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
     dept, num = splitCourse(course)
-    sections = get_class_sections_by_course_number(db, num)
+    sections = get_class_sections_by_course_number(db, num, department_subject=dept)
 
     onlineSection = None
 
