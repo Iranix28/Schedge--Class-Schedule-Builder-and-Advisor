@@ -9,6 +9,7 @@ from app.models.models import ScheduleItem
 from datetime import datetime
 from app.database.schema import ClassSection
 from app.database.schema import Course
+from typing import Any, Iterable, Set
 
 def convert_days(days, day_string):
     if "Mo" in day_string:
@@ -64,6 +65,10 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     onlineSection = None
 
     for section in sections:
+        print(section.section_type)
+        if section.section_type != "Lecture":
+            continue
+
         # Skip sections with no time or days and prioritizes in person courses rather than online
         if not section.start_time or not section.end_time or not section.days:
 
@@ -98,10 +103,60 @@ def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
 
     # If every in person section conflicts, add an online one if it exists
     if onlineSection:
-        return False, section
+        return False, onlineSection
 
     # If every section conflicts
     return True, None
+
+def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
+    dept, num = splitCourse(course)
+    sections = get_class_sections_by_course_number(db, num)
+
+    onlineSection = None
+
+    for section in sections:
+        print(section.section_type)
+        if section.section_type != "Laboratory":
+            continue
+
+        # Skip sections with no time or days and prioritizes in person courses rather than online
+        if not section.start_time or not section.end_time or not section.days:
+
+            if section.section_code == "090":
+                onlineSection = section
+
+            continue
+
+        days = convert_days([], section.days)
+
+        new_start = datetime.strptime(section.start_time.strftime("%H:%M"), "%H:%M")
+        new_end = datetime.strptime(section.end_time.strftime("%H:%M"), "%H:%M")
+
+        conflict_found = False
+
+        for item in schedule:
+            # If day does not overlap
+            if item.day not in days:
+                continue
+
+            existing_start = datetime.strptime(item.startTime, "%I:%M %p")
+            existing_end = datetime.strptime(item.endTime, "%I:%M %p")
+
+            # Time overlap check
+            if new_start < existing_end and existing_start < new_end:
+                conflict_found = True
+                break
+
+        # If no conflicts for this section, return it
+        if not conflict_found:
+            return True, section
+
+    # If every in person section conflicts, add an online one if it exists
+    if onlineSection:
+        return True, onlineSection
+
+    # If every section conflicts
+    return False, None
 
 def course_prereqs_complete(db, course: str):
     dept, num = splitCourse(course)
@@ -166,6 +221,80 @@ def requirement_met(total_classes: int, needs_class_count: int | None, needs_cre
 
     return False
 
+def prereqs_satisfied(completed_courses: Iterable[str], prereq_conditions: Any) -> bool:
+    """
+    completed_courses: list like ["CS3505","WRTG3015"]
+    prereq_conditions: value from JSONB column (None, str, list nested)
+
+    Returns True if prereqs satisfied.
+    """
+    done: Set[str] = {c.strip().upper() for c in completed_courses if c and str(c).strip()}
+
+    if prereq_conditions is None:
+        return True
+
+    # In case some code path returns JSON as a string (rare with SQLAlchemy JSONB)
+    if isinstance(prereq_conditions, str):
+        import json
+        prereq_conditions = json.loads(prereq_conditions)
+
+    return _eval_and_list(prereq_conditions, done)
+
+
+def _eval_and_list(node: Any, done: Set[str]) -> bool:
+    """
+    Top-level AND list:
+      - [] / None => satisfied
+      - "CS3505" => satisfied if in done
+      - ["CS3505", ["WRTG3014","WRTG3015"]] => CS3505 AND (WRTG3014 OR WRTG3015)
+      - ["CS3500", [["MATH1210","MATH1220"], ["MATH1310","MATH1320"]]]
+          => CS3500 AND ((MATH1210 AND MATH1220) OR (MATH1310 AND MATH1320))
+    """
+    if not node:
+        return True
+
+    if isinstance(node, str):
+        return node.strip().upper() in done
+
+    if not isinstance(node, list):
+        return False
+
+    for term in node:
+        if isinstance(term, str):
+            if term.strip().upper() not in done:
+                return False
+        elif isinstance(term, list):
+            if not _eval_or_group(term, done):
+                return False
+        else:
+            return False
+
+    return True
+
+
+def _eval_or_group(group: list, done: Set[str]) -> bool:
+    """
+    OR group:
+      - ["CS1410","CS1420"] => any one satisfies
+      - [["MATH1210","MATH1220"], ["MATH1310","MATH1320"]] => any AND-bundle satisfies
+    """
+    if not group:
+        return False
+
+    for option in group:
+        if isinstance(option, str):
+            if option.strip().upper() in done:
+                return True
+        elif isinstance(option, list):
+            # AND bundle inside OR
+            if all(
+                (item.strip().upper() in done) if isinstance(item, str) else _eval_and_list(item, done)
+                for item in option
+            ):
+                return True
+
+    return False
+
 def generate_schedule(audit_id):
     db = SessionLocal()
     audit = get_audit_tree(db, audit_id)
@@ -188,21 +317,38 @@ def generate_schedule(audit_id):
                     # Don't add courses that do not count towards requirement
                     if course in subreq.not_from:
                         continue
+                    
+                    dept, num = splitCourse(course)
+                    course_object = get_course_by_code(db=db, subject=dept, number=num)
 
-                    # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
-                    if course_prereqs_complete(db=db, course=course):
+                    prereqs = course_object.prereq_conditions
+                    comp_courses = []
+
+                    for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
+                        department = get_department(db=db, dept_id=comp.department_id)
+
+                        comp_courses.append(department.subject + comp.number)
+
+                    # print(prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs))
+                    if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
                         if not conflict:
                             add_class_to_schedule(course=course, section=section, schedule=schedule)
 
-                            print("Core")
+                            # Check if class has a lab and add it to the schedule if so
+                            lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
+                            if lab_scheduled:
+                                add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
 
                             major_classes -= 1
                             total_classes -= 1
 
     # Then fill out other requirements
     for req in audit.requirements:
+        if "Pre-Major" in req.title or "Major" in req.title or "Core" in req.title:
+            continue
+
         # UNCOMMENT THIS
         needs_class_count = req.needs_count
         needs_credits = req.needs_credits
@@ -257,8 +403,16 @@ def generate_schedule(audit_id):
                         if already_in_schedule:
                             continue
 
+                        prereqs = rangeCourse.prereq_conditions
+                        comp_courses = []
+
+                        for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
+                            department = get_department(db=db, dept_id=comp.department_id)
+
+                            comp_courses.append(department.subject + comp.number)
+
                         # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
-                        if course_prereqs_complete(db=db, course=course_code):
+                        if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
                             if not conflict:
@@ -271,6 +425,11 @@ def generate_schedule(audit_id):
 
                                 add_class_to_schedule(course=course_code, section=section, schedule=schedule)
                                 
+                                # Check if class has a lab and add it to the schedule if so
+                                lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
+                                if lab_scheduled:
+                                    add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+
                                 total_classes -= 1
 
                                 if needs_class_count is not None:
@@ -302,21 +461,33 @@ def generate_schedule(audit_id):
 
                     if already_in_schedule:
                         continue
+                    
+                    prereqs = course_object.prereq_conditions
+                    comp_courses = []
+
+                    for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
+                        department = get_department(db=db, dept_id=comp.department_id)
+
+                        comp_courses.append(department.subject + comp.number)
 
                     # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
-                    if course_prereqs_complete(db=db, course=course):
+                    if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
                         if not conflict:
-                            print(dept)
-                            print(course_object.number)
-                            print(course_object.name)
-                            print(course_object.description)
-                            print(section.section_code)
-                            print(f"{section.start_time} - {section.end_time}")
-                            print("\n")
+                            # print(dept)
+                            # print(course_object.number)
+                            # print(course_object.name)
+                            # print(course_object.description)
+                            # print(section.section_code)
+                            # print(f"{section.start_time} - {section.end_time}")
+                            # print("\n")
 
                             add_class_to_schedule(course=course, section=section, schedule=schedule)
+                            # Check if class has a lab and add it to the schedule if so
+                            lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
+                            if lab_scheduled:
+                                add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
 
                             total_classes -= 1
 
