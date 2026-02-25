@@ -80,12 +80,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	};
 
-	const planNameMountedRef = useRef(false);
+	const userEditedNameRef = useRef(false);
 	useEffect(() => {
-		if (!planNameMountedRef.current) {
-			planNameMountedRef.current = true;
-			return; // skip initial mount
-		}
+		if (!userEditedNameRef.current) return; // only autosave when user actually typed
 		if (!isAutosaveMode) return;
 		const timer = setTimeout(() => {
 			autosave(messages, visualizationData);
@@ -501,31 +498,46 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
-	const handleSelectSection = (section) => {
+	const handleSelectSection = async (section) => {
 		const days = parseDayAbbreviations(section.day);
 
-		// Extract course number from "1410 - 001"
-		const match = section.class_?.match(/(\d+)\s*-\s*(\d+)/);
-		if (!match) return;
+		// Resolve course_id: try from section directly, then allCourses, then API
+		let courseId = section.course_id || null;
+		let classSectionId = section.class_section_id || section.id || null;
 
-		const courseCode = match[1];
-		const sectionCode = match[2];
+		if (!courseId) {
+			// Try to extract course number from "1410 - 001" or "CS 1410 - 001"
+			const match = section.class_?.match(/(\d+)\s*-\s*(\d+)/);
+			if (match) {
+				const courseCode = match[1];
+				// Look in already-loaded allCourses
+				let course = allCourses.find(c => c.course_code.toString() === courseCode);
+				// If not found (allCourses not loaded yet), fetch it
+				if (!course) {
+					try {
+						const res = await fetch(`${BASE_URL}/schedule/get_courses`);
+						if (res.ok) {
+							const courses = await res.json();
+							setAllCourses(courses);
+							course = courses.find(c => c.course_code.toString() === courseCode);
+						}
+					} catch (e) {
+						console.warn("[handleSelectSection] failed to fetch courses:", e);
+					}
+				}
+				if (course) courseId = course.id;
+			}
+		}
 
-		// Find course from allCourses
-		const course = allCourses.find(
-			c => c.course_code.toString() === courseCode
-		);
-
-		if (!course) {
-			console.warn("Course not found for code:", courseCode);
-			return;
+		if (!courseId) {
+			console.warn("[handleSelectSection] could not resolve course_id for section:", section);
 		}
 
 		const newEntries = days.map(day => ({
 			...section,
 			day: day,
-			course_id: course.id,          // attach real DB id
-			class_section_id: null         // until backend returns real section ids
+			course_id: courseId,
+			class_section_id: classSectionId,
 		}));
 
 		let newVizData;
@@ -953,7 +965,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 							<input
 	type="text"
 	value={planName}
-	onChange={(e) => setPlanName(e.target.value)}
+	onChange={(e) => { userEditedNameRef.current = true; setPlanName(e.target.value); }}
 	className="bg-transparent text-white font-semibold text-xl border-b-2 border-transparent hover:border-white focus:border-white focus:outline-none transition-all pr-8"
 	style={{ minWidth: "150px" }}
 	placeholder="Enter plan name"

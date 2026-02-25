@@ -1,6 +1,6 @@
 const { useState, useEffect, useRef } = React;
 
-function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKey }) {
+function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKey, onLogout }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [isLoadingPlans, setIsLoadingPlans] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -225,7 +225,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 					{/* Bottom section: User */}
 					<div className="border-t border-neutral-800">
 						<div className="px-2 py-2">
-							<div className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all cursor-pointer group">
+							<div className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all group">
 								<div
 									className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
 									style={{ backgroundColor: "#BE0000" }}
@@ -235,9 +235,17 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 								<span className="text-sm text-neutral-300 truncate flex-1">
 									{userData?.username || "User"}
 								</span>
-								<svg className="w-4 h-4 text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-								</svg>
+								<button
+									type="button"
+									onClick={onLogout}
+									title="Logout"
+									className="flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-neutral-400 hover:text-white hover:bg-red-700 transition-all"
+								>
+									<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+									</svg>
+									<span>Logout</span>
+								</button>
 							</div>
 						</div>
 					</div>

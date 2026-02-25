@@ -117,12 +117,12 @@ class ClassSection(Base):
     term_year: Mapped[int] = mapped_column(Integer, nullable=False)       # 2025
     section_code: Mapped[str] = mapped_column(String(16), nullable=False) # "001", "002"
 
-    section_type: Mapped[str] = mapped_column(String(20), nullable=False, default="lecture")
-    parent_section_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("class_sections.id", ondelete="SET NULL"),
-        nullable=True,
-        index=True,
-    )
+    # section_type: Mapped[str] = mapped_column(String(20), nullable=False, default="lecture")
+    # parent_section_id: Mapped[Optional[int]] = mapped_column(
+    #     ForeignKey("class_sections.id", ondelete="SET NULL"),
+    #     nullable=True,
+    #     index=True,
+    # )
 
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     days: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # "MoWe", "TuTh"

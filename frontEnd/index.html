@@ -118,35 +118,32 @@
 
           // If this was a fresh multi plan that got saved, switch to saved-multi mode
           if (createdMultiPlanId && selectedPlan === "multi") {
-            // Ensure selectedSavedPlan is populated before switching routes
-            let fullPlan = selectedSavedPlan;
-            if (!fullPlan) {
-              try {
-                const res = await fetch(
-                  "http://localhost:8000/plans/multi/" + createdMultiPlanId + "?user_id=" + userData.id
-                );
-                if (res.ok) fullPlan = await res.json();
-              } catch (e) {
-                console.error("[handleBackToMultiSemester] failed to fetch plan:", e);
-              }
+            // Always re-fetch to get the latest messages/schedule from autosave
+            let fullPlan = null;
+            try {
+              const res = await fetch(
+                "http://localhost:8000/plans/multi/" + createdMultiPlanId + "?user_id=" + userData.id
+              );
+              if (res.ok) fullPlan = await res.json();
+            } catch (e) {
+              console.error("[handleBackToMultiSemester] failed to fetch plan:", e);
             }
             if (fullPlan) setSelectedSavedPlan(fullPlan);
             setSelectedPlan("saved-multi");
-          } else {
-            // Already in saved-multi — patch messages into existing selectedSavedPlan
-            setSelectedSavedPlan((prev) => {
-              if (!prev || !updatedSemesterData) return prev;
-              const dbId = selectedSemester && selectedSemester.semester_db_id;
-              return {
-                ...prev,
-                name: resolvedName || prev.name,
-                semesters: prev.semesters.map((sem) =>
-                  sem.id === dbId
-                    ? { ...sem, messages: updatedSemesterData.messages, schedule: updatedSemesterData.schedule }
-                    : sem
-                ),
-              };
-            });
+          } else if (selectedSavedPlan) {
+            // Already in saved-multi — re-fetch to get latest autosaved data
+            const planIdToFetch = selectedSavedPlan.id;
+            try {
+              const res = await fetch(
+                "http://localhost:8000/plans/multi/" + planIdToFetch + "?user_id=" + userData.id
+              );
+              if (res.ok) {
+                const fullPlan = await res.json();
+                setSelectedSavedPlan(fullPlan);
+              }
+            } catch (e) {
+              console.error("[handleBackToMultiSemester] failed to re-fetch plan:", e);
+            }
           }
 
           setSelectedSemester(null);
@@ -188,6 +185,7 @@
                 onSelectSavedPlan={handleSidebarSelectPlan}
                 onNavigate={handleSidebarNavigate}
                 refreshKey={sidebarRefreshKey}
+                onLogout={handleLogout}
               />
             )}
 
@@ -205,6 +203,7 @@
                   onBack={handleBackToPlanSelection}
                   onSelectPlan={handleSelectSavedPlan}
                   onPlanDeleted={handlePlanSaved}
+                  refreshKey={sidebarRefreshKey}
                 />
 
               ) : selectedPlan === "saved-multi" && selectedSavedPlan && !selectedSemester ? (

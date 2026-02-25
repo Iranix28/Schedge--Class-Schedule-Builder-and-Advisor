@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timezone
+import re
 
 from app.database.session import SessionLocal
 from sqlalchemy import func
@@ -114,6 +115,7 @@ class PlanListResponse(BaseModel):
     term_season: str
     term_year: int
     total_courses: int
+    total_credits: int
     semester_count: int
     mode: str
 
@@ -135,6 +137,8 @@ class SemesterDetailResponse(BaseModel):
     term_year: int
     position: int
     courses: List[CourseSelectionInput]
+    total_courses: int = 0
+    total_credits: int = 0
     messages: List[ChatMessageInput] = []
     schedule: List[ScheduleItemResponse] = []
 
@@ -439,6 +443,35 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
             for item in raw_schedule
         ]
 
+        # Compute course count and total credits
+        total_courses = len(selections)
+        total_credits = 0
+        for s in selections:
+            course = db.query(Course).filter(Course.id == s.course_id).first()
+            if course and course.units:
+                total_credits += course.units
+
+        # Fallback: if no PlanCourseSelection rows, count unique courses from schedule
+        # and look up their credits by course number
+        if total_courses == 0:
+            settings = plan.settings or {}
+            semester_schedules = settings.get("semester_schedules", {})
+            raw = semester_schedules.get(str(sem.id), [])
+            seen_classes = set()
+            for item in raw:
+                class_label = item.get("class_", "")
+                if not class_label or class_label in seen_classes:
+                    continue
+                seen_classes.add(class_label)
+                # Extract course number from "1410 - 001" or similar
+                m = re.match(r"(\d+)", class_label.strip())
+                if m:
+                    course_number = m.group(1)
+                    course = db.query(Course).filter(Course.number == course_number).first()
+                    if course and course.units:
+                        total_credits += course.units
+            total_courses = len(seen_classes)
+
         result_semesters.append(
             SemesterDetailResponse(
                 id=sem.id,
@@ -452,6 +485,8 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                     )
                     for s in selections
                 ],
+                total_courses=total_courses,
+                total_credits=total_credits,
                 messages=messages,
                 schedule=schedule,
             )
@@ -647,12 +682,39 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
             .all()
         )
         semester_count = len(semesters)
-        total_courses = sum(
-            db.query(func.count(PlanCourseSelection.id))
-            .filter(PlanCourseSelection.plan_semester_id == sem.id)
-            .scalar() or 0
-            for sem in semesters
-        )
+
+        total_courses = 0
+        total_credits = 0
+        for sem in semesters:
+            selections = (
+                db.query(PlanCourseSelection)
+                .filter(PlanCourseSelection.plan_semester_id == sem.id)
+                .all()
+            )
+            if selections:
+                total_courses += len(selections)
+                for s in selections:
+                    course = db.query(Course).filter(Course.id == s.course_id).first()
+                    if course and course.units:
+                        total_credits += course.units
+            else:
+                # Fallback: count unique courses from schedule JSON (same as multi plan logic)
+                settings = plan.settings or {}
+                semester_schedules = settings.get("semester_schedules", {})
+                raw = semester_schedules.get(str(sem.id), []) or settings.get("schedule", [])
+                seen_classes = set()
+                for item in raw:
+                    class_label = item.get("class_", "")
+                    if not class_label or class_label in seen_classes:
+                        continue
+                    seen_classes.add(class_label)
+                    m = re.match(r"(\d+)", class_label.strip())
+                    if m:
+                        course = db.query(Course).filter(Course.number == m.group(1)).first()
+                        if course and course.units:
+                            total_credits += course.units
+                total_courses += len(seen_classes)
+
         first_sem = semesters[0] if semesters else None
         result.append(PlanListResponse(
             id=plan.id,
@@ -662,6 +724,7 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
             term_season=first_sem.term_season if first_sem else "",
             term_year=first_sem.term_year if first_sem else 0,
             total_courses=total_courses,
+            total_credits=total_credits,
             semester_count=semester_count,
         ))
 
@@ -819,8 +882,15 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                         )
                     )
 
-    if not schedule_items and plan.settings and "schedule" in plan.settings:
-        for item in plan.settings["schedule"]:
+    if not schedule_items and plan.settings:
+        settings = plan.settings
+        # Try new format first: semester_schedules keyed by semester id (written by autosave PUT)
+        semester_schedules = settings.get("semester_schedules", {})
+        raw = semester_schedules.get(str(semester.id), [])
+        # Fall back to old flat "schedule" key
+        if not raw:
+            raw = settings.get("schedule", [])
+        for item in raw:
             schedule_items.append(
                 ScheduleItemResponse(
                     class_=item.get("class_", ""),

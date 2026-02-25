@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted }) {
+function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted, refreshKey }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +25,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted 
 		};
 
 		fetchPlans();
-	}, [userData]);
+	}, [userData, refreshKey]);
 
 	const filteredPlans = savedPlans.filter((plan) => {
 		const matchesSearch =
@@ -230,7 +230,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted 
 														<span>
 									{isMulti
 										? `${plan.semester_count || 0} semester${(plan.semester_count || 0) !== 1 ? "s" : ""}`
-										: `${plan.total_courses || 0} course${(plan.total_courses || 0) !== 1 ? "s" : ""}`
+										: `${plan.total_courses || 0} course${(plan.total_courses || 0) !== 1 ? "s" : ""} · ${plan.total_credits || 0} credit${(plan.total_credits || 0) !== 1 ? "s" : ""}`
 									}
 								</span>
 														<span className="text-slate-300">·</span>
