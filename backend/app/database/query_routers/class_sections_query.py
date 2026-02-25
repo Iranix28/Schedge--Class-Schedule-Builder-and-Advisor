@@ -68,6 +68,7 @@ def create_class_section_by_course_code(
         term_season=data.term_season,
         term_year=data.term_year,
         section_code=data.section_code,
+        section_type=data.section_type,
         location=data.location,
         days=data.days,
         start_time=data.start_time,

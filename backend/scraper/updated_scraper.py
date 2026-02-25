@@ -110,6 +110,7 @@ def save_to_db(data: list[dict]):
     for c in data:
         course_id = (c.get("course_id") or "").strip().upper()
         section_code = (c.get("section") or "").strip()
+        section_type = (c.get("component") or "").strip()
         title = (c.get("course_name") or "").strip()
         units_int = _units_to_int(c.get("units"))
         description = (c.get("description") or "").strip() or None
@@ -157,6 +158,7 @@ def save_to_db(data: list[dict]):
                 term_season=TERM_SEASON,
                 term_year=TERM_YEAR,
                 section_code=section_code,
+                section_type=section_type,
                 location=location,
                 days=m0["days"],
                 start_time=m0["start"],
@@ -170,6 +172,7 @@ def save_to_db(data: list[dict]):
                 term_season=TERM_SEASON,
                 term_year=TERM_YEAR,
                 section_code=section_code,
+                section_type=section_type,
                 location=location,
                 days=None,
                 start_time=None,

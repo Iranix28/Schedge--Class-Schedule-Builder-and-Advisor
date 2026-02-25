@@ -58,7 +58,9 @@ class ClassSectionBase(BaseModel):
     course_id: int
     term_season: str       # Fall
     term_year: int         # 2025
-    section_code: str      
+    section_code: str     
+    section_type: Optional[str] = None
+ 
 
     location: Optional[str] = None
     days: Optional[str] = None      # MWF, TuTh
@@ -90,6 +92,7 @@ class ClassSectionRead(BaseModel):
     term_season: str
     term_year: int
     section_code: str
+    section_type: Optional[str] = None
 
     location: Optional[str] = None
     days: Optional[str] = None
@@ -107,6 +110,7 @@ class ClassSectionCreateByCourseCode(BaseModel):
     term_season: str         
     term_year: int           
     section_code: str        
+    section_type: Optional[str] = None
 
     location: Optional[str] = None
     days: Optional[str] = None
