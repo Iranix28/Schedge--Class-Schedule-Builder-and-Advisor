@@ -2,6 +2,7 @@ const { useState, useRef, useEffect } = React;
 
 // DeepSeek-R1 (Ollama /v1 path) ---
 const BASE_URL = "http://localhost:8000"; // FastAPI, not Ollama
+const REGISTRATION_URL = "https://www.stu.utah.edu/psc/heprod/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=HEUU_REGISTRATION&PTPPB_GROUPLET_ID=UUHE_REGISTRATION_TILE&CRefName=UUHE_REGISTRATION_TILE";
 
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {
@@ -1006,8 +1007,17 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
 							</svg>
 						</div>
+						<button
+							type="button"
+							onClick={() => window.open(REGISTRATION_URL, "_blank", "noopener,noreferrer")}
+							className="px-3 py-1 bg-white font-medium rounded hover:bg-slate-100 transition-all shadow-sm text-sm"
+							style={{ color: "#BE0000" }}
+							>
+							University Registration
+						</button>
 						</div>
 					</header>
+
 				<div className="flex-1 overflow-y-auto pl-4 pr-6 py-6 space-y-6 relative overflow-hidden">
 					{/* Courses Panel */}
 					<div
