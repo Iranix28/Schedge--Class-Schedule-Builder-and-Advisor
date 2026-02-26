@@ -358,10 +358,6 @@ def generate_schedule(audit_id):
             if needs_credits is None:
                 needs_credits = subreq.needs_credits
 
-            # # Last reasource (maybe unnecessary)
-            # if needs_credits is None:
-            #     needs_credits = req["totalCredits"]
-
             for course in subreq.select_from:
                 # Don't add more than the recommended amount of total classes or when we have met the required number of credits and/or classes for this requirement
                 if requirement_met(total_classes=total_classes, needs_class_count=needs_class_count, needs_credits=needs_credits):
