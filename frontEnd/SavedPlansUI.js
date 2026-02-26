@@ -1,19 +1,20 @@
 const { useState, useEffect } = React;
 
+// Displays a searchable, filterable list of saved schedule plans (single & multi-semester)
 function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted, refreshKey }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
-	const [filter, setFilter] = useState("all");
+	const [filter, setFilter] = useState("all"); // "all" | "single" | "multi"
 
-	// ── Course catalog for credit lookups ──────────────────────────────────
+	// Credit lookup: maps "DEPT CODE" -> credit count from course catalog
 	const [creditsByDeptCode, setCreditsByDeptCode] = useState({});
 	const [catalogReady, setCatalogReady] = useState(false);
-	// Computed credits per plan id from fetching plan details
+	// Holds computed credits for plans that don't have them stored server-side
 	const [computedCredits, setComputedCredits] = useState({});
 	const [creditsReady, setCreditsReady] = useState(false);
 
-	// Fetch catalog once on mount
+	// Fetch full course catalog on mount to build credit lookup map
 	useEffect(() => {
 		(async () => {
 			try {
@@ -34,12 +35,14 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		})();
 	}, []);
 
+	// Extract "DEPT CODE" key from a class name string (e.g. "CS 101 - Intro" -> "CS 101")
 	const parseDeptCode = (className) => {
 		if (!className || typeof className !== "string") return null;
 		const match = className.match(/^([A-Z]+)\s+(\d+)/);
 		return match ? `${match[1]} ${match[2]}` : null;
 	};
 
+	// Sum credits for all unique courses in a schedule using the catalog lookup
 	const computeCreditsFromSchedule = (schedule, lookup) => {
 		const seen = new Set();
 		let total = 0;
@@ -53,7 +56,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		return total;
 	};
 
-	// Fetch plans
+	// Fetch user's saved plans list whenever user or refreshKey changes
 	useEffect(() => {
 		if (!userData?.id) return;
 		(async () => {
@@ -67,7 +70,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		})();
 	}, [userData, refreshKey]);
 
-	// Once we have plans AND catalog, fetch details for plans needing credits
+	// For plans missing credit totals, fetch their full details and compute credits locally
 	useEffect(() => {
 		if (!catalogReady || isLoading || savedPlans.length === 0) return;
 
@@ -93,6 +96,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 						if (!res.ok) return;
 						const detail = await res.json();
 
+						// Multi-semester: sum credits across all semesters
 						if (isMulti) {
 							let total = 0;
 							(detail.semesters || []).forEach(sem => {
@@ -113,7 +117,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		})();
 	}, [savedPlans, catalogReady, isLoading]);
 
-	// If no plans need credit enrichment, mark ready immediately
+	// Mark credits ready immediately when no enrichment is needed
 	useEffect(() => {
 		if (!isLoading && savedPlans.length === 0) setCreditsReady(true);
 		if (!isLoading && catalogReady && savedPlans.every(p => p.total_credits > 0 || p.total_courses === 0)) {
@@ -121,14 +125,16 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		}
 	}, [isLoading, catalogReady, savedPlans]);
 
+	// Prefer server-side credits; fall back to locally computed credits
 	const getDisplayCredits = (plan) => {
 		if (plan.total_credits > 0) return plan.total_credits;
 		return computedCredits[plan.id] || 0;
 	};
 
-	// Show loading until BOTH plan list and credit enrichment are done
+	// Block UI until both plan list and credit enrichment finish
 	const showLoading = isLoading || !creditsReady;
 
+	// Apply search query and type filter to plan list
 	const filteredPlans = savedPlans.filter((plan) => {
 		const matchesSearch =
 			plan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,13 +148,14 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 
 	return (
 		<div className="flex flex-col h-screen bg-slate-100">
+			{/* Header */}
 			<header className="px-6 py-4 flex items-center justify-between shadow-sm" style={{ backgroundColor: "#BE0000" }}>
 				<h1 className="text-xl font-semibold text-white">Saved Plans</h1>
 			</header>
 
 			<div className="flex-1 overflow-y-auto p-6">
 				<div className="max-w-4xl mx-auto">
-					{/* Search + Filter row */}
+					{/* Search input + type filter toggle (All / Single / Multi) */}
 					<div className="flex gap-3 mb-6">
 						<div className="relative flex-1">
 							<svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +175,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 						</div>
 					</div>
 
-					{/* Plan list */}
+					{/* Plan cards list — loading / empty / results */}
 					<div className="space-y-3">
 						{showLoading ? (
 							<div className="text-center py-12">
@@ -184,6 +191,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 								const isMulti = plan.mode === "multi";
 								const displayCredits = getDisplayCredits(plan);
 								return (
+									// Clickable plan card — fetches full plan detail on click
 									<div key={plan.id}
 										onClick={async () => {
 											try {
@@ -197,6 +205,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 										}}
 										className="relative cursor-pointer group rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden"
 									>
+										{/* Colored left accent bar (purple for multi, red for single) */}
 										<div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: isMulti ? "#7c3aed" : "#BE0000" }} />
 
 										<div className="pl-5 pr-5 py-4"
@@ -206,6 +215,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 												borderLeft: "none", borderRadius: "0 0.75rem 0.75rem 0",
 											}}
 										>
+											{/* Delete button — visible on hover */}
 											<button
 												onClick={async (e) => {
 													e.stopPropagation();
@@ -226,6 +236,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 											</button>
 
 											<div className="flex items-center gap-3 pr-8">
+												{/* Plan type icon */}
 												<div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
 													style={{ backgroundColor: isMulti ? "#ede9fe" : "#fff0f0" }}
 												>
@@ -240,6 +251,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 													)}
 												</div>
 
+												{/* Plan name, type badge, and metadata (term, courses, credits, date) */}
 												<div className="flex-1 min-w-0">
 													<div className="flex items-center gap-2 mb-1">
 														<span className="text-base font-bold text-slate-800 truncate group-hover:text-slate-900">{plan.name}</span>
@@ -254,6 +266,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 														</span>
 													</div>
 
+													{/* Subtitle: term info · course/semester count · last updated */}
 													<div className="flex items-center gap-3 text-xs text-slate-500">
 														<span>{isMulti ? "Multi-semester plan" : `${plan.term_season} ${plan.term_year}`}</span>
 														<span className="text-slate-300">·</span>
@@ -280,6 +293,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 													</div>
 												</div>
 
+												{/* Hover arrow indicator */}
 												<svg className="w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
 													fill="none" stroke="currentColor" viewBox="0 0 24 24"
 													style={{ color: isMulti ? "#7c3aed" : "#BE0000" }}

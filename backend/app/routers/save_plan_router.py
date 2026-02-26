@@ -22,6 +22,7 @@ from app.database.schema import (
 router = APIRouter(prefix="/plans", tags=["plans"])
 
 
+# DB session dependency with rollback on error
 def get_db():
     db = SessionLocal()
     try:
@@ -34,7 +35,7 @@ def get_db():
 
 
 # ----------------------------
-# Schemas
+# Pydantic request/response schemas
 # ----------------------------
 
 class SemesterInput(BaseModel):
@@ -72,6 +73,7 @@ class ScheduleItemResponse(BaseModel):
     class_section_id: Optional[int] = None
 
 
+# Request body for creating a single-semester plan
 class PlanCreateRequest(BaseModel):
     user_id: int
     name: str
@@ -87,15 +89,17 @@ class MultiSemesterInput(BaseModel):
     courses: List[CourseSelectionInput] = []
 
 
+# Request body for creating a multi-semester plan
 class MultiPlanCreateRequest(BaseModel):
     user_id: int
     name: str
     semesters: List[MultiSemesterInput]
 
 
+# Request body for autosaving a single semester's data (courses, messages, schedule)
 class SemesterUpdateRequest(BaseModel):
     user_id: int
-    plan_name: Optional[str] = None  # if provided, update the plan's name too
+    plan_name: Optional[str] = None
     courseSelections: List[CourseSelectionInput] = []
     messages: List[ChatMessageInput] = []
     schedule: List[ScheduleItemInput] = []
@@ -108,6 +112,7 @@ class PlanSummaryResponse(BaseModel):
     semester_db_id: Optional[int] = None
 
 
+# Used by the saved plans list — includes aggregated stats across all semesters
 class PlanListResponse(BaseModel):
     id: int
     name: str
@@ -120,6 +125,7 @@ class PlanListResponse(BaseModel):
     mode: str
 
 
+# Full detail for a single-semester plan (includes chat history and schedule)
 class PlanDetailResponse(BaseModel):
     id: int
     name: str
@@ -131,6 +137,7 @@ class PlanDetailResponse(BaseModel):
     schedule: List[ScheduleItemResponse]
 
 
+# Detail for one semester within a multi-semester plan
 class SemesterDetailResponse(BaseModel):
     id: int
     term_season: str
@@ -143,6 +150,7 @@ class SemesterDetailResponse(BaseModel):
     schedule: List[ScheduleItemResponse] = []
 
 
+# Full detail for a multi-semester plan (includes all semesters with their data)
 class MultiPlanDetailResponse(BaseModel):
     id: int
     name: str
@@ -150,8 +158,10 @@ class MultiPlanDetailResponse(BaseModel):
     semesters: List[SemesterDetailResponse]
 
 
-# ----------------------------
-# POST /plans  — save single-semester plan
+# ── POST /plans ────────────────────────────────────────────────────────────
+# Create a new single-semester plan.
+# Saves the plan, its semester, course selections, and chat conversation+messages.
+# Returns the new plan ID and semester DB ID (needed for subsequent autosaves).
 # ----------------------------
 
 @router.post("", response_model=PlanSummaryResponse)
@@ -161,6 +171,7 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
+        # Create the plan with schedule stored in settings JSON
         new_plan = Plan(
             user_id=payload.user_id,
             name=payload.name,
@@ -178,6 +189,7 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         db.add(new_plan)
         db.flush()
 
+        # Create the single semester entry
         new_semester = PlanSemester(
             plan_id=new_plan.id,
             term_season=payload.semester.term_season,
@@ -188,6 +200,7 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         db.add(new_semester)
         db.flush()
 
+        # Save course selections (skip invalid course IDs)
         for selection in payload.courseSelections:
             course = db.query(Course).filter(Course.id == selection.course_id).first()
             if not course:
@@ -200,6 +213,7 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
                 added_by="user",
             ))
 
+        # Create chat conversation and save message history
         new_conversation = ChatConversation(
             user_id=payload.user_id,
             plan_id=new_plan.id,
@@ -239,9 +253,9 @@ def save_plan(payload: PlanCreateRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to save plan: {str(e)}")
 
 
-# ----------------------------
-# POST /plans/multi  — save multi-semester plan
-# NOTE: must be before GET /{plan_id}
+# ── POST /plans/multi ─────────────────────────────────────────────────────
+# Create a new multi-semester plan with multiple semesters and their course selections.
+# NOTE: must be defined before GET /{plan_id} to avoid path param capture.
 # ----------------------------
 
 @router.post("/multi", response_model=PlanSummaryResponse)
@@ -262,6 +276,7 @@ def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_d
         db.add(new_plan)
         db.flush()
 
+        # Create each semester with its course selections in order
         for position, sem_input in enumerate(payload.semesters):
             new_semester = PlanSemester(
                 plan_id=new_plan.id,
@@ -300,9 +315,11 @@ def save_multi_plan(payload: MultiPlanCreateRequest, db: Session = Depends(get_d
         raise HTTPException(status_code=500, detail=f"Failed to save multi plan: {str(e)}")
 
 
-# ----------------------------
-# PUT /plans/multi/{plan_id}  — update existing multi-semester plan
-# NOTE: must be before GET /{plan_id}
+# ── PUT /plans/multi/{plan_id} ────────────────────────────────────────────
+# Update an existing multi-semester plan.
+# Updates name, syncs semester list (add new / update existing / delete removed),
+# and cascades deletes for removed semesters (course selections, chat messages).
+# NOTE: must be defined before GET /{plan_id}.
 # ----------------------------
 
 @router.put("/multi/{plan_id}", response_model=PlanSummaryResponse)
@@ -312,11 +329,9 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
         if not plan:
             raise HTTPException(status_code=404, detail="Plan not found")
 
-        # Update name
         plan.name = payload.name
         plan.updated_at = datetime.now(timezone.utc)
 
-        # Get existing semesters ordered by position
         existing_semesters = (
             db.query(PlanSemester)
             .filter(PlanSemester.plan_id == plan_id)
@@ -324,15 +339,14 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
             .all()
         )
 
-        # Update existing semesters or add new ones
+        # Update existing semesters or create new ones as needed
         for position, sem_input in enumerate(payload.semesters):
             if position < len(existing_semesters):
-                # Update existing semester term (preserve its id so chat history stays intact)
+                # Update term info but preserve semester ID (keeps chat history intact)
                 existing_semesters[position].term_season = sem_input.term_season
                 existing_semesters[position].term_year = sem_input.term_year
                 existing_semesters[position].position = position
             else:
-                # Add new semester
                 new_semester = PlanSemester(
                     plan_id=plan_id,
                     term_season=sem_input.term_season,
@@ -341,7 +355,7 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
                 )
                 db.add(new_semester)
 
-        # Remove extra semesters if user deleted some
+        # Cascade-delete removed semesters and their related data
         if len(existing_semesters) > len(payload.semesters):
             for sem in existing_semesters[len(payload.semesters):]:
                 db.query(PlanCourseSelection).filter(
@@ -375,9 +389,10 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
         raise HTTPException(status_code=500, detail=f"Failed to update multi plan: {str(e)}")
 
 
-# ----------------------------
-# GET /plans/multi/{plan_id}  — get multi-semester plan detail
-# NOTE: must be before GET /{plan_id}
+# ── GET /plans/multi/{plan_id} ────────────────────────────────────────────
+# Fetch full detail of a multi-semester plan including all semesters,
+# their course selections, chat messages, schedule data, and computed credit totals.
+# NOTE: must be defined before GET /{plan_id}.
 # ----------------------------
 
 @router.get("/multi/{plan_id}", response_model=MultiPlanDetailResponse)
@@ -401,13 +416,14 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
 
     result_semesters = []
     for sem in semesters:
+        # Load course selections for this semester
         selections = (
             db.query(PlanCourseSelection)
             .filter(PlanCourseSelection.plan_semester_id == sem.id)
             .all()
         )
 
-        # Load messages for this semester's conversation
+        # Load chat messages for this semester's conversation
         conversation = (
             db.query(ChatConversation)
             .filter(
@@ -426,7 +442,7 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
             )
             messages = [ChatMessageInput(role=m.role, content=m.content) for m in chat_msgs]
 
-        # Load schedule from plan settings keyed by semester id
+        # Load schedule from plan.settings JSON (keyed by semester ID)
         settings = plan.settings or {}
         semester_schedules = settings.get("semester_schedules", {})
         raw_schedule = semester_schedules.get(str(sem.id), [])
@@ -443,7 +459,7 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
             for item in raw_schedule
         ]
 
-        # Compute course count and total credits
+        # Compute course count and total credits from selections
         total_courses = len(selections)
         total_credits = 0
         for s in selections:
@@ -451,8 +467,7 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
             if course and course.units:
                 total_credits += course.units
 
-        # Fallback: if no PlanCourseSelection rows, count unique courses from schedule
-        # and look up their credits by course number
+        # Fallback: if no course selections exist, derive counts from schedule JSON
         if total_courses == 0:
             settings = plan.settings or {}
             semester_schedules = settings.get("semester_schedules", {})
@@ -463,7 +478,7 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                 if not class_label or class_label in seen_classes:
                     continue
                 seen_classes.add(class_label)
-                # Extract course number from "1410 - 001" or similar
+                # Extract course number from label like "CS 1410 - 001"
                 m = re.match(r"(\d+)", class_label.strip())
                 if m:
                     course_number = m.group(1)
@@ -500,8 +515,10 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
     )
 
 
-# ----------------------------
-# POST /plans/{plan_id}/semesters  — add a new semester to an existing plan
+# ── POST /plans/{plan_id}/semesters ───────────────────────────────────────
+# Add a new semester to an existing plan.
+# Used when entering a new semester from the multi-semester UI for the first time.
+# Returns the new semester's DB ID so the frontend can start autosaving to it.
 # ----------------------------
 
 class AddSemesterRequest(BaseModel):
@@ -519,7 +536,7 @@ def add_semester(plan_id: int, payload: AddSemesterRequest, db: Session = Depend
         if not plan:
             raise HTTPException(status_code=404, detail="Plan not found")
 
-        # Get next position
+        # Position is based on existing semester count
         existing_count = db.query(PlanSemester).filter(PlanSemester.plan_id == plan_id).count()
 
         new_semester = PlanSemester(
@@ -540,9 +557,12 @@ def add_semester(plan_id: int, payload: AddSemesterRequest, db: Session = Depend
         raise HTTPException(status_code=500, detail=f"Failed to add semester: {str(e)}")
 
 
-# ----------------------------
-# PUT /plans/{plan_id}/semesters/{semester_id}  — autosave a semester
-# NOTE: must be before GET /{plan_id}
+# ── PUT /plans/{plan_id}/semesters/{semester_id} ──────────────────────────
+# Autosave endpoint for a single semester.
+# Replaces course selections, chat messages, and schedule data for the semester.
+# Also updates plan name if changed. Stores schedule in plan.settings JSON
+# keyed by semester ID.
+# NOTE: must be defined before GET /{plan_id}.
 # ----------------------------
 
 @router.put("/{plan_id}/semesters/{semester_id}", status_code=200)
@@ -561,7 +581,7 @@ def update_semester(
         if not plan:
             raise HTTPException(status_code=404, detail="Plan not found")
 
-        # Update plan name if the user renamed it
+        # Optionally update plan name if user renamed it
         if payload.plan_name and payload.plan_name.strip() and payload.plan_name.strip() != plan.name:
             plan.name = payload.plan_name.strip()
 
@@ -573,13 +593,13 @@ def update_semester(
         if not semester:
             raise HTTPException(status_code=404, detail="Semester not found")
 
-        # Replace course selections — flush the DELETE before inserting new rows
-        # to avoid unique-constraint collisions on uq_plan_sem_course
+        # Replace course selections (delete-then-insert to avoid unique constraint violations)
         db.query(PlanCourseSelection).filter(
             PlanCourseSelection.plan_semester_id == semester_id
         ).delete(synchronize_session=False)
         db.flush()
 
+        # Deduplicate and insert new course selections
         seen = set()
         for sel in payload.courseSelections:
             key = (sel.course_id, sel.class_section_id)
@@ -597,7 +617,7 @@ def update_semester(
                 added_by="user",
             ))
 
-        # Replace conversation messages
+        # Replace chat messages (create conversation if it doesn't exist yet)
         conversation = (
             db.query(ChatConversation)
             .filter(
@@ -619,8 +639,7 @@ def update_semester(
             db.add(conversation)
             db.flush()
 
-        # DELETE old messages first and flush before inserting new ones
-        # to avoid unique-constraint collisions on uq_chat_msg_seq
+        # Delete old messages then insert new ones (avoids seq unique constraint)
         db.query(ChatMessage).filter(
             ChatMessage.conversation_id == conversation.id
         ).delete(synchronize_session=False)
@@ -637,7 +656,7 @@ def update_semester(
 
         conversation.last_message_at = datetime.now(timezone.utc)
 
-        # Store schedule in plan settings keyed by semester_id
+        # Store schedule in plan.settings JSON keyed by semester ID
         settings = dict(plan.settings) if plan.settings else {}
         semester_schedules = dict(settings.get("semester_schedules", {}))
         semester_schedules[str(semester_id)] = [
@@ -659,14 +678,15 @@ def update_semester(
         raise HTTPException(status_code=500, detail=f"Failed to save semester: {str(e)}")
 
 
-# ----------------------------
-# GET /plans  — list all plans
+# ── GET /plans ────────────────────────────────────────────────────────────
+# List all plans for a user, ordered by most recently updated.
+# Returns summary info with aggregated course/credit totals across all semesters.
+# Used by the sidebar and saved plans list view.
 # ----------------------------
 
 @router.get("", response_model=List[PlanListResponse])
 def list_plans(user_id: int, db: Session = Depends(get_db)):
 
-    # Get all plans for user, ordered by most recently updated
     plans = (
         db.query(Plan)
         .filter(Plan.user_id == user_id)
@@ -683,6 +703,7 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
         )
         semester_count = len(semesters)
 
+        # Aggregate course count and credit totals across all semesters
         total_courses = 0
         total_credits = 0
         for sem in semesters:
@@ -698,7 +719,7 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
                     if course and course.units:
                         total_credits += course.units
             else:
-                # Fallback: count unique courses from schedule JSON (same as multi plan logic)
+                # Fallback: derive counts from schedule JSON when no course selections exist
                 settings = plan.settings or {}
                 semester_schedules = settings.get("semester_schedules", {})
                 raw = semester_schedules.get(str(sem.id), []) or settings.get("schedule", [])
@@ -731,9 +752,8 @@ def list_plans(user_id: int, db: Session = Depends(get_db)):
     return result
 
 
-
-# ----------------------------
-# PATCH /plans/{plan_id}/name  — update plan name only
+# ── PATCH /plans/{plan_id}/name ───────────────────────────────────────────
+# Update only the plan's name. Used by the debounced title autosave in the UI.
 # ----------------------------
 
 class PlanNameUpdateRequest(BaseModel):
@@ -758,8 +778,8 @@ def update_plan_name(plan_id: int, payload: PlanNameUpdateRequest, db: Session =
         raise HTTPException(status_code=500, detail=f"Failed to update plan name: {str(e)}")
 
 
-# ----------------------------
-# DELETE /plans/{plan_id}
+# ── DELETE /plans/{plan_id} ───────────────────────────────────────────────
+# Delete a plan and all related data (cascades via ORM relationships).
 # ----------------------------
 
 @router.delete("/{plan_id}", status_code=204)
@@ -778,9 +798,12 @@ def delete_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
-# ----------------------------
-# GET /plans/{plan_id}  — single-semester plan detail
-# NOTE: keep this LAST among all /{plan_id} routes
+# ── GET /plans/{plan_id} ─────────────────────────────────────────────────
+# Fetch full detail of a single-semester plan: semester info, course selections,
+# chat history, and schedule data.
+# Builds schedule from course selections first; falls back to plan.settings JSON
+# if no selections have associated sections.
+# NOTE: must be the LAST /{plan_id} route to avoid capturing /multi, /name, etc.
 # ----------------------------
 
 @router.get("/{plan_id}", response_model=PlanDetailResponse)
@@ -807,6 +830,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
         .all()
     )
 
+    # Load chat conversation and messages
     conversation = (
         db.query(ChatConversation)
         .filter(ChatConversation.plan_id == plan.id)
@@ -824,6 +848,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
         for m in chat_msgs:
             messages.append(ChatMessageInput(role=m.role, content=m.content))
 
+    # Day abbreviation to full name mapping for schedule building
     DAY_MAP = {
         "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday",
         "Th": "Thursday", "Fr": "Friday", "Sa": "Saturday", "Su": "Sunday",
@@ -850,6 +875,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
             display_hour = 12
         return f"{display_hour}:{minute:02d} {period}"
 
+    # Build schedule from course selections + their class section DB records
     schedule_items = []
 
     for selection in selections:
@@ -869,6 +895,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                     f"{course.number} - {section.section_code}" if course
                     else section.section_code
                 )
+                # Create one schedule entry per day the section meets
                 for day_name in _parse_days(section.days or ""):
                     schedule_items.append(
                         ScheduleItemResponse(
@@ -882,12 +909,13 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                         )
                     )
 
+    # Fallback: load schedule from plan.settings JSON if no DB-derived items
     if not schedule_items and plan.settings:
         settings = plan.settings
-        # Try new format first: semester_schedules keyed by semester id (written by autosave PUT)
+        # Try new format first (keyed by semester ID, written by autosave PUT)
         semester_schedules = settings.get("semester_schedules", {})
         raw = semester_schedules.get(str(semester.id), [])
-        # Fall back to old flat "schedule" key
+        # Fall back to legacy flat "schedule" key
         if not raw:
             raw = settings.get("schedule", [])
         for item in raw:

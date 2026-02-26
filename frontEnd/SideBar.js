@@ -1,5 +1,6 @@
 const { useState, useEffect, useRef } = React;
 
+// Fixed left sidebar — provides navigation, plan search, saved plans list, and user controls
 function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKey, onLogout, onPlanDeleted }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [isLoadingPlans, setIsLoadingPlans] = useState(false);
@@ -9,19 +10,20 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 
 	const BASE_URL = "http://localhost:8000";
 
-	// Fetch saved plans on mount and when userData changes
+	// Fetch saved plans on mount and when user or refreshKey changes
 	useEffect(() => {
 		if (!userData?.id) return;
 		fetchPlans();
 	}, [userData, refreshKey]);
 
-	// Auto-focus search input when search is toggled open
+	// Auto-focus search input when toggled open
 	useEffect(() => {
 		if (showSearch && searchInputRef.current) {
 			searchInputRef.current.focus();
 		}
 	}, [showSearch]);
 
+	// Load all saved plans for the current user
 	const fetchPlans = async () => {
 		if (!userData?.id) return;
 		try {
@@ -38,6 +40,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 		}
 	};
 
+	// Delete a plan and notify parent (e.g. to navigate away if it was active)
 	const handleDeletePlan = async (e, plan) => {
 		e.stopPropagation();
 		if (!confirm(`Delete "${plan.name}"?`)) return;
@@ -49,7 +52,6 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 			);
 			if (!res.ok) throw new Error("Failed to delete plan");
 			setSavedPlans((prev) => prev.filter((p) => p.id !== plan.id));
-			// Notify parent so it can navigate home if this was the active plan
 			if (onPlanDeleted) onPlanDeleted(plan.id);
 		} catch (err) {
 			console.error("Failed to delete plan:", err);
@@ -57,6 +59,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 		}
 	};
 
+	// Fetch full plan detail (single or multi) and pass to parent
 	const handleSelectPlan = async (plan) => {
 		try {
 			const url = plan.mode === "multi"
@@ -72,6 +75,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 		}
 	};
 
+	// Filter plans by name or term/year against search query
 	const filteredPlans = savedPlans.filter((plan) =>
 		plan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 		`${plan.term_season} ${plan.term_year}`
@@ -81,7 +85,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 
 	return (
 		<>
-			{/* Sidebar - always visible */}
+			{/* Sidebar container — fixed left, full height */}
 			<div
 				className="fixed top-0 left-0 h-full z-40 flex flex-col"
 				style={{
@@ -89,12 +93,10 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 					backgroundColor: "#171717",
 				}}
 			>
-				{/* Inner wrapper */}
 				<div className="flex flex-col h-full" style={{ width: "260px", minWidth: "260px" }}>
 
-					{/* Top section: Logo (Home) + New Chat */}
+					{/* Top: Logo / Home button */}
 					<div className="flex items-center justify-between px-3 pt-3 pb-1">
-						{/* Logo – click to go home */}
 						<button
 							onClick={() => onNavigate(null)}
 							className="flex items-center gap-2 rounded-lg hover:opacity-80 transition-opacity"
@@ -109,7 +111,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 						</button>
 					</div>
 
-					{/* Search */}
+					{/* Search bar — toggles between button and input */}
 					<div className="px-2 pt-2 pb-1">
 						{showSearch ? (
 							<div className="relative">
@@ -148,7 +150,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 						)}
 					</div>
 
-					{/* Navigation Items */}
+					{/* Navigation: Home, Single semester, Multi-semester */}
 					<div className="px-2 pt-1 pb-2 space-y-0.5">
 						<NavItem
 							icon={
@@ -185,10 +187,9 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 						/>
 					</div>
 
-					{/* Divider */}
 					<div className="mx-3 border-t border-neutral-800" />
 
-					{/* Saved Plans List */}
+					{/* Saved plans list — scrollable, shows loading/empty/filtered results */}
 					<div className="flex-1 overflow-y-auto px-0 pt-2 pb-2" style={{ scrollbarWidth: "thin", scrollbarColor: "#404040 transparent" }}>
 						{isLoadingPlans ? (
 							<div className="px-3 py-4">
@@ -206,6 +207,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 							</div>
 						) : (
 							<div className="mb-3">
+								{/* "Your Plans" header — navigates to full saved plans view */}
 								<button
 									onClick={() => onNavigate("saved")}
 									className="px-3 py-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider hover:text-white transition-colors cursor-pointer text-left"
@@ -224,7 +226,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 						)}
 					</div>
 
-					{/* Bottom section: User */}
+					{/* Bottom: User avatar, name, and logout */}
 					<div className="border-t border-neutral-800">
 						<div className="px-2 py-2">
 							<div className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all group">
@@ -258,7 +260,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 	);
 }
 
-/* ── Individual nav item ── */
+/* ── Reusable sidebar navigation button ── */
 function NavItem({ icon, label, onClick }) {
 	return (
 		<button
@@ -271,7 +273,7 @@ function NavItem({ icon, label, onClick }) {
 	);
 }
 
-/* ── Individual plan item in the sidebar list ── */
+/* ── Single plan row in the sidebar list — color-coded by mode (single/multi) ── */
 function PlanItem({ plan, onSelect, onDelete }) {
 	const [hovered, setHovered] = useState(false);
 	const isMulti = plan.mode === "multi";
@@ -287,7 +289,7 @@ function PlanItem({ plan, onSelect, onDelete }) {
 				backgroundColor: hovered ? (isMulti ? "#2d1f4e" : "#2a1515") : "transparent",
 			}}
 		>
-			{/* Mode indicator dot / icon */}
+			{/* Mode indicator icon (purple for multi, red for single) */}
 			<div
 				className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center"
 				style={{ backgroundColor: isMulti ? "#4c1d95" : "#3b0a0a" }}
@@ -305,6 +307,7 @@ function PlanItem({ plan, onSelect, onDelete }) {
 
 			<span className="truncate flex-1 text-xs">{plan.name}</span>
 
+			{/* Delete button — visible on hover */}
 			{hovered && (
 				<button
 					onClick={onDelete}
