@@ -60,15 +60,13 @@ def add_class_to_schedule(course: str, section: ClassSection, schedule: list[Sch
 
 def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
     dept, num = splitCourse(course)
-    # FIX: pass department_subject so we only get sections for the correct department
     sections = get_class_sections_by_course_number(db, num, department_subject=dept)
 
     onlineSection = None
 
     for section in sections:
-        # print("class check")
-        # print(section.section_type)
-        if (section.section_type or "").strip().lower() != "lecture":
+        sec_type = (section.section_type or "").strip().lower()
+        if sec_type == "laboratory" or sec_type == "discussion":
             continue
 
         # Skip sections with no time or days and prioritizes in person courses rather than online
@@ -115,18 +113,21 @@ def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
     sections = get_class_sections_by_course_number(db, num, department_subject=dept)
 
     onlineSection = None
+    lab_exists = False
 
     for section in sections:
-        # print("Lab Check")
-        # print(section.section_type)
-        if (section.section_type or "").strip().lower() != "laboratory":
+        sec_type = (section.section_type or "").strip().lower()
+        if sec_type != "laboratory" and sec_type != "discussion":
             continue
+        
+        lab_exists = True
 
-        # Skip sections with no time or days and prioritizes in person courses rather than online
+        # Skip sections with no time or days and prioritizes in person courses rather than online (Some classes/labs may not have announced times, we need to find a way to handle that)
         if not section.start_time or not section.end_time or not section.days:
 
-            if section.section_code == "090":
-                onlineSection = section
+            # Logic for online section (maybe uncomment later when front end figures out how to handle that)
+            # if section.section_code == "090":
+            #     onlineSection = section
 
             continue
 
@@ -152,31 +153,14 @@ def schedule_lab(db, course: str, schedule: list[ScheduleItem]):
 
         # If no conflicts for this section, return it
         if not conflict_found:
-            return True, section
+            return True, section, lab_exists
 
     # If every in person section conflicts, add an online one if it exists
     if onlineSection:
-        return True, onlineSection
+        return True, onlineSection, lab_exists
 
     # If every section conflicts
-    return False, None
-
-def course_prereqs_complete(db, course: str):
-    dept, num = splitCourse(course)
-
-    prereqs = get_course_prerequisites_by_subject(db=db, department_subject=dept, course_number=num)
-
-    for prereq in prereqs:
-        # Get subject (I believe .subject would return 'CS')
-        pre_subject = get_department(db=db, dept_id=prereq.department_id).subject
-
-        pre_id = get_course_id(db=db, subject=pre_subject, number=prereq.number)
-
-        # Use actual user ID that will be passed in when login is made
-        if not is_course_completed(db=db, user_id=1, course_id=pre_id):
-            return False
-    
-    return True
+    return False, None, lab_exists
 
 def course_not_allowed(db, course: Course, not_from: list[str]):
     for not_course in not_from:
@@ -309,7 +293,7 @@ def generate_schedule(audit_id):
     comp_courses = []
     for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
         department = get_department(db=db, dept_id=comp.department_id)
-
+        
         comp_courses.append(department.subject + comp.number)
 
     # First get Major specific classes
@@ -332,22 +316,30 @@ def generate_schedule(audit_id):
 
                     prereqs = course_object.prereq_conditions
 
-                    # print(prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs))
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
-                        if not conflict:
-                            add_class_to_schedule(course=course, section=section, schedule=schedule)
+                        if conflict:
+                            continue
 
-                            # Check if class has a lab and add it to the schedule if so
-                            lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
-                            if lab_scheduled:
-                                add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
-                                print(course)
-                                print("here")
+                        before_len = len(schedule)
 
-                            major_classes -= 1
-                            total_classes -= 1
+                        # Tentatively add lecture
+                        add_class_to_schedule(course=course, section=section, schedule=schedule)
+
+                        # Now try to schedule lab (if it exists)
+                        lab_scheduled, lab_section, lab_exists = schedule_lab(db=db, course=course, schedule=schedule)
+
+                        if lab_exists and not lab_scheduled:
+                            # Roll back lecture if lab is required but can't fit
+                            del schedule[before_len:] 
+                            continue
+
+                        if lab_exists and lab_scheduled:
+                            add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+
+                        major_classes -= 1
+                        total_classes -= 1
 
     # Then fill out other requirements
     for req in audit.requirements:
@@ -415,26 +407,34 @@ def generate_schedule(audit_id):
                         if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
-                            if not conflict:
-                                add_class_to_schedule(course=course_code, section=section, schedule=schedule)
-                                
-                                # Check if class has a lab and add it to the schedule if so
-                                lab_scheduled, lab_section = schedule_lab(db=db, course=course_code, schedule=schedule)
-                                if lab_scheduled:
-                                    add_class_to_schedule(course=course_code, section=lab_section, schedule=schedule)
+                            if conflict:
+                                continue
 
-                                total_classes -= 1
+                            before_len = len(schedule)
 
-                                if needs_class_count is not None:
-                                    needs_class_count -= 1
-                                
-                                # Subtract the courses credits from the total needed credits
-                                if needs_credits is not None:
-                                    needs_credits -= rangeCourse.units
+                            add_class_to_schedule(course=course_code, section=section, schedule=schedule)
 
-                                # In this case only one class should be added for this requirement
-                                if needs_class_count is None and needs_credits is None:
-                                    break
+                            lab_scheduled, lab_section, lab_exists = schedule_lab(db=db, course=course_code, schedule=schedule)
+
+                            if lab_exists and not lab_scheduled:
+                                del schedule[before_len:]
+                                continue
+
+                            if lab_exists and lab_scheduled:
+                                add_class_to_schedule(course=course_code, section=lab_section, schedule=schedule)                                
+
+                            total_classes -= 1
+
+                            if needs_class_count is not None:
+                                needs_class_count -= 1
+                            
+                            # Subtract the courses credits from the total needed credits
+                            if needs_credits is not None:
+                                needs_credits -= rangeCourse.units
+
+                            # In this case only one class should be added for this requirement
+                            if needs_class_count is None and needs_credits is None:
+                                break
                 else:
                     # Don't add courses that do not count towards requirement
                     dept, num = splitCourse(course)
@@ -462,24 +462,33 @@ def generate_schedule(audit_id):
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
-                        if not conflict:
-                            add_class_to_schedule(course=course, section=section, schedule=schedule)
-                            # Check if class has a lab and add it to the schedule if so
-                            lab_scheduled, lab_section = schedule_lab(db=db, course=course, schedule=schedule)
-                            if lab_scheduled:
-                                add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+                        if conflict:
+                            continue
 
-                            total_classes -= 1
+                        before_len = len(schedule)
 
-                            if needs_class_count is not None:
-                                needs_class_count -= 1
-                                
-                            # Subtract the courses credits from the total needed credits
-                            if needs_credits is not None:
-                                needs_credits -= course_object.units
+                        add_class_to_schedule(course=course, section=section, schedule=schedule)
 
-                            # In this case only one class should be added for this requirement
-                            if needs_class_count is None and needs_credits is None:
-                                break
+                        lab_scheduled, lab_section, lab_exists = schedule_lab(db=db, course=course, schedule=schedule)
+
+                        if lab_exists and not lab_scheduled:
+                            del schedule[before_len:] 
+                            continue
+                        
+                        if lab_exists and lab_scheduled:
+                            add_class_to_schedule(course=course, section=lab_section, schedule=schedule)
+
+                        total_classes -= 1
+
+                        if needs_class_count is not None:
+                            needs_class_count -= 1
+                            
+                        # Subtract the courses credits from the total needed credits
+                        if needs_credits is not None:
+                            needs_credits -= course_object.units
+
+                        # In this case only one class should be added for this requirement
+                        if needs_class_count is None and needs_credits is None:
+                            break
     
     return schedule

@@ -28,7 +28,14 @@ def splitCourse(course):
     for i, ch in enumerate(course):
         if ch.isdigit():
             dept = course[:i].strip().replace(" ", "")
-            num = course[i:].strip()
+
+            # Keep only the leading digits of the number (fix)
+            num_part = course[i:].strip()
+            m = re.match(r"(\d+)", num_part)
+            if not m:
+                return dept, None
+
+            num = m.group(1)
             return dept, num
 
     return None, None
@@ -46,10 +53,6 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
     lines = []
 
     for req in requirements:
-        # print("Scraper")
-        # print(req["title"])
-        # print(req["needsCount"])
-        # print(req["needsCredits"])
         # DB
         reqId = add_requirement(db, auditId, req["title"], needs_count = req["needsCount"] or None, needs_credits = req["needsCredits"] or None)
 
@@ -137,6 +140,7 @@ def outputRequirements(requirements, completedCourses, filename="parsed_audit.tx
         lines.append(course + "\n")
 
         dept, num = splitCourse(course)
+
         comp_course_ids.append(get_course_id(db, dept, num))
 
     if comp_course_ids:
