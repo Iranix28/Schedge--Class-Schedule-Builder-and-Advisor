@@ -346,12 +346,10 @@ def generate_schedule(audit_id):
         if "Pre-Major" in req.title or "Major" in req.title or "Core" in req.title:
             continue
 
-        # UNCOMMENT THIS
         needs_class_count = req.needs_count
         needs_credits = req.needs_credits
         
         for subreq in req.subrequirements:
-            # UNCOMMENT THIS
             if needs_class_count is None:
                 needs_class_count = subreq.needs_count
 
