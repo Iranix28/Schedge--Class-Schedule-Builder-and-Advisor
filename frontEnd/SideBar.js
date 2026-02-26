@@ -1,6 +1,6 @@
 const { useState, useEffect, useRef } = React;
 
-function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKey, onLogout }) {
+function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKey, onLogout, onPlanDeleted }) {
 	const [savedPlans, setSavedPlans] = useState([]);
 	const [isLoadingPlans, setIsLoadingPlans] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +49,8 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 			);
 			if (!res.ok) throw new Error("Failed to delete plan");
 			setSavedPlans((prev) => prev.filter((p) => p.id !== plan.id));
+			// Notify parent so it can navigate home if this was the active plan
+			if (onPlanDeleted) onPlanDeleted(plan.id);
 		} catch (err) {
 			console.error("Failed to delete plan:", err);
 			alert("Could not delete plan");

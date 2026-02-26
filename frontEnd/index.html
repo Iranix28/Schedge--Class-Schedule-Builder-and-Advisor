@@ -20,7 +20,7 @@
     <script type="text/babel" src="./ChatUI.js"></script>
 
     <script type="text/babel">
-      const { useState, useEffect } = React;
+      const { useState, useEffect, useCallback } = React;
 
       function App() {
         const [isAuthenticated, setIsAuthenticated]   = useState(false);
@@ -32,6 +32,32 @@
         const [resetKey, setResetKey]                 = useState(0);
         const [multiPlanTitle, setMultiPlanTitle]     = useState("");
         const [createdMultiPlanId, setCreatedMultiPlanId] = useState(null);
+
+        // ── default plan name numbering ───────────────────────────────────
+        const [nextSingleNum, setNextSingleNum] = useState(1);
+        const [nextMultiNum, setNextMultiNum]   = useState(1);
+
+        const refreshDefaultNumbers = useCallback(async () => {
+          if (!userData?.id) return;
+          try {
+            const res = await fetch("http://localhost:8000/plans?user_id=" + userData.id);
+            if (!res.ok) return;
+            const plans = await res.json();
+            // Find highest existing "Single #" and "Multi #"
+            let maxSingle = 0, maxMulti = 0;
+            plans.forEach(p => {
+              const sMatch = p.name.match(/^Single\s+(\d+)$/i);
+              const mMatch = p.name.match(/^Multi\s+(\d+)$/i);
+              if (sMatch) maxSingle = Math.max(maxSingle, parseInt(sMatch[1]));
+              if (mMatch) maxMulti  = Math.max(maxMulti, parseInt(mMatch[1]));
+            });
+            setNextSingleNum(maxSingle + 1);
+            setNextMultiNum(maxMulti + 1);
+          } catch (e) { console.warn("[App] failed to refresh default numbers:", e); }
+        }, [userData]);
+
+        // Refresh numbers when user logs in and whenever sidebar refreshes (plan saved/deleted)
+        useEffect(() => { refreshDefaultNumbers(); }, [userData, sidebarRefreshKey, refreshDefaultNumbers]);
 
         // ── auth ──────────────────────────────────────────────────────────────
         useEffect(() => {
@@ -116,9 +142,7 @@
 
           if (resolvedName && resolvedName.trim()) setMultiPlanTitle(resolvedName);
 
-          // If this was a fresh multi plan that got saved, switch to saved-multi mode
           if (createdMultiPlanId && selectedPlan === "multi") {
-            // Always re-fetch to get the latest messages/schedule from autosave
             let fullPlan = null;
             try {
               const res = await fetch(
@@ -131,7 +155,6 @@
             if (fullPlan) setSelectedSavedPlan(fullPlan);
             setSelectedPlan("saved-multi");
           } else if (selectedSavedPlan) {
-            // Already in saved-multi — re-fetch to get latest autosaved data
             const planIdToFetch = selectedSavedPlan.id;
             try {
               const res = await fetch(
@@ -186,6 +209,16 @@
                 onNavigate={handleSidebarNavigate}
                 refreshKey={sidebarRefreshKey}
                 onLogout={handleLogout}
+                onPlanDeleted={(deletedPlanId) => {
+                  // If the deleted plan is the one currently being viewed, go home
+                  const activeId = selectedSavedPlan?.id || createdMultiPlanId || savedPlan?.id;
+                  if (activeId && String(activeId) === String(deletedPlanId)) {
+                    setSelectedPlan(null);
+                    setSelectedSavedPlan(null);
+                    resetMultiState();
+                  }
+                  setSidebarRefreshKey((k) => k + 1);
+                }}
               />
             )}
 
@@ -219,6 +252,7 @@
                   initialTitle={multiPlanTitle || selectedSavedPlan.name}
                   onTitleChange={setMultiPlanTitle}
                   planId={selectedSavedPlan.id}
+                  defaultPlanName={`Multi ${nextMultiNum}`}
                 />
 
               ) : selectedPlan === "saved-multi" && selectedSemester ? (
@@ -230,6 +264,7 @@
                   onBack={handleBackToMultiSemester}
                   onPlanSaved={handlePlanSaved}
                   onPlanCreated={handlePlanCreated}
+                  defaultPlanName={`Single ${nextSingleNum}`}
                 />
 
               ) : selectedPlan === "saved" && selectedSavedPlan ? (
@@ -240,6 +275,7 @@
                   onBack={handleBackToSavedPlans}
                   savedPlan={selectedSavedPlan}
                   onPlanSaved={handlePlanSaved}
+                  defaultPlanName={`Single ${nextSingleNum}`}
                 />
 
               ) : selectedPlan === "single" ? (
@@ -249,6 +285,7 @@
                   onLogout={handleLogout}
                   onBack={handleBackToPlanSelection}
                   onPlanSaved={handlePlanSaved}
+                  defaultPlanName={`Single ${nextSingleNum}`}
                 />
 
               ) : selectedPlan === "multi" && !selectedSemester ? (
@@ -264,6 +301,7 @@
                   initialTitle={multiPlanTitle}
                   onTitleChange={setMultiPlanTitle}
                   planId={createdMultiPlanId}
+                  defaultPlanName={`Multi ${nextMultiNum}`}
                 />
 
               ) : selectedPlan === "multi" && selectedSemester ? (
@@ -275,6 +313,7 @@
                   onBack={handleBackToMultiSemester}
                   onPlanSaved={handlePlanSaved}
                   onPlanCreated={handlePlanCreated}
+                  defaultPlanName={`Single ${nextSingleNum}`}
                 />
 
               ) : null}

@@ -4,30 +4,74 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 	const BASE_URL = "http://localhost:8000";
 	const [plannerTitle, setPlannerTitle] = useState(initialTitle || "");
 	const [isSaving, setIsSaving] = useState(false);
-	// Track the plan id once created/saved so semester clicks get _existingPlanId injected
 	const [activePlanId, setActivePlanId] = useState(null);
 	const titleMountedRef = useRef(false);
 
-	// Keep activePlanId in sync with planId prop and savedPlan
+	// ── Course catalog for credit lookups ──────────────────────────────────
+	const [courseCatalog, setCourseCatalog] = useState([]);
+	const [catalogReady, setCatalogReady] = useState(false);
+
+	useEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await fetch(`${BASE_URL}/schedule/get_courses`);
+				if (res.ok && !cancelled) {
+					setCourseCatalog(await res.json());
+				}
+			} catch (e) { console.warn("[MultiSemesterUI] failed to fetch course catalog:", e); }
+			finally { if (!cancelled) setCatalogReady(true); }
+		})();
+		return () => { cancelled = true; };
+	}, []);
+
+	const creditsByDeptCode = React.useMemo(() => {
+		const map = {};
+		courseCatalog.forEach(c => {
+			const credits = typeof c.credits === "number" ? c.credits : parseFloat(c.credits) || 0;
+			if (c.department && c.course_code) {
+				map[`${c.department.toUpperCase()} ${c.course_code}`] = credits;
+			}
+		});
+		return map;
+	}, [courseCatalog]);
+
+	const parseDeptCode = (className) => {
+		if (!className || typeof className !== "string") return null;
+		const match = className.match(/^([A-Z]+)\s+(\d+)/);
+		return match ? `${match[1]} ${match[2]}` : null;
+	};
+
+	const computeSemesterCredits = (semester) => {
+		if (semester.total_credits > 0) return semester.total_credits;
+		if (semester.credits > 0) return semester.credits;
+
+		const seen = new Set();
+		let total = 0;
+		[...(semester.schedule || []), ...(semester.courses || [])].forEach(item => {
+			const key = parseDeptCode(item.class_ || item.class_name || "");
+			if (key && !seen.has(key)) {
+				seen.add(key);
+				total += creditsByDeptCode[key] || 0;
+			}
+		});
+		return total;
+	};
+	// ────────────────────────────────────────────────────────────────────────
+
 	useEffect(() => {
 		setActivePlanId(savedPlan?.id || planId || null);
 	}, [savedPlan, planId]);
 
-	// Sync title up to parent whenever it changes so it survives navigation
 	const handleTitleChange = (val) => {
 		setPlannerTitle(val);
 		if (onTitleChange) onTitleChange(val);
 	};
 
-	// Debounced autosave of plan name — only when plan already exists in DB
 	useEffect(() => {
-		if (!titleMountedRef.current) {
-			titleMountedRef.current = true;
-			return;
-		}
+		if (!titleMountedRef.current) { titleMountedRef.current = true; return; }
 		const currentPlanId = activePlanId;
 		if (!currentPlanId || !userData?.id || !plannerTitle.trim()) return;
-
 		const timer = setTimeout(async () => {
 			try {
 				await fetch(`${BASE_URL}/plans/${currentPlanId}/name`, {
@@ -36,14 +80,11 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 					body: JSON.stringify({ user_id: userData.id, name: plannerTitle.trim() }),
 				});
 				if (onPlanSaved) onPlanSaved();
-			} catch (e) {
-				console.error("[MultiSemesterUI] failed to autosave plan name:", e);
-			}
+			} catch (e) { console.error("[MultiSemesterUI] failed to autosave plan name:", e); }
 		}, 1000);
 		return () => clearTimeout(timer);
 	}, [plannerTitle]);
 
-	// Function to get the next semester based on current date
 	const getNextSemester = () => {
 		const now = new Date();
 		const month = now.getMonth();
@@ -53,65 +94,40 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 		return { term: "Spring", year: year + 1 };
 	};
 
+	const mapSemesterFromBackend = (sem, idx, planIdVal) => ({
+		id: idx + 1,
+		name: `${sem.term_season} ${sem.term_year}`,
+		year: sem.term_year,
+		term: sem.term_season,
+		credits: sem.total_credits || 0,
+		total_courses: sem.total_courses ?? (sem.courses || []).length,
+		courses: sem.courses || [],
+		plan_id: planIdVal,
+		semester_db_id: sem.id,
+		messages: sem.messages || [],
+		schedule: sem.schedule || [],
+	});
+
 	const buildInitialSemesters = () => {
 		if (savedPlan && savedPlan.semesters && savedPlan.semesters.length > 0) {
-			return savedPlan.semesters.map((sem, idx) => ({
-				id: idx + 1,
-				name: `${sem.term_season} ${sem.term_year}`,
-				year: sem.term_year,
-				term: sem.term_season,
-				credits: sem.total_credits || 0,
-				total_courses: sem.total_courses ?? (sem.courses || []).length,
-				courses: sem.courses || [],
-				plan_id: savedPlan.id,
-				semester_db_id: sem.id,
-				messages: sem.messages || [],
-				schedule: sem.schedule || [],
-			}));
+			return savedPlan.semesters.map((sem, idx) => mapSemesterFromBackend(sem, idx, savedPlan.id));
 		}
 		const initialSemester = getNextSemester();
-		return [{
-			id: 1,
-			name: `${initialSemester.term} ${initialSemester.year}`,
-			year: initialSemester.year,
-			term: initialSemester.term,
-			credits: 0,
-			courses: [],
-		}];
+		return [{ id: 1, name: `${initialSemester.term} ${initialSemester.year}`, year: initialSemester.year, term: initialSemester.term, credits: 0, courses: [], schedule: [] }];
 	};
 
-	useEffect(() => {
-		if (savedPlan) {
-			handleTitleChange(savedPlan.name || "");
-		}
-	}, [savedPlan?.name]);
+	useEffect(() => { if (savedPlan) handleTitleChange(savedPlan.name || ""); }, [savedPlan?.name]);
 
-	// Rebuild semesters whenever savedPlan updates (e.g. after back from ChatUI re-fetch)
 	useEffect(() => {
 		if (savedPlan && savedPlan.semesters && savedPlan.semesters.length > 0) {
-			setSemesters(savedPlan.semesters.map((sem, idx) => ({
-				id: idx + 1,
-				name: `${sem.term_season} ${sem.term_year}`,
-				year: sem.term_year,
-				term: sem.term_season,
-				credits: sem.total_credits || 0,
-				total_courses: sem.total_courses ?? (sem.courses || []).length,
-				courses: sem.courses || [],
-				plan_id: savedPlan.id,
-				semester_db_id: sem.id,
-				messages: sem.messages || [],
-				schedule: sem.schedule || [],
-			})));
+			setSemesters(savedPlan.semesters.map((sem, idx) => mapSemesterFromBackend(sem, idx, savedPlan.id)));
 		}
 	}, [savedPlan]);
 
 	const [semesters, setSemesters] = useState(buildInitialSemesters);
 
 	const pulseStyle = `
-		@keyframes pulseBorder {
-			0%, 100% { border-color: #cbd5e1; }
-			50% { border-color: #BE0000; }
-		}
+		@keyframes pulseBorder { 0%, 100% { border-color: #cbd5e1; } 50% { border-color: #BE0000; } }
 		.pulse-border { animation: pulseBorder 2s ease-in-out infinite; }
 		.plan-title-input:-webkit-autofill,
 		.plan-title-input:-webkit-autofill:hover,
@@ -120,13 +136,8 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 			-webkit-text-fill-color: white !important;
 			transition: background-color 5000s ease-in-out 0s;
 		}
-		.plan-title-input::selection {
-			background: rgba(255,255,255,0.3);
-			color: white;
-		}
-		.plan-title-input:focus {
-			background: transparent !important;
-		}
+		.plan-title-input::selection { background: rgba(255,255,255,0.3); color: white; }
+		.plan-title-input:focus { background: transparent !important; }
 	`;
 
 	const handleAddSemester = () => {
@@ -135,15 +146,7 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 		if (lastSemester.term === "Spring") { newTerm = "Summer"; newYear = lastSemester.year; }
 		else if (lastSemester.term === "Summer") { newTerm = "Fall"; newYear = lastSemester.year; }
 		else { newTerm = "Spring"; newYear = lastSemester.year + 1; }
-
-		setSemesters([...semesters, {
-			id: semesters.length + 1,
-			name: `${newTerm} ${newYear}`,
-			year: newYear,
-			term: newTerm,
-			credits: 0,
-			courses: [],
-		}]);
+		setSemesters([...semesters, { id: semesters.length + 1, name: `${newTerm} ${newYear}`, year: newYear, term: newTerm, credits: 0, courses: [], schedule: [] }]);
 	};
 
 	const handleRemoveSemester = (semesterId) => {
@@ -153,73 +156,34 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 
 	const handleSavePlan = async () => {
 		if (!userData?.id) { alert("User not loaded"); return; }
-
 		const name = plannerTitle.trim() || "Multi-Semester Plan";
 		const existingPlanId = activePlanId;
-
-		const payload = {
-			user_id: userData.id,
-			name,
-			semesters: semesters.map(sem => ({
-				term_season: sem.term,
-				term_year: sem.year,
-				courses: sem.courses || [],
-			})),
-		};
-
+		const payload = { user_id: userData.id, name, semesters: semesters.map(sem => ({ term_season: sem.term, term_year: sem.year, courses: sem.courses || [] })) };
 		try {
 			setIsSaving(true);
-			const url = existingPlanId
-				? `${BASE_URL}/plans/multi/${existingPlanId}`
-				: `${BASE_URL}/plans/multi`;
+			const url = existingPlanId ? `${BASE_URL}/plans/multi/${existingPlanId}` : `${BASE_URL}/plans/multi`;
 			const method = existingPlanId ? "PUT" : "POST";
-
 			const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 			if (!res.ok) throw new Error(await res.text());
-
 			const data = await res.json();
-
-			if (!existingPlanId && data.id) {
-				// Fresh plan just created — store id locally so semester clicks use it
-				setActivePlanId(data.id);
-				// Notify App to store the plan id (without touching selectedSemester)
-				if (onPlanIdSaved) onPlanIdSaved(data.id);
-			}
-
-			// Fetch the full plan to get real semester_db_ids for all semesters
-			// so clicking any semester immediately has proper DB ids for autosave
+			if (!existingPlanId && data.id) { setActivePlanId(data.id); if (onPlanIdSaved) onPlanIdSaved(data.id); }
 			const savedPlanId = existingPlanId || data.id;
 			try {
 				const detailRes = await fetch(`${BASE_URL}/plans/multi/${savedPlanId}?user_id=${userData.id}`);
 				if (detailRes.ok) {
 					const fullPlan = await detailRes.json();
-					setSemesters(fullPlan.semesters.map((sem, idx) => ({
-						id: idx + 1,
-						name: `${sem.term_season} ${sem.term_year}`,
-						year: sem.term_year,
-						term: sem.term_season,
-						credits: sem.total_credits || 0,
-						total_courses: sem.total_courses ?? (sem.courses || []).length,
-						courses: sem.courses || [],
-						plan_id: savedPlanId,
-						semester_db_id: sem.id,
-						messages: sem.messages || [],
-						schedule: sem.schedule || [],
-					})));
+					setSemesters(fullPlan.semesters.map((sem, idx) => mapSemesterFromBackend(sem, idx, savedPlanId)));
 				}
-			} catch (e) {
-				console.error("[MultiSemesterUI] failed to refresh semesters after save:", e);
-			}
-
+			} catch (e) { console.error("[MultiSemesterUI] failed to refresh semesters after save:", e); }
 			if (onPlanSaved) onPlanSaved();
 			alert(existingPlanId ? "Plan updated!" : "Multi-semester plan saved!");
-		} catch (err) {
-			console.error("Save error:", err);
-			alert("Error saving plan: " + err.message);
-		} finally {
-			setIsSaving(false);
-		}
+		} catch (err) { console.error("Save error:", err); alert("Error saving plan: " + err.message); }
+		finally { setIsSaving(false); }
 	};
+
+	// ── Show a brief loader while catalog is loading so credits never flash 0 ──
+	const hasCourses = semesters.some(s => (s.total_courses ?? s.courses.length) > 0 || (s.schedule || []).length > 0);
+	const showLoading = !catalogReady && hasCourses;
 
 	return (
 		<div className="flex flex-col h-screen bg-slate-100">
@@ -228,20 +192,11 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 			<header className="px-6 py-4 flex items-center justify-between shadow-sm" style={{ backgroundColor: "#BE0000" }}>
 				<div className="flex items-center gap-3">
 					<div className="relative group">
-						<input
-							type="text"
-							value={plannerTitle}
-							onChange={(e) => handleTitleChange(e.target.value)}
-							placeholder="Multi-Semester Planner"
+						<input type="text" value={plannerTitle} onChange={(e) => handleTitleChange(e.target.value)} placeholder="Multi-Semester Planner"
 							className="plan-title-input bg-transparent text-white font-semibold text-xl border-none focus:outline-none focus:ring-0 transition-all pr-8"
 							style={{ minWidth: "150px", caretColor: "white", WebkitAppearance: "none", boxShadow: "none" }}
 						/>
-						<svg
-							className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
+						<svg className="w-4 h-4 text-white absolute right-2 top-1/2 -translate-y-1/2 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
 						</svg>
 					</div>
@@ -255,19 +210,21 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 						<p className="text-slate-600">Click on any semester to start planning your courses</p>
 					</div>
 
+					{showLoading ? (
+						<div className="text-center py-12">
+							<div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-3" style={{ borderColor: "#BE0000" }}></div>
+							<p className="text-slate-500">Loading course data...</p>
+						</div>
+					) : (
+					<>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-						{semesters.map((semester, index) => (
-							<div
-								key={semester.id}
+						{semesters.map((semester, index) => {
+							const displayCredits = computeSemesterCredits(semester);
+							return (
+							<div key={semester.id}
 								onClick={() => {
 									const currentPlanId = activePlanId || null;
-									const semesterWithContext = {
-										...semester,
-										_planTitle: plannerTitle.trim() || "Multi-Semester Plan",
-										_allSemesters: semesters,
-										...(currentPlanId && !semester.plan_id ? { _existingPlanId: currentPlanId } : {}),
-									};
-									onSelectSemester(semesterWithContext);
+									onSelectSemester({ ...semester, _planTitle: plannerTitle.trim() || "Multi-Semester Plan", _allSemesters: semesters, ...(currentPlanId && !semester.plan_id ? { _existingPlanId: currentPlanId } : {}) });
 								}}
 								className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group hover:scale-105 border-2 border-transparent hover:border-red-700"
 							>
@@ -281,62 +238,42 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 										</div>
 										{semesters.length > 1 && (
 											<button type="button" onClick={(e) => { e.stopPropagation(); handleRemoveSemester(semester.id); }} className="text-slate-400 hover:text-red-600 transition-colors" title="Remove semester">
-												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-												</svg>
+												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
 											</button>
 										)}
 									</div>
-
 									<div className="space-y-2">
 										<div className="flex items-center gap-2 text-sm text-slate-600">
-											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-											</svg>
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
 											<span>{(semester.total_courses ?? semester.courses.length)} course{(semester.total_courses ?? semester.courses.length) !== 1 ? "s" : ""}</span>
 										</div>
 										<div className="flex items-center gap-2 text-sm text-slate-600">
-											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-											</svg>
-											<span>{semester.credits} credit{semester.credits !== 1 ? "s" : ""}</span>
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+											<span>{displayCredits} credit{displayCredits !== 1 ? "s" : ""}</span>
 										</div>
 									</div>
-
-
 								</div>
-
 								<div className="px-6 py-3 border-t border-slate-100 flex items-center justify-center gap-2 text-sm font-medium group-hover:bg-red-50 transition-colors" style={{ color: "#BE0000" }}>
 									<span>Plan This Semester</span>
-									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-									</svg>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
 								</div>
 							</div>
-						))}
+							);
+						})}
 					</div>
 
-					<button
-						type="button"
-						onClick={handleAddSemester}
+					<button type="button" onClick={handleAddSemester}
 						className={"w-full py-4 border-2 border-dashed rounded-xl hover:border-red-700 hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-red-700 font-medium " + (semesters.length === 1 ? "pulse-border" : "border-slate-300")}
 					>
-						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-						</svg>
+						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
 						Add Another Semester
 					</button>
 
-					<button
-						type="button"
-						onClick={handleSavePlan}
-						disabled={isSaving}
+					<button type="button" onClick={handleSavePlan} disabled={isSaving}
 						className="w-full mt-3 py-4 rounded-xl font-semibold text-white transition-all shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
 						style={{ backgroundColor: "#BE0000" }}
 					>
-						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-						</svg>
+						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
 						{isSaving ? "Saving..." : "Save Plan"}
 					</button>
 
@@ -352,11 +289,13 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 								<div className="text-sm text-slate-600">Total Courses</div>
 							</div>
 							<div className="text-center">
-								<div className="text-3xl font-bold text-slate-800">{semesters.reduce((sum, sem) => sum + sem.credits, 0)}</div>
+								<div className="text-3xl font-bold text-slate-800">{semesters.reduce((sum, sem) => sum + computeSemesterCredits(sem), 0)}</div>
 								<div className="text-sm text-slate-600">Total Credits</div>
 							</div>
 						</div>
 					</div>
+					</>
+					)}
 				</div>
 			</div>
 		</div>
