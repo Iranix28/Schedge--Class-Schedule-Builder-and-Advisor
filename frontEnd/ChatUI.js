@@ -3,6 +3,7 @@ const { useState, useRef, useEffect } = React;
 const BASE_URL = "http://localhost:8000";
 const REGISTRATION_URL = "https://www.stu.utah.edu/psc/heprod/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=HEUU_REGISTRATION&PTPPB_GROUPLET_ID=UUHE_REGISTRATION_TILE&CRefName=UUHE_REGISTRATION_TILE";
 
+// Send a message to the LLM backend and invoke callback with the reply
 async function sendMessageLLM(userText, onToken) {
 	const res = await fetch(`${BASE_URL}/ollama/chat`, {
 		method: "POST",
@@ -14,6 +15,7 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
+// Main chat + schedule builder view — split panel with AI advisor chat (left) and schedule grid (right)
 function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
 	const [messages, setMessages] = useState([
 		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
@@ -21,7 +23,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [uploadedFiles, setUploadedFiles] = useState([]);
-	const [visualizationData, setVisualizationData] = useState(null);
+	const [visualizationData, setVisualizationData] = useState(null); // Schedule data: { type: "schedule", data: [...] }
 	const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
 	const [class_code, setClass_code] = useState("");
 	const [availableSections, setAvailableSections] = useState([]);
@@ -37,18 +39,20 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
 	const [planName, setPlanName] = useState("My Plan");
-	const [autosaveStatus, setAutosaveStatus] = useState(null);
+	const [autosaveStatus, setAutosaveStatus] = useState(null); // null | "saving" | "saved" | "error"
 	const [savedFlash, setSavedFlash] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState("");
-	const [savedPlanIds, setSavedPlanIds] = useState(null);
+	const [savedPlanIds, setSavedPlanIds] = useState(null); // Tracks plan/semester IDs after first manual save
 
+	// Schedule grid sizing constants
 	// IDEAL_ROW_HEIGHT: preferred px per hour — tall enough to show 3 lines of text in a class block
 	// MAX_SCHEDULE_HEIGHT: hard cap so everything fits on screen without page-level scrolling
-	// When totalHours * IDEAL > MAX, rowHeight shrinks proportionally to fit exactly within MAX.
 	const IDEAL_ROW_HEIGHT = 55;
 	const MAX_SCHEDULE_HEIGHT = 500;
 
 	// ── Time helpers ──────────────────────────────────────────────────────────
+
+	// Convert "HH:MM AM/PM" string to total minutes since midnight
 	const parseTimeToMinutes = (timeStr) => {
 		if (!timeStr) return 0;
 		const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
@@ -59,6 +63,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return h * 60 + parseInt(m[2]);
 	};
 
+	// Format 24h hour number to "X AM/PM" label
 	const formatHourLabel = (hour) => {
 		if (hour === 0) return "12 AM";
 		if (hour === 12) return "12 PM";
@@ -66,6 +71,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return `${hour - 12} PM`;
 	};
 
+	// Compute the visible hour range for the schedule grid based on class times
 	const getScheduleTimeRange = (data) => {
 		if (!data || data.length === 0) return { startHour: 8, endHour: 18 };
 		let minMin = Infinity, maxMin = -Infinity;
@@ -74,7 +80,6 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			if (item.endTime)   maxMin = Math.max(maxMin, parseTimeToMinutes(item.endTime));
 		});
 		if (minMin === Infinity) return { startHour: 8, endHour: 18 };
-		// Tight bounds: floor start to nearest hour below, ceil end to nearest hour above — no extra padding rows
 		return {
 			startHour: Math.max(0, Math.floor(minMin / 60) - 1),
 			endHour: Math.ceil(maxMin / 60) + 1,
@@ -85,6 +90,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const openCourseDetails = (course) => { setSelectedCourse(course); setShowCourseDetailModal(true); };
 	const closeCourseDetails = () => { setShowCourseDetailModal(false); setSelectedCourse(null); };
 
+	// Fetch course catalog and warm up LLM on first mount
 	const warmupDoneRef = useRef(false);
 	useEffect(() => {
 		fetchAllCourses();
@@ -96,6 +102,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		})();
 	}, []);
 
+	// Debounced autosave when user edits the plan name
 	const userEditedNameRef = useRef(false);
 	useEffect(() => {
 		if (!userEditedNameRef.current) return;
@@ -104,6 +111,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return () => clearTimeout(timer);
 	}, [planName]);
 
+	// Auto-resize textarea to fit content
 	useEffect(() => {
 		if (textareaRef.current) {
 			textareaRef.current.style.height = "auto";
@@ -111,12 +119,14 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	}, [input]);
 
+	// Prevent native form submissions globally
 	useEffect(() => {
 		const onSubmit = (e) => { console.log("FORM SUBMIT CAUGHT", e.target); e.preventDefault(); e.stopPropagation(); };
 		document.addEventListener("submit", onSubmit, true);
 		return () => document.removeEventListener("submit", onSubmit, true);
 	}, []);
 
+	// Restore state when loading an existing saved plan
 	useEffect(() => {
 		if (!savedPlan) return;
 		setPlanName(savedPlan.name || "My Plan");
@@ -124,6 +134,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		setVisualizationData(savedPlan.schedule?.length > 0 ? { type: "schedule", data: savedPlan.schedule } : null);
 	}, [savedPlan]);
 
+	// Restore state when entering from a multi-semester view (runs once)
 	const semesterInitializedRef = useRef(false);
 	useEffect(() => {
 		if (!semester || semesterInitializedRef.current) return;
@@ -133,7 +144,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		setVisualizationData(semester.schedule?.length > 0 ? { type: "schedule", data: semester.schedule } : null);
 	}, [semester]);
 
+	// Determine if this is a new multi-semester plan that hasn't been persisted yet
 	const isFreshMultiMode = !!(semester && !semester.plan_id && (semester._allSemesters || semester._existingPlanId));
+	// Autosave is enabled when we have known plan+semester DB IDs (or can create them)
 	const isAutosaveMode = !!(semester?.plan_id && semester?.semester_db_id)
 		|| isFreshMultiMode
 		|| !!(savedPlan?.id && savedPlan?.semester_db_id)
@@ -142,6 +155,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const createdPlanRef = useRef(null);
 	const isCreatingPlanRef = useRef(false);
 
+	// Register this semester with an existing multi-plan on mount (if coming from multi-semester view)
 	useEffect(() => {
 		if (!semester?._existingPlanId || !userData?.id || createdPlanRef.current) return;
 		const registerSemester = async () => {
@@ -166,6 +180,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 	console.log("[ChatUI] semester:", semester, "isAutosaveMode:", isAutosaveMode, "isFreshMultiMode:", isFreshMultiMode);
 
+	// Resolve the active plan + semester DB IDs from various sources
 	const getActivePlanIds = () => {
 		if (semester?.plan_id && semester?.semester_db_id) return { plan_id: semester.plan_id, semester_db_id: semester.semester_db_id };
 		if (createdPlanRef.current) return createdPlanRef.current;
@@ -174,6 +189,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return null;
 	};
 
+	// Create a new multi-semester plan on backend when autosaving for the first time
 	const createFreshMultiPlan = async () => {
 		const allSemesters = semester._allSemesters || [];
 		const planTitle = semester._planTitle || "Multi-Semester Plan";
@@ -181,6 +197,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		let planId = semester._existingPlanId || null;
 		let semesterDbId = null;
 		if (!planId) {
+			// Create entire multi-plan
 			const res = await fetch(`${BASE_URL}/plans/multi`, {
 				method: "POST", headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ user_id: userData.id, name: planTitle, semesters: allSemesters.map((s) => ({ term_season: s.term, term_year: s.year, courses: s.courses || [] })) }),
@@ -188,12 +205,14 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			if (!res.ok) throw new Error(await res.text());
 			const created = await res.json();
 			planId = created.id;
+			// Re-fetch to get server-assigned semester IDs
 			const detailRes = await fetch(`${BASE_URL}/plans/multi/${planId}?user_id=${userData.id}`);
 			if (!detailRes.ok) throw new Error(await detailRes.text());
 			const detail = await detailRes.json();
 			semesterDbId = detail.semesters[thisSemesterIndex]?.id;
 			if (onPlanSaved) onPlanSaved();
 		} else {
+			// Plan exists — just add this semester to it
 			if (createdPlanRef.current) return createdPlanRef.current;
 			const res = await fetch(`${BASE_URL}/plans/${planId}/semesters`, {
 				method: "POST", headers: { "Content-Type": "application/json" },
@@ -210,16 +229,19 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return ids;
 	};
 
+	// Persist current messages, schedule, and course selections to the backend
 	const autosave = async (msgs, vizData) => {
 		if (!isAutosaveMode || !userData?.id) return;
 		setAutosaveStatus("saving");
 		try {
 			let ids = getActivePlanIds();
+			// Create plan on first autosave if needed
 			if (!ids) {
 				if (isCreatingPlanRef.current) return;
 				isCreatingPlanRef.current = true;
 				try { ids = await createFreshMultiPlan(); } finally { isCreatingPlanRef.current = false; }
 			}
+			// Deduplicate course selections from schedule data
 			const courseSelections = [];
 			const seen = new Set();
 			(vizData?.data || []).forEach((item) => {
@@ -242,6 +264,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		} catch (err) { console.error("[autosave] error:", err); setAutosaveStatus("error"); }
 	};
 
+	// Upload a degree audit file and parse it into schedule data
 	const handleFileUpload = async (e) => {
 		const file = e.target.files[0];
 		if (!file) return;
@@ -256,6 +279,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		} catch (err) { console.error(err); alert("Failed to load schedule from backend"); }
 	};
 
+	// Send user message to LLM and append streamed response
 	const handleSubmit = async () => {
 		if (!input.trim() || isLoading) return;
 		const userMessage = input.trim();
@@ -283,6 +307,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const removeFile = (index) => { setUploadedFiles((prev) => prev.filter((_, i) => i !== index)); };
 	const toggleRightPanel = () => { setIsRightPanelExpanded(!isRightPanelExpanded); };
 
+	// Convert compact day string ("MoWeFr") into full day names array
 	const parseDayAbbreviations = (dayStr) => {
 		const dayMap = { "Mo": "Monday", "Tu": "Tuesday", "We": "Wednesday", "Th": "Thursday", "Fr": "Friday", "Sa": "Saturday", "Su": "Sunday" };
 		const days = [];
@@ -290,6 +315,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return days;
 	};
 
+	// Look up available sections for a course code and show selection modal
 	const handleAddCourse = async () => {
 		if (!class_code.trim()) { alert("Please enter a class code"); return; }
 		try {
@@ -309,8 +335,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		} catch (err) { console.error("handleAddCourse error:", err); alert(`Failed to add course: ${err.message}`); }
 	};
 
+	// Add the chosen section to the schedule grid (expanding multi-day entries) and autosave
 	const handleSelectSection = async (section) => {
 		const days = parseDayAbbreviations(section.day);
+		// Resolve course_id and class_section_id for persistence
 		let courseId = section.course_id || null;
 		let classSectionId = section.class_section_id || section.id || null;
 		if (!courseId) {
@@ -328,6 +356,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			}
 		}
 		if (!courseId) console.warn("[handleSelectSection] could not resolve course_id for section:", section);
+		// Create one schedule entry per day the section meets
 		const newEntries = days.map(day => ({ ...section, day, course_id: courseId, class_section_id: classSectionId }));
 		const newVizData = visualizationData
 			? { ...visualizationData, data: [...visualizationData.data, ...newEntries] }
@@ -345,6 +374,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 	const closeModal = () => { setShowSectionModal(false); setAvailableSections([]); };
 
+	// Fetch full course catalog from backend
 	const fetchAllCourses = async () => {
 		setIsLoadingCourses(true);
 		try {
@@ -359,8 +389,11 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	};
 
 	const toggleCoursesPanel = () => { if (!showCoursesPanel && allCourses.length === 0) fetchAllCourses(); setShowCoursesPanel(!showCoursesPanel); };
+
+	// Open course detail modal from course browser
 	const handleCourseClick = (course) => { setShowCoursesPanel(false); openCourseDetails(course); };
 
+	// Fetch sections for a course by code and show selection modal
 	const fetchCourseSections = async (courseCode) => {
 		try {
 			const res = await fetch(`${BASE_URL}/schedule/${courseCode}`, { method: "GET" });
@@ -371,6 +404,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		} catch (err) { console.error(err); alert(`Failed to add course: ${err.message}`); }
 	};
 
+	// Open course detail modal when clicking a class block on the schedule
 	const handleScheduleItemClick = (scheduleItem) => {
 		const courseCodeMatch = scheduleItem.class_.match(/(\d+)/);
 		if (!courseCodeMatch) return;
@@ -387,6 +421,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	// Remove all schedule entries for a given class and autosave
 	const handleDeleteCourse = (e, scheduleItem) => {
 		e.stopPropagation();
 		const updatedData = visualizationData.data.filter(item => item.class_ !== scheduleItem.class_);
@@ -399,6 +434,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	// Filter course catalog by search query (matches dept, code, name, or description)
 	const filteredCourses = allCourses.filter(course => {
 		const searchLower = courseSearchQuery.toLowerCase().trim();
 		const combined = `${course.department} ${course.course_code}`.toLowerCase();
@@ -411,6 +447,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		);
 	});
 
+	// Manual save for single-semester mode (non-autosave) — creates a new plan
 	const handleSavePlan = async () => {
 		try {
 			if (!userData?.id) { alert("User not loaded"); return; }
@@ -422,6 +459,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 				messages: messages.map((m) => ({ role: m.role, content: m.content })),
 				schedule: (visualizationData?.data || []).map((item) => ({ class_: item.class_ || "", day: item.day || "", startTime: item.startTime || "", endTime: item.endTime || "", room: item.room || "", course_id: item.course_id || null, class_section_id: item.class_section_id || null })),
 			};
+			// Deduplicate course selections from schedule
 			if (visualizationData?.data?.length > 0) {
 				const seen = new Set();
 				visualizationData.data.forEach((item) => {
@@ -433,6 +471,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			const res = await fetch(`${BASE_URL}/plans`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 			if (!res.ok) { const errText = await res.text(); throw new Error(errText); }
 			const data = await res.json();
+			// Enable autosave after first manual save
 			if (data.id && data.semester_db_id) setSavedPlanIds({ plan_id: data.id, semester_db_id: data.semester_db_id });
 			alert("Plan saved successfully");
 			setSavedFlash(true);
@@ -441,6 +480,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		} catch (err) { console.error("Save error:", err); alert("Error saving plan"); }
 	};
 
+	// Check if a section conflicts with existing schedule (duplicate course or time overlap)
 	const getSectionConflict = (section) => {
 		const toMinutes = (timeStr) => {
 			const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/);
@@ -450,6 +490,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			return h * 60 + parseInt(m[2]);
 		};
 		const reasons = [];
+		// Check for duplicate course already on schedule
 		const sectionMatch = section.class_?.match(/^([A-Z]+)\s+(\d+)/);
 		if (sectionMatch) {
 			const sectionDept = sectionMatch[1];
@@ -460,6 +501,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			});
 			if (duplicate) reasons.push(`Already on schedule (${duplicate.class_})`);
 		}
+		// Check for time conflicts on each day the section meets
 		const days = parseDayAbbreviations(section.day);
 		const conflictsByClass = {};
 		for (const day of days) {
@@ -482,6 +524,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		return reasons.length > 0 ? reasons : null;
 	};
 
+	// CSS for plan title input autofill styling
 	const titleInputStyle = `
 		.plan-title-input:-webkit-autofill,
 		.plan-title-input:-webkit-autofill:hover,
@@ -494,7 +537,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		.plan-title-input:focus { background: transparent !important; }
 	`;
 
-	// ── Schedule sizing ───────────────────────────────────────────────────────
+	// ── Schedule grid sizing — compute row height and total grid dimensions ──
 	const scheduleRange = visualizationData ? getScheduleTimeRange(visualizationData.data) : null;
 	const scheduleStartHour = scheduleRange?.startHour ?? 8;
 	const scheduleEndHour   = scheduleRange?.endHour   ?? 18;
@@ -507,7 +550,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 	const scheduleGridHeight = scheduleTotalHours * rowHeight;
 
-	// Hour labels: inclusive start, exclusive end (no phantom row beyond grid boundary)
+	// Hour labels array (inclusive start, exclusive end)
 	const hourLabels = [];
 	for (let h = scheduleStartHour; h <= scheduleEndHour; h++) hourLabels.push(h);
 	// ─────────────────────────────────────────────────────────────────────────
@@ -516,8 +559,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		<div className="flex h-screen bg-slate-100 relative">
 		<style>{titleInputStyle}</style>
 
-			{/* Left Side - Chat Interface */}
+			{/* ── Left panel: AI advisor chat ── */}
 			<div className={`flex flex-col border-r border-slate-300 bg-white transition-all duration-500 ease-in-out overflow-hidden ${isRightPanelExpanded ? "w-0" : "w-1/3"}`}>
+				{/* Chat header with optional back button (multi-semester mode) */}
 				<header className="border-b border-slate-200 px-6 py-4 h-16 flex items-center shadow-sm" style={{ backgroundColor: "#BE0000" }}>
 					<div className="flex items-center gap-3">
 						{(isAutosaveMode || isFreshMultiMode) && (
@@ -530,6 +574,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 					</div>
 				</header>
 
+				{/* Message list */}
 				<div className="flex-1 overflow-y-auto">
 					<div className="px-4 py-4 space-y-3">
 						{messages.map((message, index) => (
@@ -545,6 +590,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 								)}
 							</div>
 						))}
+						{/* Typing indicator */}
 						{isLoading && (
 							<div className="flex gap-2 justify-start">
 								<div className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
@@ -560,6 +606,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 					</div>
 				</div>
 
+				{/* Chat input bar with file upload button */}
 				<div className="border-t border-slate-200 px-6 py-4 bg-white">
 					<div>
 						<div className="relative flex items-center gap-3 bg-slate-50 rounded-full border border-slate-200 px-3 py-2 focus-within:ring-2 focus-within:ring-opacity-50 transition-all">
@@ -568,6 +615,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 							<input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="Type your message here..." className="flex-1 bg-transparent px-2 py-1 outline-none text-slate-800 placeholder-slate-400" disabled={isLoading} />
 							<button type="button" onClick={handleSubmit} disabled={!input.trim() || isLoading} className="flex-shrink-0 w-8 h-8 rounded-full text-white flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg text-lg" style={{ backgroundColor: "#BE0000" }}>➤</button>
 						</div>
+						{/* Uploaded file chips */}
 						{uploadedFiles.length > 0 && (
 							<div className="mt-2 flex gap-2 overflow-x-auto">
 								{uploadedFiles.map((file, index) => (
@@ -583,8 +631,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 				</div>
 			</div>
 
-			{/* Right Side */}
+			{/* ── Right panel: Schedule grid + course tools ── */}
 			<div className={`flex flex-col bg-slate-50 transition-all duration-500 ease-in-out ${isRightPanelExpanded ? "w-full" : "w-2/3"}`}>
+				{/* Right header: editable plan name + university registration link */}
 				<header className="border-b border-slate-200 px-6 py-4 h-16 flex items-center justify-between shadow-sm" style={{ backgroundColor: "#BE0000" }}>
 					<div className="flex items-center gap-4">
 						<div className="relative group">
@@ -608,7 +657,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 				<div className="flex-1 overflow-y-auto pl-4 pr-6 py-6 space-y-6 relative">
 
-					{/* Courses Panel */}
+					{/* ── Slide-out course browser panel ── */}
 					<div className={`fixed top-16 right-0 h-[calc(100vh-4rem)] bg-white shadow-2xl transition-transform duration-300 ease-in-out z-20 ${showCoursesPanel ? "translate-x-0" : "translate-x-full"}`} style={{ width: "400px" }}>
 						<div className="h-full flex flex-col">
 							<div className="p-4 border-b border-slate-200">
@@ -644,12 +693,12 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						</div>
 					</div>
 
-					{/* Schedule Visualization */}
+					{/* ── Weekly schedule grid ── */}
 					{visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
 							<h3 className="text-base font-semibold text-slate-800 mb-3">Weekly Class Schedule</h3>
 							<div className="w-full">
-								{/* Day headers */}
+								{/* Day column headers */}
 								<div className="flex gap-1 mb-1">
 									<div style={{ width: "45px", flexShrink: 0 }}></div>
 									{["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
@@ -657,10 +706,10 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 									))}
 								</div>
 
-								{/* Grid: exact height, no scroll, no bleed */}
+								{/* Grid container: exact height, no overflow */}
 								<div className="relative overflow-hidden" style={{ height: `${scheduleGridHeight}px` }}>
 
-									{/* Hour grid lines */}
+									{/* Hour grid lines and time labels */}
 									<div className="absolute inset-0">
 										{hourLabels.map((hour, i) => (
 											<div key={hour} className="flex gap-1 absolute w-full" style={{ top: `${i * rowHeight}px`, height: `${rowHeight}px` }}>
@@ -674,7 +723,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 										))}
 									</div>
 
-									{/* Class blocks */}
+									{/* Class blocks positioned absolutely within the grid */}
 									<div className="absolute inset-0 pointer-events-none">
 										<div className="flex gap-1 h-full">
 											<div style={{ width: "45px", flexShrink: 0 }}></div>
@@ -686,9 +735,8 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 															const startMinutes = parseTimeToMinutes(classItem.startTime);
 															const endMinutes   = parseTimeToMinutes(classItem.endTime);
 															const topOffset    = ((startMinutes - scheduleStartHour * 60) / 60) * rowHeight;
-															// Natural height from duration; minimum 48px so 3 lines of text always fit
 															const naturalHeight = ((endMinutes - startMinutes) / 60) * rowHeight - 2;
-															const height = Math.max(naturalHeight, 48);
+															const height = Math.max(naturalHeight, 48); // Min 48px for 3 lines of text
 															return (
 																<div
 																	key={idx}
@@ -701,6 +749,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 																	<div className="font-semibold truncate" style={{ fontSize: "11px", lineHeight: "1.4" }}>{classItem.class_}</div>
 																	<div className="truncate" style={{ fontSize: "10px", lineHeight: "1.4", opacity: 0.9 }}>{classItem.room}</div>
 																	<div className="truncate" style={{ fontSize: "10px", lineHeight: "1.4", opacity: 0.8 }}>{classItem.startTime}-{classItem.endTime}</div>
+																	{/* Delete button on hover */}
 																	{hoveredScheduleItem === classItem.class_ && (
 																		<button type="button" onClick={(e) => handleDeleteCourse(e, classItem)} className="absolute top-1 right-1 w-4 h-4 bg-white text-red-700 rounded-full flex items-center justify-center hover:bg-red-100 transition-all shadow-sm" style={{ fontSize: "10px", fontWeight: "bold" }}>×</button>
 																	)}
@@ -716,6 +765,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						</div>
 					)}
 
+					{/* Empty state when no schedule data */}
 					{!visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
 							<h3 className="text-lg font-semibold text-slate-800 mb-4">Visualizations</h3>
@@ -727,7 +777,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						</div>
 					)}
 
-					{/* Save button */}
+					{/* Save / autosave status button */}
 					<button
 						type="button"
 						onClick={isAutosaveMode ? undefined : handleSavePlan}
@@ -746,6 +796,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						)}
 					</button>
 
+					{/* Course add controls: department selector, class code input, add + browse buttons */}
 					<div className="mt-4 flex justify-center items-center gap-3">
 						<select value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 text-slate-800 bg-white">
 							<option value="">All Depts</option>
@@ -772,7 +823,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 				</div>
 			</div>
 
-			{/* Section Modal */}
+			{/* ── Section selection modal — pick a section after entering a course code ── */}
 			{showSectionModal && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
@@ -788,6 +839,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 									const conflictReasons = getSectionConflict(section);
 									const isDisabled = !!conflictReasons;
 									return (
+										// Section card — disabled with conflict reasons if it overlaps existing schedule
 										<div key={index} onClick={() => !isDisabled && handleSelectSection(section)} className={`border rounded-lg p-4 transition-all ${isDisabled ? "border-slate-200 bg-slate-100 opacity-60 cursor-not-allowed" : "border-slate-200 hover:border-red-700 hover:bg-slate-50 cursor-pointer"}`}>
 											<div className="flex justify-between items-start">
 												<div>
@@ -795,6 +847,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}><span className="font-medium">Day:</span> {section.day}</p>
 													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}><span className="font-medium">Time:</span> {section.startTime} - {section.endTime}</p>
 													<p className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}><span className="font-medium">Room:</span> {section.room}</p>
+													{/* Conflict warning messages */}
 													{isDisabled && (
 														<div className="mt-2 space-y-0.5">
 															{conflictReasons.map((reason, i) => (
@@ -816,7 +869,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 				</div>
 			)}
 
-			{/* Course Detail Modal */}
+			{/* ── Course detail modal — shows description and credits ── */}
 			{showCourseDetailModal && selectedCourse && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeCourseDetails}>
 					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -837,7 +890,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 				</div>
 			)}
 
-			{/* Expand/Collapse Button */}
+			{/* Panel expand/collapse toggle button */}
 			<button
 				type="button"
 				onClick={toggleRightPanel}
