@@ -45,17 +45,30 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 		e.stopPropagation();
 		if (!confirm(`Delete "${plan.name}"?`)) return;
 
+		// Optimistically remove from local UI immediately
+		setSavedPlans((prev) => prev.filter((p) => p.id !== plan.id));
+
 		try {
 			const res = await fetch(
 				`${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`,
 				{ method: "DELETE" }
 			);
-			if (!res.ok) throw new Error("Failed to delete plan");
-			setSavedPlans((prev) => prev.filter((p) => p.id !== plan.id));
+			// 200, 204 = deleted. 404 = already gone — both are fine.
+			if (!res.ok && res.status !== 404) {
+				// Real error — restore the plan in the list
+				setSavedPlans((prev) => {
+					if (prev.find((p) => p.id === plan.id)) return prev;
+					return [...prev, plan].sort((a, b) => a.name.localeCompare(b.name));
+				});
+				throw new Error(`Delete failed with status ${res.status}`);
+			}
+			// Only notify parent AFTER the backend confirms deletion.
+			// This prevents the parent from bumping sidebarRefreshKey before
+			// the DELETE completes, which would re-fetch and restore the plan.
 			if (onPlanDeleted) onPlanDeleted(plan.id);
 		} catch (err) {
 			console.error("Failed to delete plan:", err);
-			alert("Could not delete plan");
+			alert("Could not delete plan. Please try again.");
 		}
 	};
 

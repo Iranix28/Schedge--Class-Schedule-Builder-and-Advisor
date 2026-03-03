@@ -81,7 +81,13 @@
         };
 
         // ── plan saved callback ───────────────────────────────────────────────
-        const handlePlanSaved = () => setSidebarRefreshKey((k) => k + 1);
+        const [activeSinglePlanId, setActiveSinglePlanId] = useState(null);
+        const handlePlanSaved = (newPlanId) => {
+          // newPlanId is passed by ChatUI after a first manual save — track it
+          // so onPlanDeleted can navigate home if this plan gets deleted from the sidebar
+          if (newPlanId) setActiveSinglePlanId(newPlanId);
+          setSidebarRefreshKey((k) => k + 1);
+        };
 
         // ── helpers to fully reset multi-plan navigation state ────────────────
         const resetMultiState = () => {
@@ -174,6 +180,7 @@
 
         const handleSidebarNavigate = (mode) => {
           setSelectedSavedPlan(null);
+          setActiveSinglePlanId(null);
           resetMultiState();
           setSelectedPlan(mode);
           setResetKey((k) => k + 1);
@@ -182,6 +189,7 @@
         const handleBackToPlanSelection = () => {
           setSelectedPlan(null);
           setSelectedSavedPlan(null);
+          setActiveSinglePlanId(null);
           resetMultiState();
         };
 
@@ -210,14 +218,17 @@
                 refreshKey={sidebarRefreshKey}
                 onLogout={handleLogout}
                 onPlanDeleted={(deletedPlanId) => {
-                  // If the deleted plan is the one currently being viewed, go home
-                  const activeId = selectedSavedPlan?.id || createdMultiPlanId || savedPlan?.id;
+                  // Check all possible sources for the currently active plan ID
+                  const activeId = selectedSavedPlan?.id || createdMultiPlanId || activeSinglePlanId;
                   if (activeId && String(activeId) === String(deletedPlanId)) {
                     setSelectedPlan(null);
                     setSelectedSavedPlan(null);
+                    setActiveSinglePlanId(null);
                     resetMultiState();
                   }
-                  setSidebarRefreshKey((k) => k + 1);
+                  // Do NOT bump sidebarRefreshKey here — the sidebar already removed
+                  // the plan from local state, and a re-fetch would race with the DELETE
+                  // and restore the plan before it's been removed from the DB.
                 }}
               />
             )}
