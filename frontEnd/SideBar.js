@@ -8,7 +8,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 	const [showSearch, setShowSearch] = useState(false);
 	const searchInputRef = useRef(null);
 
-	const BASE_URL = "http://localhost:8000";
+	const BASE_URL = "http://136.36.121.11:8000";
 
 	// Fetch saved plans on mount and when user or refreshKey changes
 	useEffect(() => {

@@ -5,6 +5,7 @@ function LoginPage({ onLoginSuccess }) {
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState("");
+	const BASE_URL = "http://136.36.121.11:8000";
 
 	const handleSubmit = async () => {
 		setError("");
@@ -15,7 +16,7 @@ function LoginPage({ onLoginSuccess }) {
 		}
 
 		try {
-			const res = await fetch("http://localhost:8000/auth/login", {
+			const res = await fetch(`${BASE_URL}/auth/login`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			credentials: "include", // IMPORTANT: allows HttpOnly cookie session

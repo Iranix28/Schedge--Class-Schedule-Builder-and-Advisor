@@ -14,11 +14,12 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 	const [computedCredits, setComputedCredits] = useState({});
 	const [creditsReady, setCreditsReady] = useState(false);
 
+	const BASE_URL = "http://136.36.121.11:8000";
 	// Fetch full course catalog on mount to build credit lookup map
 	useEffect(() => {
 		(async () => {
 			try {
-				const res = await fetch("http://localhost:8000/schedule/get_courses");
+				const res = await fetch(`${BASE_URL}/schedule/get_courses`);
 				if (res.ok) {
 					const courses = await res.json();
 					const map = {};

@@ -1,6 +1,6 @@
 const { useState, useRef, useEffect } = React;
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "http://136.36.121.11:8000";
 const REGISTRATION_URL = "https://www.stu.utah.edu/psc/heprod/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=HEUU_REGISTRATION&PTPPB_GROUPLET_ID=UUHE_REGISTRATION_TILE&CRefName=UUHE_REGISTRATION_TILE";
 
 async function sendMessageLLM(userText, onToken) {
