@@ -63,7 +63,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		(async () => {
 			try {
 				setIsLoading(true);
-				const res = await fetch(`http://localhost:8000/plans?user_id=${userData.id}`);
+				const res = await fetch(`${BASE_URL}/plans?user_id=${userData.id}`);
 				if (!res.ok) throw new Error(await res.text());
 				setSavedPlans(await res.json());
 			} catch (err) { console.error("Failed to fetch plans:", err); setSavedPlans([]); }
@@ -91,8 +91,8 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 					try {
 						const isMulti = plan.mode === "multi";
 						const url = isMulti
-							? `http://localhost:8000/plans/multi/${plan.id}?user_id=${userData.id}`
-							: `http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`;
+							? `http://${BASE_URL}/plans/multi/${plan.id}?user_id=${userData.id}`
+							: `http://${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`;
 						const res = await fetch(url);
 						if (!res.ok) return;
 						const detail = await res.json();
@@ -197,8 +197,8 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 										onClick={async () => {
 											try {
 												const url = isMulti
-													? `http://localhost:8000/plans/multi/${plan.id}?user_id=${userData.id}`
-													: `http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`;
+													? `http://${BASE_URL}/plans/multi/${plan.id}?user_id=${userData.id}`
+													: `http://${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`;
 												const res = await fetch(url);
 												if (!res.ok) throw new Error(await res.text());
 												onSelectPlan(await res.json());
@@ -222,7 +222,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 													e.stopPropagation();
 													if (!confirm(`Delete "${plan.name}"?`)) return;
 													try {
-														const res = await fetch(`http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`, { method: "DELETE" });
+														const res = await fetch(`http://${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`, { method: "DELETE" });
 														if (!res.ok) throw new Error(await res.text());
 														setSavedPlans(savedPlans.filter(p => p.id !== plan.id));
 														if (onPlanDeleted) onPlanDeleted();
