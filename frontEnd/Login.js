@@ -153,10 +153,6 @@ function LoginPage({ onLoginSuccess }) {
 						</div>
 					</div>
 				</div>
-
-				<div className="mt-10 text-center text-base text-slate-600">
-					<p>© 2025 University Advisor Chat. All rights reserved.</p>
-				</div>
 			</div>
 		</div>
 	);
