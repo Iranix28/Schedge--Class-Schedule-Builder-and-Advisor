@@ -7,24 +7,18 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import {
-  deleteUserPlan,
-  fetchFullPlan,
-  fetchUserPlans,
-} from "../services/sidebar.service";
+import { useRouter } from "next/navigation";
+import { deleteUserPlan, fetchUserPlans } from "../services/sidebar.service";
 import type { SidebarPlan, SidebarProps } from "../types/sidebar.types";
 
 // Fixed left sidebar — provides navigation, plan search, saved plans list, and user controls
 export default function Sidebar({
   userData,
-  onNewChat,
-  onSelectSavedPlan,
-  onNavigate,
   refreshKey,
   onLogout,
   onPlanDeleted,
 }: SidebarProps) {
-  void onNewChat;
+  const router = useRouter();
 
   const [savedPlans, setSavedPlans] = useState<SidebarPlan[]>([]);
   const [isLoadingPlans, setIsLoadingPlans] = useState(false);
@@ -93,18 +87,9 @@ export default function Sidebar({
     }
   };
 
-  // Fetch full plan detail (single or multi) and pass to parent
-  const handleSelectPlan = async (plan: SidebarPlan) => {
-    if (!userData?.id) return;
-    const userId = userData.id;
-
-    try {
-      const fullPlan = await fetchFullPlan(userId, plan);
-      onSelectSavedPlan(fullPlan);
-    } catch (err) {
-      console.error("Failed to load full plan:", err);
-      alert("Could not load plan");
-    }
+  // Navigate to the plan route; the route page loads the correct plan UI
+  const handleSelectPlan = (plan: SidebarPlan) => {
+    router.push(`/plans/${String(plan.id)}`);
   };
 
   // Filter plans by name or term/year against search query
@@ -134,7 +119,7 @@ export default function Sidebar({
           <div className="flex items-center justify-between px-3 pt-3 pb-1">
             <button
               type="button"
-              onClick={() => onNavigate(null)}
+              onClick={() => router.push("/plans/new")}
               className="flex items-center gap-2 rounded-lg hover:opacity-80 transition-opacity"
               title="Home"
             >
@@ -226,7 +211,7 @@ export default function Sidebar({
                 </svg>
               }
               label="Home"
-              onClick={() => onNavigate(null)}
+              onClick={() => router.push("/plans/new")}
             />
 
             <div className="mx-1 my-1 border-t border-neutral-800" />
@@ -251,7 +236,7 @@ export default function Sidebar({
                 </svg>
               }
               label="Single semester"
-              onClick={() => onNavigate("single")}
+              onClick={() => router.push("/plans/new?mode=single")}
             />
             <NavItem
               icon={
@@ -270,7 +255,7 @@ export default function Sidebar({
                 </svg>
               }
               label="Multi-semester"
-              onClick={() => onNavigate("multi")}
+              onClick={() => router.push("/plans/new?mode=multi")}
             />
           </div>
 
@@ -319,7 +304,7 @@ export default function Sidebar({
                 {/* "Your Plans" header — navigates to full saved plans view */}
                 <button
                   type="button"
-                  onClick={() => onNavigate("saved")}
+                  onClick={() => router.push("/plans/saved")}
                   className="px-3 py-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Your Plans &rsaquo;
@@ -329,7 +314,7 @@ export default function Sidebar({
                     key={plan.id}
                     plan={plan}
                     onSelect={() => {
-                      void handleSelectPlan(plan);
+                      handleSelectPlan(plan);
                     }}
                     onDelete={(e) => {
                       void handleDeletePlan(e, plan);
@@ -355,7 +340,7 @@ export default function Sidebar({
                 </span>
                 <button
                   type="button"
-                  onClick={onLogout}
+                  onClick={() => void onLogout()}
                   title="Logout"
                   className="flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-neutral-400 hover:text-white hover:bg-red-700 transition-all"
                 >

@@ -15,10 +15,7 @@ export interface SidebarPlan {
 
 export interface SidebarProps {
   userData: SidebarUser | null;
-  onNewChat?: () => void;
-  onSelectSavedPlan: (plan: Record<string, unknown>) => void;
-  onNavigate: (mode: string | null) => void;
   refreshKey: number;
-  onLogout: () => void;
+  onLogout: () => void | Promise<void>;
   onPlanDeleted?: (deletedPlanId: number | string) => void;
 }
