@@ -178,18 +178,6 @@ function PrereqChainViz({ prereqs, current, unlocks }) {
 
 	return (
 		<div className="rounded-lg border border-slate-200 bg-slate-50 p-3 overflow-x-auto">
-			<div className="flex flex-wrap gap-4 mb-3 text-xs text-slate-500">
-				{hasUnlocks && (
-					<span className="flex items-center gap-1.5">
-						<span
-							className="w-3 h-3 rounded inline-block"
-							style={{ background: PAL.unlock.fill, border: `1.5px solid ${PAL.unlock.stroke}` }}
-						/>
-						Courses unlocked
-					</span>
-				)}
-			</div>
-
 			<svg width={totalW} height={totalH} style={{ display: "block", minWidth: totalW }}>
 				{/* Column headers */}
 				{hasPrereqs && (
@@ -226,7 +214,7 @@ function PrereqChainViz({ prereqs, current, unlocks }) {
 						fill="#94A3B8"
 						fontFamily="system-ui,sans-serif"
 					>
-						UNLOCKS
+						ENABLED
 					</text>
 				)}
 
