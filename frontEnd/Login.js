@@ -5,7 +5,7 @@ function LoginPage({ onLoginSuccess }) {
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState("");
-	const BASE_URL = "http://136.36.121.11:8000";
+	const BASE_URL = "http://localhost:8000";
 
 	const handleSubmit = async () => {
 		setError("");

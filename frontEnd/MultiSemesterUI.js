@@ -2,7 +2,7 @@ const { useState, useEffect, useRef } = React;
 
 // Multi-semester planner view — lets users create, name, and manage a multi-semester degree plan
 function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPlanSaved, onPlanCreated, onPlanIdSaved, initialTitle, onTitleChange, planId }) {
-	const BASE_URL = "http://136.36.121.11:8000";
+	const BASE_URL = "http://localhost:8000";
 	const [plannerTitle, setPlannerTitle] = useState(initialTitle || "");
 	const [isSaving, setIsSaving] = useState(false);
 	const [activePlanId, setActivePlanId] = useState(null);
