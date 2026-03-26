@@ -307,7 +307,7 @@ function PrereqChainViz({ prereqs, current, unlocks }) {
 
 function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
 	const [messages, setMessages] = useState([
-		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
+		{ role: "assistant", content: "Hello! How can I help you?" },
 	]);
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -838,7 +838,6 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			if (!res.ok) { const errText = await res.text(); throw new Error(errText); }
 			const data = await res.json();
 			if (data.id && data.semester_db_id) setSavedPlanIds({ plan_id: data.id, semester_db_id: data.semester_db_id });
-			alert("Plan saved successfully");
 			setSavedFlash(true);
 			setTimeout(() => setSavedFlash(false), 2000);
 			// Pass the new plan ID up so App can track it for onPlanDeleted matching
@@ -933,7 +932,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 
 				<div className="flex-1 overflow-y-auto">
 					<div className="px-4 py-4 space-y-3">
-						{messages.map((message, index) => (
+						{messages.map((message, index) => {
+							if (!message.content) return null;
+							return (
 							<div key={index} className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
 								{message.role === "assistant" && (
 									<div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-700 flex items-center justify-center shadow-sm text-white text-xs font-bold">AI</div>
@@ -941,11 +942,11 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 								<div className={`max-w-md rounded-xl px-3 py-2 shadow-sm text-sm ${message.role === "user" ? "text-white" : "bg-slate-50 text-slate-800 border border-slate-200"}`} style={message.role === "user" ? { backgroundColor: "#BE0000" } : {}}>
 									<p className="whitespace-pre-wrap leading-snug">{message.content}</p>
 								</div>
-								{message.role === "user" && (
+								{message.role === "user" && message.content && (
 									<div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center shadow-sm text-white text-sm">👤</div>
 								)}
 							</div>
-						))}
+						)})}
 						{isLoading && (
 							<div className="flex gap-2 justify-start">
 								<div className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">

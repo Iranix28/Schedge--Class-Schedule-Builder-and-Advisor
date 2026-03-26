@@ -195,7 +195,6 @@ function MultiSemesterUI({ userData, onLogout, onSelectSemester, savedPlan, onPl
 				}
 			} catch (e) { console.error("[MultiSemesterUI] failed to refresh semesters after save:", e); }
 			if (onPlanSaved) onPlanSaved();
-			alert(existingPlanId ? "Plan updated!" : "Multi-semester plan saved!");
 		} catch (err) { console.error("Save error:", err); alert("Error saving plan: " + err.message); }
 		finally { setIsSaving(false); }
 	};
