@@ -42,6 +42,9 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [savedFlash, setSavedFlash] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState("");
 	const [savedPlanIds, setSavedPlanIds] = useState(null);
+	const [calendarSyncStatus, setCalendarSyncStatus] = useState(null);
+	const googleTokenClientRef = useRef(null);
+	const googleAccessTokenRef = useRef(null);
 
 	const IDEAL_ROW_HEIGHT = 55;
 	const MAX_SCHEDULE_HEIGHT = 500;
@@ -394,6 +397,126 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	const GOOGLE_CALENDAR_CLIENT_ID = window.GOOGLE_CALENDAR_CLIENT_ID || "";
+	const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.events";
+	const GOOGLE_TIME_ZONE = "America/Denver";
+
+	const parseTermToMonth = (term) => {
+		if (!term) return 0;
+		const normalized = String(term).toLowerCase();
+		if (normalized.includes("spring")) return 0;
+		if (normalized.includes("summer")) return 4;
+		if (normalized.includes("fall")) return 7;
+		return 0;
+	};
+
+	const getSemesterDateRange = () => {
+		const semYear = Number(semester?.year || savedPlan?.term_year || new Date().getFullYear());
+		const semTerm = semester?.term || savedPlan?.term_season || planName || "";
+		const startMonth = parseTermToMonth(semTerm);
+		const start = new Date(semYear, startMonth, 15);
+		const end = new Date(semYear, Math.min(startMonth + 4, 11), 15, 23, 59, 59);
+		return { start, end };
+	};
+
+	const dayNameToRRule = { Monday: "MO", Tuesday: "TU", Wednesday: "WE", Thursday: "TH", Friday: "FR", Saturday: "SA", Sunday: "SU" };
+
+	const getNextOccurrenceForDay = (dayName, timeStr, referenceDate = new Date()) => {
+		const dayOrder = { Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6 };
+		const targetDay = dayOrder[dayName];
+		if (targetDay === undefined) return null;
+		const minutes = parseTimeToMinutes(timeStr || "");
+		const hours = Math.floor(minutes / 60);
+		const mins = minutes % 60;
+		const base = new Date(referenceDate);
+		base.setHours(0, 0, 0, 0);
+		const diff = (targetDay - base.getDay() + 7) % 7;
+		base.setDate(base.getDate() + diff);
+		base.setHours(hours, mins, 0, 0);
+		if (base < referenceDate) base.setDate(base.getDate() + 7);
+		return base;
+	};
+
+	const toLocalIsoString = (dateObj) => {
+		if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+		const pad = (num) => String(num).padStart(2, "0");
+		return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}:00`;
+	};
+
+	const toUntilUtcString = (dateObj) => {
+		if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+		const pad = (num) => String(num).padStart(2, "0");
+		return `${dateObj.getUTCFullYear()}${pad(dateObj.getUTCMonth() + 1)}${pad(dateObj.getUTCDate())}T${pad(dateObj.getUTCHours())}${pad(dateObj.getUTCMinutes())}${pad(dateObj.getUTCSeconds())}Z`;
+	};
+
+	const buildRecurringCourseEvents = (scheduleItems) => {
+		if (!Array.isArray(scheduleItems) || scheduleItems.length === 0) return [];
+		const grouped = new Map();
+		for (const item of scheduleItems) {
+			const key = [item.class_ || "Untitled Course", item.startTime || "", item.endTime || "", item.room || ""].join("|");
+			if (!grouped.has(key)) grouped.set(key, []);
+			grouped.get(key).push(item);
+		}
+		const { start: semesterStart, end: semesterEnd } = getSemesterDateRange();
+		const referenceDate = new Date() > semesterStart ? new Date() : semesterStart;
+		const untilUtc = toUntilUtcString(semesterEnd);
+		return Array.from(grouped.values()).map((items) => {
+			const first = items[0];
+			const rruleDays = Array.from(new Set(items.map((item) => dayNameToRRule[item.day]).filter(Boolean)));
+			const firstMeetingStart = getNextOccurrenceForDay(items[0].day, first.startTime, referenceDate);
+			if (!firstMeetingStart) return null;
+			const durationMinutes = Math.max(30, parseTimeToMinutes(first.endTime) - parseTimeToMinutes(first.startTime));
+			const firstMeetingEnd = new Date(firstMeetingStart.getTime() + durationMinutes * 60000);
+			return {
+				summary: first.class_ || "Course",
+				location: first.room || "",
+				description: `${first.class_ || "Course"} schedule exported from Advisor Chat`,
+				start: { dateTime: toLocalIsoString(firstMeetingStart), timeZone: GOOGLE_TIME_ZONE },
+				end: { dateTime: toLocalIsoString(firstMeetingEnd), timeZone: GOOGLE_TIME_ZONE },
+				recurrence: rruleDays.length && untilUtc ? [`RRULE:FREQ=WEEKLY;BYDAY=${rruleDays.join(",")};UNTIL=${untilUtc}`] : [],
+			};
+		}).filter(Boolean);
+	};
+
+	const requestGoogleCalendarAccess = () => new Promise((resolve, reject) => {
+		if (!window.google?.accounts?.oauth2) return reject(new Error("Google Identity Services script did not load."));
+		if (!GOOGLE_CALENDAR_CLIENT_ID) return reject(new Error("Missing Google Calendar client ID. Set window.GOOGLE_CALENDAR_CLIENT_ID in index.html."));
+		googleTokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+			client_id: GOOGLE_CALENDAR_CLIENT_ID,
+			scope: GOOGLE_CALENDAR_SCOPE,
+			callback: (tokenResponse) => {
+				if (tokenResponse?.error) return reject(new Error(tokenResponse.error));
+				googleAccessTokenRef.current = tokenResponse.access_token;
+				resolve(tokenResponse.access_token);
+			},
+		});
+		googleTokenClientRef.current.requestAccessToken({ prompt: googleAccessTokenRef.current ? "" : "consent" });
+	});
+
+	const handleSendScheduleToGoogleCalendar = async () => {
+		if (!visualizationData?.data?.length) return alert("No schedule available to export.");
+		const events = buildRecurringCourseEvents(visualizationData.data);
+		if (!events.length) return alert("Could not build Google Calendar events from the current schedule.");
+		setCalendarSyncStatus("syncing");
+		try {
+			const accessToken = await requestGoogleCalendarAccess();
+			for (const event of events) {
+				const response = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
+					method: "POST",
+					headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+					body: JSON.stringify(event),
+				});
+				if (!response.ok) throw new Error(await response.text());
+			}
+			setCalendarSyncStatus("success");
+			setTimeout(() => setCalendarSyncStatus(null), 2500);
+		} catch (err) {
+			console.error("[Google Calendar] export failed:", err);
+			setCalendarSyncStatus("error");
+			alert(`Google Calendar export failed: ${err.message}`);
+		}
+	};
+
 	const handleDeleteCourse = (e, scheduleItem) => {
 		e.stopPropagation();
 		const updatedData = visualizationData.data.filter(item => item.class_ !== scheduleItem.class_);
@@ -689,8 +812,22 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 					{/* ── Weekly schedule grid ── */}
 					{visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-							<h3 className="text-base font-semibold text-slate-800 mb-3">Weekly Class Schedule</h3>
-							<div className="w-full">
+							<div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+							<h3 className="text-base font-semibold text-slate-800">Weekly Class Schedule</h3>
+							<button
+								type="button"
+								onClick={handleSendScheduleToGoogleCalendar}
+								disabled={calendarSyncStatus === "syncing"}
+								className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all shadow-sm border disabled:opacity-60 disabled:cursor-not-allowed"
+								style={{ backgroundColor: "white", color: "#BE0000", borderColor: "#BE0000" }}
+							>
+								{calendarSyncStatus === "syncing" ? "Syncing..." : calendarSyncStatus === "success" ? "Added to Google Calendar" : "Add to Google Calendar"}
+							</button>
+						</div>
+						{calendarSyncStatus === "error" && (
+							<p className="text-sm text-red-600 mb-3">Could not sync schedule. Check your Google client ID and popup permissions.</p>
+						)}
+						<div className="w-full">
 								<div className="flex gap-1 mb-1">
 									<div style={{ width: "45px", flexShrink: 0 }}></div>
 									{["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (

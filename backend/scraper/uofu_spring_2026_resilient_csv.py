@@ -16,9 +16,9 @@ from bs4.element import Tag
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-TERM_SEASON = "Spring"
+TERM_SEASON = "Fall"
 TERM_YEAR = 2026
-TERM_CODE = os.environ.get("UOFU_TERM", "1264")
+TERM_CODE = os.environ.get("UOFU_TERM", "1268")
 BASE = f"https://class-schedule.app.utah.edu/main/{TERM_CODE}/"
 CATALOG_LIST_URL = "https://catalog.utah.edu/courses"
 
