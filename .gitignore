@@ -1,2 +1,10 @@
 scraper/My Audit.html
 /backend/migrations/versions/*
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+frontend-next/build/
+frontend-next/.env*
+frontend-next/.vercel/
+frontend-next/*.tsbuildinfo
+frontend-next/next-env.d.ts
