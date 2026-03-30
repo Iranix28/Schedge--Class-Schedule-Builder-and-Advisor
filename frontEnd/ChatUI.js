@@ -14,10 +14,6 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
-// ── Prerequisite Chain Visualizer ────────────────────────────────────────────
-// ── Prerequisite Chain Visualizer (Dynamic Width) ────────────────────────────────────────────
-// This version dynamically resizes nodes based on their content length
-
 // ── Prerequisite Chain Visualizer (Dynamic Width + Proper AND/OR Logic) ────────────────────────────────────────────
 
 function PrereqChainViz({ prereqs, current, unlocks }) {
