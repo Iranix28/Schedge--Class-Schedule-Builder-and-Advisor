@@ -8,7 +8,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 	const [showSearch, setShowSearch] = useState(false);
 	const searchInputRef = useRef(null);
 
-	const BASE_URL = "http://localhost:8000";
+	const BASE_URL = "http://136.36.121.11:8000";
 
 	// Fetch saved plans on mount and when user or refreshKey changes
 	useEffect(() => {
@@ -43,7 +43,6 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 	// Delete a plan and notify parent (e.g. to navigate away if it was active)
 	const handleDeletePlan = async (e, plan) => {
 		e.stopPropagation();
-		if (!confirm(`Delete "${plan.name}"?`)) return;
 
 		// Optimistically remove from local UI immediately
 		setSavedPlans((prev) => prev.filter((p) => p.id !== plan.id));
@@ -192,7 +191,7 @@ function Sidebar({ userData, onNewChat, onSelectSavedPlan, onNavigate, refreshKe
 						<NavItem
 							icon={
 								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V6a2 2 0 012-2h6a2 2 0 012 2v1M7 7h10" />
 								</svg>
 							}
 							label="Multi-semester"

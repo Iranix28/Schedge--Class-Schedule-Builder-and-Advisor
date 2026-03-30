@@ -14,11 +14,12 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 	const [computedCredits, setComputedCredits] = useState({});
 	const [creditsReady, setCreditsReady] = useState(false);
 
+	const BASE_URL = "http://136.36.121.11:8000";
 	// Fetch full course catalog on mount to build credit lookup map
 	useEffect(() => {
 		(async () => {
 			try {
-				const res = await fetch("http://localhost:8000/schedule/get_courses");
+				const res = await fetch(`${BASE_URL}/schedule/get_courses`);
 				if (res.ok) {
 					const courses = await res.json();
 					const map = {};
@@ -62,7 +63,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 		(async () => {
 			try {
 				setIsLoading(true);
-				const res = await fetch(`http://localhost:8000/plans?user_id=${userData.id}`);
+				const res = await fetch(`${BASE_URL}/plans?user_id=${userData.id}`);
 				if (!res.ok) throw new Error(await res.text());
 				setSavedPlans(await res.json());
 			} catch (err) { console.error("Failed to fetch plans:", err); setSavedPlans([]); }
@@ -90,8 +91,8 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 					try {
 						const isMulti = plan.mode === "multi";
 						const url = isMulti
-							? `http://localhost:8000/plans/multi/${plan.id}?user_id=${userData.id}`
-							: `http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`;
+							? `${BASE_URL}/plans/multi/${plan.id}?user_id=${userData.id}`
+							: `${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`;
 						const res = await fetch(url);
 						if (!res.ok) return;
 						const detail = await res.json();
@@ -196,8 +197,8 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 										onClick={async () => {
 											try {
 												const url = isMulti
-													? `http://localhost:8000/plans/multi/${plan.id}?user_id=${userData.id}`
-													: `http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`;
+													? `${BASE_URL}/plans/multi/${plan.id}?user_id=${userData.id}`
+													: `${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`;
 												const res = await fetch(url);
 												if (!res.ok) throw new Error(await res.text());
 												onSelectPlan(await res.json());
@@ -219,9 +220,8 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 											<button
 												onClick={async (e) => {
 													e.stopPropagation();
-													if (!confirm(`Delete "${plan.name}"?`)) return;
 													try {
-														const res = await fetch(`http://localhost:8000/plans/${plan.id}?user_id=${userData.id}`, { method: "DELETE" });
+														const res = await fetch(`${BASE_URL}/plans/${plan.id}?user_id=${userData.id}`, { method: "DELETE" });
 														if (!res.ok) throw new Error(await res.text());
 														setSavedPlans(savedPlans.filter(p => p.id !== plan.id));
 														if (onPlanDeleted) onPlanDeleted();
@@ -251,55 +251,44 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 													)}
 												</div>
 
-												{/* Plan name, type badge, and metadata (term, courses, credits, date) */}
+												{/* Plan name and metadata (term, courses, credits, date) */}
 												<div className="flex-1 min-w-0">
 													<div className="flex items-center gap-2 mb-1">
 														<span className="text-base font-bold text-slate-800 truncate group-hover:text-slate-900">{plan.name}</span>
-														<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0"
-															style={isMulti ? { backgroundColor: "#ede9fe", color: "#6d28d9" } : { backgroundColor: "#fff0f0", color: "#BE0000" }}
-														>
-															{isMulti ? (
-																<><svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM2 12a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2z"/></svg>Multi</>
-															) : (
-																<><svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/></svg>Single</>
-															)}
-														</span>
 													</div>
 
 													{/* Subtitle: term info · course/semester count · last updated */}
 													<div className="flex items-center gap-3 text-xs text-slate-500">
-														<span>{isMulti ? "Multi-semester plan" : `${plan.term_season} ${plan.term_year}`}</span>
-														<span className="text-slate-300">·</span>
 														<span>
 															{isMulti
 																? `${plan.semester_count || 0} semester${(plan.semester_count || 0) !== 1 ? "s" : ""}`
 																: `${plan.total_courses || 0} course${(plan.total_courses || 0) !== 1 ? "s" : ""} · ${displayCredits} credit${displayCredits !== 1 ? "s" : ""}`
 															}
-														</span>
-														<span className="text-slate-300">·</span>
-														<span>
-															{plan.updated_at
-																? (() => {
-																	const raw = plan.updated_at;
-																	const d = new Date(raw.endsWith("Z") ? raw : raw + "Z");
-																	if (isNaN(d.getTime())) return "—";
-																	return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
-																		+ " · "
-																		+ d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-																})()
-																: "—"
-															}
-														</span>
-													</div>
+														</span></div>
 												</div>
 
-												{/* Hover arrow indicator */}
-												<svg className="w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
-													fill="none" stroke="currentColor" viewBox="0 0 24 24"
-													style={{ color: isMulti ? "#7c3aed" : "#BE0000" }}
-												>
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-												</svg>
+												{/* Date + Hover arrow indicator */}
+												<div className="flex items-center gap-2 flex-shrink-0">
+													<span className="text-xs text-slate-400">
+														{plan.updated_at
+															? (() => {
+																const raw = plan.updated_at;
+																const d = new Date(raw.endsWith("Z") ? raw : raw + "Z");
+																if (isNaN(d.getTime())) return "—";
+																return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+																	+ " · "
+																	+ d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+															})()
+															: "—"
+														}
+													</span>
+													<svg className="w-4 h-4 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
+														fill="none" stroke="currentColor" viewBox="0 0 24 24"
+														style={{ color: isMulti ? "#7c3aed" : "#BE0000" }}
+													>
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+													</svg>
+												</div>
 											</div>
 										</div>
 									</div>
