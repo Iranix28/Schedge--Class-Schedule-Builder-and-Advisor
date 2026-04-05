@@ -1,7 +1,8 @@
 from datetime import datetime, timezone, time
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, Time, ForeignKey, UniqueConstraint, Index, DateTime, Text, Boolean
+from decimal import Decimal
+from sqlalchemy import Integer, String, Time, ForeignKey, UniqueConstraint, Index, DateTime, Text, Boolean, Numeric, CheckConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.dialects.postgresql import JSONB
@@ -100,6 +101,96 @@ class Course(Base):
     prereq_for: Mapped[List["CoursePrerequisite"]] = relationship(
         back_populates="prerequisite_course",
         foreign_keys="CoursePrerequisite.prerequisite_course_id",
+    )
+
+    grade_stats: Mapped[Optional["CourseGradeStats"]] = relationship(
+        back_populates="course",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
+
+class CourseGradeStats(Base):
+    """
+    One aggregate grade-distribution row per course.
+    """
+
+    __tablename__ = "course_grade_stats"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+
+    course_id: Mapped[int] = mapped_column(
+        ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+
+    # Raw imported counts
+    a_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    b_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    c_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    d_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    e_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    cr_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    nc_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    w_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    other_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Helper counts
+    total_students: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    letter_graded_students: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Calculated metrics
+    average_gpa: Mapped[Optional[Decimal]] = mapped_column(Numeric(4, 3), nullable=True)
+
+    withdrawal_rate: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+    completion_rate: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+
+    failure_rate_letter_only: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 5), nullable=True)
+    failure_rate_total: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+
+    pass_rate_letter_only: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 5), nullable=True)
+    pass_rate_total: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+
+    a_rate: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 5), nullable=True)
+    b_or_better_rate: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 5), nullable=True)
+    c_or_better_rate: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 5), nullable=True)
+
+    letter_graded_rate: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+    nonstandard_grading_rate: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+    other_rate: Mapped[Decimal] = mapped_column(Numeric(6, 5), nullable=False, default=0)
+
+    # Frontend flags
+    is_low_sample: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    has_letter_grades: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    has_nonstandard_grading: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    # For frontend charts
+    grade_distribution: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+
+    course: Mapped["Course"] = relationship(
+        back_populates="grade_stats"
+    )
+
+    __table_args__ = (
+        CheckConstraint("a_count >= 0", name="ck_course_grade_stats_a_count_nonnegative"),
+        CheckConstraint("b_count >= 0", name="ck_course_grade_stats_b_count_nonnegative"),
+        CheckConstraint("c_count >= 0", name="ck_course_grade_stats_c_count_nonnegative"),
+        CheckConstraint("d_count >= 0", name="ck_course_grade_stats_d_count_nonnegative"),
+        CheckConstraint("e_count >= 0", name="ck_course_grade_stats_e_count_nonnegative"),
+        CheckConstraint("cr_count >= 0", name="ck_course_grade_stats_cr_count_nonnegative"),
+        CheckConstraint("nc_count >= 0", name="ck_course_grade_stats_nc_count_nonnegative"),
+        CheckConstraint("w_count >= 0", name="ck_course_grade_stats_w_count_nonnegative"),
+        CheckConstraint("other_count >= 0", name="ck_course_grade_stats_other_count_nonnegative"),
+        CheckConstraint("total_students >= 0", name="ck_course_grade_stats_total_students_nonnegative"),
+        CheckConstraint("letter_graded_students >= 0", name="ck_course_grade_stats_letter_graded_students_nonnegative"),
+
+        Index("ix_course_grade_stats_average_gpa", "average_gpa"),
+        Index("ix_course_grade_stats_withdrawal_rate", "withdrawal_rate"),
+        Index("ix_course_grade_stats_failure_rate_total", "failure_rate_total"),
+        Index("ix_course_grade_stats_a_rate", "a_rate"),
+        Index("ix_course_grade_stats_c_or_better_rate", "c_or_better_rate"),
     )
 
 class ClassSection(Base):

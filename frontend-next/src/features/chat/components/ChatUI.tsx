@@ -20,6 +20,7 @@ import {
   saveSinglePlanRequest,
   sendMessageLLM,
   uploadAuditFile,
+  fetchCourseGradeStatsRequest,
 } from "../services/chat.service";
 import type {
   ChatMessage,
@@ -29,7 +30,10 @@ import type {
   Section,
   VisualizationData,
   VisualizationItem,
+  CourseGradeStats,
 } from "../types/chat.types";
+
+import CourseGradeDistributionModal from "./CourseGradeDistributionModal";
 
 export default function ChatUI({
   userData,
@@ -67,6 +71,8 @@ export default function ChatUI({
   const [browserDepartmentFilter, setBrowserDepartmentFilter] = useState(""); // NEW: filter inside browser panel
   const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [showGradeDistributionModal, setShowGradeDistributionModal] =
+    useState(false);
   const [hoveredScheduleItem, setHoveredScheduleItem] = useState<string | null>(
     null,
   );
@@ -80,6 +86,14 @@ export default function ChatUI({
   const [savedFlash, setSavedFlash] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [savedPlanIds, setSavedPlanIds] = useState<SavedPlanIds | null>(null);
+
+  const [courseGradeStats, setCourseGradeStats] =
+    useState<CourseGradeStats | null>(null);
+  const [isLoadingCourseGradeStats, setIsLoadingCourseGradeStats] =
+    useState(false);
+  const [courseGradeStatsError, setCourseGradeStatsError] = useState<
+    string | null
+  >(null);
 
   const IDEAL_ROW_HEIGHT = 55;
   const MAX_SCHEDULE_HEIGHT = 500;
@@ -122,9 +136,53 @@ export default function ChatUI({
     setSelectedCourse(course);
     setShowCourseDetailModal(true);
   };
+
   const closeCourseDetails = () => {
     setShowCourseDetailModal(false);
+    setShowGradeDistributionModal(false);
     setSelectedCourse(null);
+    setCourseGradeStats(null);
+    setCourseGradeStatsError(null);
+  };
+
+  const openGradeDistributionModal = async () => {
+    if (!selectedCourse) return;
+
+    setShowGradeDistributionModal(true);
+    await loadCourseGradeStats(selectedCourse);
+  };
+
+  const closeGradeDistributionModal = () => {
+    setShowGradeDistributionModal(false);
+    setCourseGradeStats(null);
+    setCourseGradeStatsError(null);
+  };
+
+  const loadCourseGradeStats = async (course: Course) => {
+    if (!course?.department || !course?.course_code) {
+      setCourseGradeStats(null);
+      setCourseGradeStatsError("Missing course info");
+      return;
+    }
+
+    setIsLoadingCourseGradeStats(true);
+    setCourseGradeStatsError(null);
+
+    try {
+      const stats = await fetchCourseGradeStatsRequest(
+        course.department,
+        course.course_code,
+      );
+      setCourseGradeStats(stats);
+    } catch (err) {
+      console.error("Failed to load course grade stats:", err);
+      setCourseGradeStats(null);
+      setCourseGradeStatsError(
+        err instanceof Error ? err.message : "Failed to load grade stats",
+      );
+    } finally {
+      setIsLoadingCourseGradeStats(false);
+    }
   };
 
   const warmupDoneRef = useRef(false);
@@ -1709,6 +1767,21 @@ export default function ChatUI({
                 ? selectedCourse.description
                 : "No description available for this course."}
             </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={openGradeDistributionModal}
+                className="px-3 py-2 text-sm font-semibold rounded-lg border transition-all hover:opacity-90"
+                style={{
+                  color: "#BE0000",
+                  borderColor: "#BE0000",
+                  backgroundColor: "white",
+                }}
+              >
+                View Grade Distribution
+              </button>
+            </div>
             <div className="mt-6 flex justify-end">
               <button
                 type="button"
@@ -1722,6 +1795,15 @@ export default function ChatUI({
           </div>
         </div>
       )}
+
+      <CourseGradeDistributionModal
+        isOpen={showGradeDistributionModal}
+        onClose={closeGradeDistributionModal}
+        course={selectedCourse}
+        stats={courseGradeStats}
+        isLoading={isLoadingCourseGradeStats}
+        error={courseGradeStatsError}
+      />
 
       {/* Panel expand/collapse toggle */}
       <button

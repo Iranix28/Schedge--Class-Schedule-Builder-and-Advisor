@@ -102,3 +102,41 @@ export interface ChatUIProps {
   onPlanSaved?: (newPlanId?: number | string) => void;
   onPlanCreated?: (ids: SavedPlanIds) => void;
 }
+
+export type CourseGradeStats = {
+  id: number | string;
+  course_id: number | string;
+
+  a_count: number;
+  b_count: number;
+  c_count: number;
+  d_count: number;
+  e_count: number;
+  cr_count: number;
+  nc_count: number;
+  w_count: number;
+  other_count: number;
+
+  total_students: number;
+  letter_graded_students: number;
+
+  average_gpa: number | string | null;
+  withdrawal_rate: number | string | null;
+  completion_rate: number | string | null;
+  failure_rate_letter_only: number | string | null;
+  failure_rate_total: number | string | null;
+  pass_rate_letter_only: number | string | null;
+  pass_rate_total: number | string | null;
+  a_rate: number | string | null;
+  b_or_better_rate: number | string | null;
+  c_or_better_rate: number | string | null;
+  letter_graded_rate: number | string | null;
+  nonstandard_grading_rate: number | string | null;
+  other_rate: number | string | null;
+
+  is_low_sample: boolean;
+  has_letter_grades: boolean;
+  has_nonstandard_grading: boolean;
+
+  grade_distribution?: Record<string, number> | null;
+};

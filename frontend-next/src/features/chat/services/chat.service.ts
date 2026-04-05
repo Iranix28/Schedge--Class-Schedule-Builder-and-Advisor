@@ -1,5 +1,6 @@
 import type {
   Course,
+  CourseGradeStats,
   SavedPlanIds,
   Section,
   VisualizationItem,
@@ -224,4 +225,28 @@ export async function saveSinglePlanRequest(payload: {
     id: number | string;
     semester_db_id: number | string;
   };
+}
+
+export async function fetchCourseGradeStatsRequest(
+  department: string,
+  courseCode: string | number,
+): Promise<CourseGradeStats | null> {
+  const response = await fetch(
+    `${BASE_URL}/course-grade-stats/${encodeURIComponent(
+      department,
+    )}/${encodeURIComponent(String(courseCode))}`,
+    {
+      method: "GET",
+    },
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch course grade stats");
+  }
+
+  return (await response.json()) as CourseGradeStats;
 }
