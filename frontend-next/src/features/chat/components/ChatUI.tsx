@@ -428,6 +428,7 @@ export default function ChatUI({
           room: item.room || "",
           course_id: item.course_id || null,
           class_section_id: item.class_section_id || null,
+          instructor: (item.instructor as string | null) || null,
         })),
       });
 
@@ -806,6 +807,7 @@ export default function ChatUI({
           room: item.room || "",
           course_id: item.course_id || null,
           class_section_id: item.class_section_id || null,
+          instructor: (item.instructor as string | null) || null,
         })),
       };
 

@@ -171,6 +171,7 @@ export async function autosaveSemesterRequest(
       room: string;
       course_id: number | string | null;
       class_section_id: number | string | null;
+      instructor?: string | null;  
     }>;
   },
 ): Promise<void> {
@@ -208,6 +209,7 @@ export async function saveSinglePlanRequest(payload: {
     room: string;
     course_id: number | string | null;
     class_section_id: number | string | null;
+    instructor?: string | null;
   }>;
 }): Promise<{ id: number | string; semester_db_id: number | string }> {
   const response = await fetch(`${BASE_URL}/plans`, {
