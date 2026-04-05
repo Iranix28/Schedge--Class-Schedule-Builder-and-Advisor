@@ -225,3 +225,22 @@ export async function saveSinglePlanRequest(payload: {
     semester_db_id: number | string;
   };
 }
+
+export async function fetchProfessorRating(professorName: string): Promise<{
+  name: string;
+  department: string | null;
+  rating: number | null;
+  difficulty: number | null;
+  num_ratings: number | null;
+  would_take_again: number | null;
+  tags: string[];
+  rmp_url: string;
+  error?: string;
+} | null> {
+  const response = await fetch(
+    `${BASE_URL}/professor-rating/${encodeURIComponent(professorName)}`,
+    { method: "GET" }
+  );
+  if (!response.ok) return null;
+  return response.json();
+}

@@ -102,17 +102,3 @@ def get_professor_data(professor_name: str) -> dict | None:
         "tags": scrape_tags(numeric_id),
         "rmp_url": f"https://www.ratemyprofessors.com/professor/{numeric_id}",
     }
-
-if __name__ == "__main__":
-    result = get_professor_data("Travis Martin")
-
-    if result:
-        print(f"Name:             {result['name']}")
-        print(f"Department:       {result['department']}")
-        print(f"Rating:           {result['rating']} / 5.0")
-        print(f"Difficulty:       {result['difficulty']} / 5.0")
-        print(f"# of Ratings:     {result['num_ratings']}")
-        wta = result['would_take_again']
-        print(f"Would Take Again: {wta}%" if wta else "Would Take Again: N/A")
-        print(f"Tags:             {', '.join(result['tags']) or 'None found'}")
-        print(f"RMP URL:          {result['rmp_url']}")
