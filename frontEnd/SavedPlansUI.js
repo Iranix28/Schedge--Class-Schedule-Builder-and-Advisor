@@ -14,7 +14,7 @@ function SavedPlansUI({ userData, onLogout, onBack, onSelectPlan, onPlanDeleted,
 	const [computedCredits, setComputedCredits] = useState({});
 	const [creditsReady, setCreditsReady] = useState(false);
 
-	const BASE_URL = "http://136.36.121.11:8000";
+	const BASE_URL = "http://localhost:8000";
 	// Fetch full course catalog on mount to build credit lookup map
 	useEffect(() => {
 		(async () => {

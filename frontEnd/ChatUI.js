@@ -1,6 +1,6 @@
 const { useState, useRef, useEffect } = React;
 
-const BASE_URL = "http://136.36.121.11:8000";
+const BASE_URL = "http://localhost:8000";
 const REGISTRATION_URL = "https://www.stu.utah.edu/psc/heprod/EMPLOYEE/SA/c/NUI_FRAMEWORK.PT_AGSTARTPAGE_NUI.GBL?CONTEXTIDPARAMS=TEMPLATE_ID%3aPTPPNAVCOL&scname=HEUU_REGISTRATION&PTPPB_GROUPLET_ID=UUHE_REGISTRATION_TILE&CRefName=UUHE_REGISTRATION_TILE";
 
 async function sendMessageLLM(userText, onToken) {
@@ -12,6 +12,293 @@ async function sendMessageLLM(userText, onToken) {
 	if (!res.ok) throw new Error(`LLM request failed: ${res.status}`);
 	const data = await res.json();
 	onToken(data.reply);
+}
+
+// ── Prerequisite Chain Visualizer (Dynamic Width + Proper AND/OR Logic) ────────────────────────────────────────────
+
+function PrereqChainViz({ prereqs, current, unlocks }) {
+	const hasPrereqs = prereqs.length > 0;
+	const hasUnlocks = unlocks.length > 0;
+
+	if (!hasPrereqs && !hasUnlocks) {
+		return (
+			<div className="rounded-lg border border-slate-200 bg-slate-50 py-5 px-4 text-center text-slate-400 text-sm">
+				No prerequisite relationships found for this course.
+			</div>
+		);
+	}
+
+	// Constants
+	const NODE_H = 38;
+	const MIN_NODE_W = 100;
+	const CHAR_WIDTH = 7.5; // Approximate width per character at font-size 11
+	const NODE_PADDING = 24; // Horizontal padding inside node
+	const COL_GAP = 60;
+	const ROW_GAP = 12;
+	const PILL_R = 8;
+	const ARROW_SZ = 6;
+	const MARGIN = 10;
+
+	// Calculate dynamic width for a node based on its label
+	const calcNodeWidth = (label) => {
+		const textWidth = label.length * CHAR_WIDTH;
+		return Math.max(MIN_NODE_W, textWidth + NODE_PADDING);
+	};
+
+	// Calculate max width for each column
+	const prereqMaxW = hasPrereqs 
+		? Math.max(...prereqs.map(p => calcNodeWidth(p.label)))
+		: 0;
+	const currentW = calcNodeWidth(current.label);
+	const unlockMaxW = hasUnlocks 
+		? Math.max(...unlocks.map(u => calcNodeWidth(u.label)))
+		: 0;
+
+	// Calculate column center X positions
+	const prereqCX = hasPrereqs ? MARGIN + prereqMaxW / 2 : 0;
+	const currentCX = (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) + currentW / 2;
+	const unlockCX = hasUnlocks 
+		? (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) + currentW + COL_GAP + unlockMaxW / 2
+		: 0;
+
+	// Calculate total SVG dimensions
+	const totalW = MARGIN + 
+		(hasPrereqs ? prereqMaxW + COL_GAP : 0) + 
+		currentW + 
+		(hasUnlocks ? COL_GAP + unlockMaxW : 0) + 
+		MARGIN;
+
+	const colH = (n) => Math.max(1, n) * NODE_H + (Math.max(1, n) - 1) * ROW_GAP;
+	const totalH = Math.max(
+		hasPrereqs ? colH(prereqs.length) : NODE_H, 
+		NODE_H, 
+		hasUnlocks ? colH(unlocks.length) : NODE_H
+	) + 50;
+
+	// Calculate Y positions
+	const centredYs = (count) => {
+		const bH = colH(count);
+		const start = (totalH - bH) / 2 + NODE_H / 2;
+		return Array.from({ length: count }, (_, i) => start + i * (NODE_H + ROW_GAP));
+	};
+
+	const prereqYs = hasPrereqs ? centredYs(prereqs.length) : [];
+	const currentY = totalH / 2;
+	const unlockYs = hasUnlocks ? centredYs(unlocks.length) : [];
+
+	const PAL = {
+		prereq: { fill: "#FFF3E0", stroke: "#FB8C00", text: "#7C3800" },
+		current: { fill: "#BE0000", stroke: "#7A0000", text: "#FFFFFF" },
+		unlock: { fill: "#E8F5E9", stroke: "#43A047", text: "#145214" }
+	};
+
+	// Dynamic width node component
+	const Node = ({ label, cx, cy, pal, width }) => {
+		return (
+			<g>
+				<rect
+					x={cx - width / 2}
+					y={cy - NODE_H / 2}
+					width={width}
+					height={NODE_H}
+					rx={PILL_R}
+					ry={PILL_R}
+					fill={pal.fill}
+					stroke={pal.stroke}
+					strokeWidth="1.5"
+				/>
+				<text
+					x={cx}
+					y={cy}
+					textAnchor="middle"
+					dominantBaseline="central"
+					fontSize="11"
+					fontWeight="700"
+					fill={pal.text}
+					fontFamily="system-ui,sans-serif"
+				>
+					{label}
+				</text>
+			</g>
+		);
+	};
+
+	const Arrow = ({ x1, y1, x2, y2 }) => {
+		const mx = (x1 + x2) / 2;
+		return (
+			<g>
+				<path
+					d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`}
+					fill="none"
+					stroke="#CBD5E1"
+					strokeWidth="1.5"
+				/>
+				<path
+					d={`M${x2},${y2} L${x2 - ARROW_SZ},${y2 - ARROW_SZ / 2} L${x2 - ARROW_SZ},${y2 + ARROW_SZ / 2}Z`}
+					fill="#CBD5E1"
+				/>
+			</g>
+		);
+	};
+
+	// Format prerequisites with proper AND/OR logic
+	// - Commas within a node = OR (alternatives)
+	// - Multiple nodes = AND (all required)
+	const formatPrereqSummary = () => {
+		const formattedGroups = prereqs.map(p => {
+			const label = p.label;
+			// Split by comma to find alternatives within this node
+			const alternatives = label.split(/,/).map(s => s.trim()).filter(s => s.length > 0);
+			
+			if (alternatives.length === 1) {
+				// Single prerequisite, no parentheses needed
+				return alternatives[0];
+			} else {
+				// Multiple alternatives (OR relationship)
+				return `(${alternatives.join(" OR ")})`;
+			}
+		});
+
+		// Join all groups with AND
+		if (formattedGroups.length === 1) {
+			return formattedGroups[0];
+		} else {
+			return formattedGroups.join(" AND ");
+		}
+	};
+
+	// Format unlocks summary (similar logic if needed, but typically unlocks are single courses)
+	const formatUnlocksSummary = () => {
+		return unlocks.map(u => u.label).join(", ");
+	};
+
+	return (
+		<div className="rounded-lg border border-slate-200 bg-slate-50 p-3 overflow-x-auto">
+			<svg width={totalW} height={totalH} style={{ display: "block", minWidth: totalW }}>
+				{/* Column headers */}
+				{hasPrereqs && (
+					<text
+						x={prereqCX}
+						y={14}
+						textAnchor="middle"
+						fontSize="8.5"
+						fontWeight="700"
+						fill="#94A3B8"
+						fontFamily="system-ui,sans-serif"
+					>
+						PREREQUISITES
+					</text>
+				)}
+				<text
+					x={currentCX}
+					y={14}
+					textAnchor="middle"
+					fontSize="8.5"
+					fontWeight="700"
+					fill="#94A3B8"
+					fontFamily="system-ui,sans-serif"
+				>
+					THIS COURSE
+				</text>
+				{hasUnlocks && (
+					<text
+						x={unlockCX}
+						y={14}
+						textAnchor="middle"
+						fontSize="8.5"
+						fontWeight="700"
+						fill="#94A3B8"
+						fontFamily="system-ui,sans-serif"
+					>
+						ENABLED
+					</text>
+				)}
+
+				{/* Arrows from prereqs to current */}
+				{prereqYs.map((py, i) => {
+					const prereqW = calcNodeWidth(prereqs[i].label);
+					return (
+						<Arrow
+							key={`pa${i}`}
+							x1={prereqCX + prereqW / 2 + 2}
+							y1={py}
+							x2={currentCX - currentW / 2 - ARROW_SZ}
+							y2={currentY}
+						/>
+					);
+				})}
+
+				{/* Arrows from current to unlocks */}
+				{unlockYs.map((uy, i) => {
+					const unlockW = calcNodeWidth(unlocks[i].label);
+					return (
+						<Arrow
+							key={`ua${i}`}
+							x1={currentCX + currentW / 2 + 2}
+							y1={currentY}
+							x2={unlockCX - unlockW / 2 - ARROW_SZ}
+							y2={uy}
+						/>
+					);
+				})}
+
+				{/* Prereq nodes */}
+				{prereqs.map((p, i) => {
+					const nodeW = calcNodeWidth(p.label);
+					return (
+						<Node
+							key={`p${i}`}
+							label={p.label}
+							cx={prereqCX}
+							cy={prereqYs[i]}
+							pal={PAL.prereq}
+							width={nodeW}
+						/>
+					);
+				})}
+
+				{/* Current course node */}
+				<Node
+					label={current.label}
+					cx={currentCX}
+					cy={currentY}
+					pal={PAL.current}
+					width={currentW}
+				/>
+
+				{/* Unlock nodes */}
+				{unlocks.map((u, i) => {
+					const nodeW = calcNodeWidth(u.label);
+					return (
+						<Node
+							key={`u${i}`}
+							label={u.label}
+							cx={unlockCX}
+							cy={unlockYs[i]}
+							pal={PAL.unlock}
+							width={nodeW}
+						/>
+					);
+				})}
+			</svg>
+
+			{/* Text summary with proper AND/OR logic */}
+			<div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-500 space-y-0.5">
+				{hasPrereqs && (
+					<p>
+						<span className="font-semibold text-orange-700">Requires: </span>
+						{formatPrereqSummary()}
+					</p>
+				)}
+				{hasUnlocks && (
+					<p>
+						<span className="font-semibold text-green-700">Enables: </span>
+						{formatUnlocksSummary()}
+					</p>
+				)}
+			</div>
+		</div>
+	);
 }
 
 function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
@@ -34,6 +321,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [hoveredScheduleItem, setHoveredScheduleItem] = useState(null);
+	const [prereqChain, setPrereqChain] = useState({ prereqs: [], unlocks: [], loading: false });
 	const messagesEndRef = useRef(null);
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
@@ -42,6 +330,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [savedFlash, setSavedFlash] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState("");
 	const [savedPlanIds, setSavedPlanIds] = useState(null);
+	const [calendarSyncStatus, setCalendarSyncStatus] = useState(null);
 
 	const IDEAL_ROW_HEIGHT = 55;
 	const MAX_SCHEDULE_HEIGHT = 500;
@@ -77,8 +366,107 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		};
 	};
 
-	const openCourseDetails = (course) => { setSelectedCourse(course); setShowCourseDetailModal(true); };
-	const closeCourseDetails = () => { setShowCourseDetailModal(false); setSelectedCourse(null); };
+	const openCourseDetails = async (course) => {
+		setSelectedCourse(course);
+		setShowCourseDetailModal(true);
+		setPrereqChain({ prereqs: [], unlocks: [], loading: true });
+		try {
+			let fullCourse = null;
+			if (course.department && course.course_code) {
+				const r = await fetch(`${BASE_URL}/courses/by-code?subject=${encodeURIComponent(course.department)}&number=${encodeURIComponent(course.course_code)}`);
+				if (r.ok) fullCourse = await r.json();
+			}
+			const conditions = fullCourse?.prereq_conditions || [];
+			// Format prereq labels to have consistent spacing (e.g., "CS3810" → "CS 3810")
+			const prereqs = conditions.map((cond, i) => {
+				let label = String(cond);
+				// Insert space between letters and numbers if not already present
+				// Handles: "CS3810" → "CS 3810", "MATH2210" → "MATH 2210"
+				// But preserves: "CS 3810" (already has space)
+				label = label.replace(/([A-Za-z]+)(\d)/, '$1 $2');
+				return { id: i, label: label };
+			});
+			
+			// Build multiple patterns to match against prereq_conditions
+			const dept = (course.department || "").toUpperCase();
+			const code = (course.course_code || "").toString();
+			const courseKeyWithSpace = `${dept} ${code}`;
+			const courseKeyNoSpace = `${dept}${code}`;
+			
+			let coursesWithPrereqs = [];
+			try {
+				const r = await fetch(`${BASE_URL}/courses/`);
+				if (r.ok) coursesWithPrereqs = await r.json();
+			} catch (_) {}
+			
+			// Find courses that this course unlocks, with flexible matching
+			const unlocks = coursesWithPrereqs
+				.filter(c => {
+					if (!Array.isArray(c.prereq_conditions)) return false;
+					return c.prereq_conditions.some(cond => {
+						const condStr = String(cond).toUpperCase();
+						const condNoSpaces = condStr.replace(/\s+/g, '');
+						// Match various formats: "CS 4400", "CS4400", just "4400" with dept context
+						return condStr.includes(courseKeyWithSpace) || 
+							   condNoSpaces.includes(courseKeyNoSpace) ||
+							   (dept && code && condStr.includes(code) && condStr.includes(dept));
+					});
+				})
+				.map(c => {
+					const unlockNum = c.number || "";
+					
+					// Try to get department info from multiple sources
+					let unlockDept = "";
+					let deptSource = "";
+					
+					// Method 1: Check if department is a nested object with subject
+					if (c.department && typeof c.department === 'object' && c.department.subject) {
+						unlockDept = c.department.subject;
+						deptSource = "nested object";
+					}
+					// Method 2: Check if department is directly a string
+					else if (c.department && typeof c.department === 'string') {
+						unlockDept = c.department;
+						deptSource = "direct string";
+					}
+					// Method 3: Check for subject field directly on course
+					else if (c.subject) {
+						unlockDept = c.subject;
+						deptSource = "subject field";
+					}
+					// Method 4: Look up from allCourses (schedule endpoint) by UNIQUE course ID only
+					// (Don't match by course number alone - different departments can have same numbers!)
+					else if (allCourses && allCourses.length > 0) {
+						const matchingCourse = allCourses.find(ac => ac.id === c.id);
+						if (matchingCourse && matchingCourse.department) {
+							unlockDept = matchingCourse.department;
+							deptSource = "allCourses lookup by ID";
+						}
+					}
+					// Method 5: Fallback - assume same department as current course
+					if (!unlockDept) {
+						unlockDept = course.department || "";
+						deptSource = "fallback to current course dept";
+					}
+					
+					console.log(`[unlock] course id=${c.id}, number=${unlockNum}, dept=${unlockDept}, source=${deptSource}, raw c.department=`, c.department);
+					
+					const label = unlockDept 
+						? `${unlockDept} ${unlockNum}`.trim()
+						: unlockNum;
+					
+					return { id: c.id, label: label };
+				});
+			
+			console.log("[openCourseDetails] courseKey:", courseKeyWithSpace, "found unlocks:", unlocks.length, unlocks);
+			
+			setPrereqChain({ prereqs, unlocks, loading: false });
+		} catch (e) {
+			console.warn("[openCourseDetails] failed:", e);
+			setPrereqChain({ prereqs: [], unlocks: [], loading: false });
+		}
+	};
+	const closeCourseDetails = () => { setShowCourseDetailModal(false); setSelectedCourse(null); setPrereqChain({ prereqs: [], unlocks: [], loading: false }); };
 
 	const warmupDoneRef = useRef(false);
 	useEffect(() => {
@@ -394,6 +782,199 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		}
 	};
 
+	const GOOGLE_TIME_ZONE = "America/Denver";
+
+	const HARDCODED_UOFU_TERM_DATES = {
+		2026: {
+			spring: {
+				start: new Date(2026, 0, 5, 0, 0, 0),
+				end: new Date(2026, 3, 21, 23, 59, 59),
+				label: "Spring 2026",
+			},
+			summer: {
+				start: new Date(2026, 4, 11, 0, 0, 0),
+				end: new Date(2026, 6, 29, 23, 59, 59),
+				label: "Summer 2026",
+			},
+			fall: {
+				start: new Date(2026, 7, 24, 0, 0, 0),
+				end: new Date(2026, 11, 10, 23, 59, 59),
+				label: "Fall 2026",
+			},
+		},
+	};
+
+	const normalizeTermKey = (term) => {
+		if (!term) return null;
+		const normalized = String(term).toLowerCase();
+		if (normalized.includes("spring")) return "spring";
+		if (normalized.includes("summer")) return "summer";
+		if (normalized.includes("fall")) return "fall";
+		return null;
+	};
+
+	const parseTermToMonth = (term) => {
+		const normalized = normalizeTermKey(term);
+		if (normalized === "spring") return 0;
+		if (normalized === "summer") return 4;
+		if (normalized === "fall") return 7;
+		return 0;
+	};
+
+	const getHardcodedSemesterRange = (year, term) => {
+		const termKey = normalizeTermKey(term);
+		if (!termKey) return null;
+		return HARDCODED_UOFU_TERM_DATES?.[year]?.[termKey] || null;
+	};
+
+	const getCurrentSemesterRange = (today = new Date()) => {
+		for (const yearData of Object.values(HARDCODED_UOFU_TERM_DATES)) {
+			for (const termData of Object.values(yearData)) {
+				if (today >= termData.start && today <= termData.end) return termData;
+			}
+		}
+		return null;
+	};
+
+	const getSemesterDateRange = () => {
+		const explicitYear = Number(semester?.year || semester?.term_year || savedPlan?.term_year || NaN);
+		const explicitTerm = semester?.term || semester?.term_season || savedPlan?.term_season || "";
+		const explicitRange = Number.isFinite(explicitYear) ? getHardcodedSemesterRange(explicitYear, explicitTerm) : null;
+		if (explicitRange) return explicitRange;
+
+		const currentRange = getCurrentSemesterRange(new Date());
+		if (currentRange) return currentRange;
+
+		const fallbackYear = Number.isFinite(explicitYear) ? explicitYear : new Date().getFullYear();
+		const fallbackTerm = explicitTerm || planName || "";
+		const startMonth = parseTermToMonth(fallbackTerm);
+		return {
+			start: new Date(fallbackYear, startMonth, 15, 0, 0, 0),
+			end: new Date(fallbackYear, Math.min(startMonth + 4, 11), 15, 23, 59, 59),
+			label: `${fallbackTerm || "Current"} ${fallbackYear}`.trim(),
+		};
+	};
+
+	const dayNameToRRule = { Monday: "MO", Tuesday: "TU", Wednesday: "WE", Thursday: "TH", Friday: "FR", Saturday: "SA", Sunday: "SU" };
+
+	const getNextOccurrenceForDay = (dayName, timeStr, referenceDate = new Date()) => {
+		const dayOrder = { Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6 };
+		const targetDay = dayOrder[dayName];
+		if (targetDay === undefined) return null;
+		const minutes = parseTimeToMinutes(timeStr || "");
+		const hours = Math.floor(minutes / 60);
+		const mins = minutes % 60;
+		const base = new Date(referenceDate);
+		base.setHours(0, 0, 0, 0);
+		const diff = (targetDay - base.getDay() + 7) % 7;
+		base.setDate(base.getDate() + diff);
+		base.setHours(hours, mins, 0, 0);
+		if (base < referenceDate) base.setDate(base.getDate() + 7);
+		return base;
+	};
+
+	const toUntilUtcString = (dateObj) => {
+		if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+		const pad = (num) => String(num).padStart(2, "0");
+		return `${dateObj.getUTCFullYear()}${pad(dateObj.getUTCMonth() + 1)}${pad(dateObj.getUTCDate())}T${pad(dateObj.getUTCHours())}${pad(dateObj.getUTCMinutes())}${pad(dateObj.getUTCSeconds())}Z`;
+	};
+
+	const formatICSDate = (dateObj) => {
+		if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+		const pad = (num) => String(num).padStart(2, "0");
+		return `${dateObj.getUTCFullYear()}${pad(dateObj.getUTCMonth() + 1)}${pad(dateObj.getUTCDate())}T${pad(dateObj.getUTCHours())}${pad(dateObj.getUTCMinutes())}${pad(dateObj.getUTCSeconds())}Z`;
+	};
+
+	const escapeICS = (value = "") => String(value)
+		.replace(/\\/g, "\\\\")
+		.replace(/\r?\n/g, "\\n")
+		.replace(/,/g, "\\,")
+		.replace(/;/g, "\\;");
+const buildRecurringCourseEvents = (scheduleItems) => {
+		if (!Array.isArray(scheduleItems) || scheduleItems.length === 0) return [];
+		const grouped = new Map();
+		for (const item of scheduleItems) {
+			const key = [item.class_ || "Untitled Course", item.startTime || "", item.endTime || "", item.room || ""].join("|");
+			if (!grouped.has(key)) grouped.set(key, []);
+			grouped.get(key).push(item);
+		}
+		const { start: semesterStart, end: semesterEnd } = getSemesterDateRange();
+		const referenceDate = new Date() > semesterStart ? new Date() : semesterStart;
+		const untilUtc = toUntilUtcString(semesterEnd);
+		return Array.from(grouped.values()).map((items) => {
+			const first = items[0];
+			const rruleDays = Array.from(new Set(items.map((item) => dayNameToRRule[item.day]).filter(Boolean)));
+			const firstMeetingStart = getNextOccurrenceForDay(first.day, first.startTime, referenceDate);
+			if (!firstMeetingStart) return null;
+			const durationMinutes = Math.max(30, parseTimeToMinutes(first.endTime) - parseTimeToMinutes(first.startTime));
+			const firstMeetingEnd = new Date(firstMeetingStart.getTime() + durationMinutes * 60000);
+			return {
+				summary: first.class_ || "Course",
+				location: first.room || "",
+				description: `${first.class_ || "Course"} schedule exported from Advisor Chat`,
+				startDate: firstMeetingStart,
+				endDate: firstMeetingEnd,
+				recurrenceRule: rruleDays.length && untilUtc ? `FREQ=WEEKLY;BYDAY=${rruleDays.join(",")};UNTIL=${untilUtc}` : "",
+			};
+		}).filter(Boolean);
+	};
+
+	const downloadICSFile = (events) => {
+		const lines = [
+			"BEGIN:VCALENDAR",
+			"VERSION:2.0",
+			"PRODID:-//Advisor Chat//Course Schedule Export//EN",
+			"CALSCALE:GREGORIAN",
+			"METHOD:PUBLISH",
+			`X-WR-CALNAME:${escapeICS(planName || "Course Schedule")}`,
+			`X-WR-TIMEZONE:${GOOGLE_TIME_ZONE}`,
+		];
+
+		events.forEach((event, index) => {
+			const dtStart = formatICSDate(event.startDate);
+			const dtEnd = formatICSDate(event.endDate);
+			if (!dtStart || !dtEnd) return;
+			lines.push("BEGIN:VEVENT");
+			lines.push(`UID:${Date.now()}-${index}@advisor-chat`);
+			lines.push(`DTSTAMP:${formatICSDate(new Date())}`);
+			lines.push(`SUMMARY:${escapeICS(event.summary)}`);
+			lines.push(`DESCRIPTION:${escapeICS(event.description || "")}`);
+			if (event.location) lines.push(`LOCATION:${escapeICS(event.location)}`);
+			lines.push(`DTSTART:${dtStart}`);
+			lines.push(`DTEND:${dtEnd}`);
+			if (event.recurrenceRule) lines.push(`RRULE:${event.recurrenceRule}`);
+			lines.push("END:VEVENT");
+		});
+
+		lines.push("END:VCALENDAR");
+
+		const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+		const url = URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		const safeName = (planName || "course-schedule").replace(/[^a-z0-9-_]+/gi, "-").replace(/^-+|-+$/g, "") || "course-schedule";
+		anchor.href = url;
+		anchor.download = `${safeName}.ics`;
+		document.body.appendChild(anchor);
+		anchor.click();
+		anchor.remove();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	};
+
+	const handleDownloadCalendarFile = () => {
+		if (!visualizationData?.data?.length) return alert("No schedule available to export.");
+		const events = buildRecurringCourseEvents(visualizationData.data);
+		if (!events.length) return alert("Could not build calendar events from the current schedule.");
+		try {
+			downloadICSFile(events);
+			setCalendarSyncStatus("success");
+			setTimeout(() => setCalendarSyncStatus(null), 2500);
+		} catch (err) {
+			console.error("[Calendar Export] .ics download failed:", err);
+			setCalendarSyncStatus("error");
+			alert(`Calendar export failed: ${err.message}`);
+		}
+	};
+
 	const handleDeleteCourse = (e, scheduleItem) => {
 		e.stopPropagation();
 		const updatedData = visualizationData.data.filter(item => item.class_ !== scheduleItem.class_);
@@ -690,8 +1271,22 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 					{/* ── Weekly schedule grid ── */}
 					{visualizationData && (
 						<div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-							<h3 className="text-base font-semibold text-slate-800 mb-3">Weekly Class Schedule</h3>
-							<div className="w-full">
+							<div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+							<h3 className="text-base font-semibold text-slate-800">Weekly Class Schedule</h3>
+							<button
+								type="button"
+								onClick={handleDownloadCalendarFile}
+								disabled={false}
+								className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all shadow-sm border disabled:opacity-60 disabled:cursor-not-allowed"
+								style={{ backgroundColor: "white", color: "#BE0000", borderColor: "#BE0000" }}
+							>
+								{calendarSyncStatus === "success" ? "Downloaded calendar file" : "Download calendar (.ics)"}
+							</button>
+						</div>
+						{calendarSyncStatus === "error" && (
+							<p className="text-sm text-red-600 mb-3">Could not export the calendar file. Please try again.</p>
+						)}
+						<div className="w-full">
 								<div className="flex gap-1 mb-1">
 									<div style={{ width: "45px", flexShrink: 0 }}></div>
 									{["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
@@ -853,7 +1448,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 			{/* ── Course detail modal ── */}
 			{showCourseDetailModal && selectedCourse && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeCourseDetails}>
-					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
 						<div className="flex justify-between items-start mb-4">
 							<div>
 								<h3 className="text-xl font-semibold text-slate-800">{selectedCourse.department} {selectedCourse.course_code}: {selectedCourse.course_name}</h3>
@@ -863,6 +1458,21 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 						</div>
 						<div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
 							{selectedCourse.description && selectedCourse.description.trim().length > 0 ? selectedCourse.description : "No description available for this course."}
+						</div>
+						<div className="mt-5">
+							<p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Course Path</p>
+							{prereqChain.loading ? (
+								<div className="flex items-center justify-center gap-2 py-8 text-slate-400 text-sm">
+									<svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+									Loading prerequisite chain…
+								</div>
+							) : (
+								<PrereqChainViz
+									prereqs={prereqChain.prereqs}
+									current={{ label: `${selectedCourse.department} ${selectedCourse.course_code}` }}
+									unlocks={prereqChain.unlocks}
+								/>
+							)}
 						</div>
 						<div className="mt-6 flex justify-end">
 							<button type="button" onClick={closeCourseDetails} className="px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90" style={{ backgroundColor: "#BE0000" }}>Close</button>

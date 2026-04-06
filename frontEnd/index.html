@@ -11,7 +11,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <script type="text/babel" src="./Sidebar.js"></script>
     <script type="text/babel" src="./login.js"></script>
     <script type="text/babel" src="./PlanSelection.js"></script>
@@ -40,7 +39,7 @@
         const refreshDefaultNumbers = useCallback(async () => {
           if (!userData?.id) return;
           try {
-            const res = await fetch("http://136.36.121.11:8000/plans?user_id=" + userData.id);
+            const res = await fetch("http://localhost:8000/plans?user_id=" + userData.id);
             if (!res.ok) return;
             const plans = await res.json();
             // Find highest existing "Single #" and "Multi #"
@@ -63,7 +62,7 @@
         useEffect(() => {
           (async () => {
             try {
-              const res = await fetch("http://136.36.121.11:8000/auth/me", { credentials: "include" });
+              const res = await fetch("http://localhost:8000/auth/me", { credentials: "include" });
               if (!res.ok) return;
               const user = await res.json();
               setUserData(user);
@@ -75,7 +74,7 @@
         const handleLoginSuccess = (user) => { setUserData(user); setIsAuthenticated(true); };
 
         const handleLogout = async () => {
-          try { await fetch("http://136.36.121.11:8000/auth/logout", { method: "POST", credentials: "include" }); } catch (e) {}
+          try { await fetch("http://localhost:8000/auth/logout", { method: "POST", credentials: "include" }); } catch (e) {}
           setIsAuthenticated(false);
           setUserData(null);
         };
@@ -133,7 +132,7 @@
           setSidebarRefreshKey((k) => k + 1);
           try {
             const res = await fetch(
-              "http://136.36.121.11:8000/plans/multi/" + ids.plan_id + "?user_id=" + userData.id
+              "http://localhost:8000/plans/multi/" + ids.plan_id + "?user_id=" + userData.id
             );
             if (!res.ok) return;
             const fullPlan = await res.json();
@@ -152,7 +151,7 @@
             let fullPlan = null;
             try {
               const res = await fetch(
-                "http://136.36.121.11:8000/plans/multi/" + createdMultiPlanId + "?user_id=" + userData.id
+                "http://localhost:8000/plans/multi/" + createdMultiPlanId + "?user_id=" + userData.id
               );
               if (res.ok) fullPlan = await res.json();
             } catch (e) {
@@ -164,7 +163,7 @@
             const planIdToFetch = selectedSavedPlan.id;
             try {
               const res = await fetch(
-                "http://136.36.121.11:8000/plans/multi/" + planIdToFetch + "?user_id=" + userData.id
+                "http://localhost:8000/plans/multi/" + planIdToFetch + "?user_id=" + userData.id
               );
               if (res.ok) {
                 const fullPlan = await res.json();

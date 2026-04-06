@@ -16,6 +16,7 @@ class ScheduleItem(BaseModel):
     instructor: str | None = None
 
 class CourseItem(BaseModel):
+    id: int
     department: str
     course_code: str
     course_name: str
