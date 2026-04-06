@@ -28,6 +28,7 @@ def get_courses(db: Session = Depends(get_session)) -> List[CourseItem]:
         subject = getattr(dept_obj, "subject", None) or "Unknown"
 
         frontend_courses.append(CourseItem(
+            id=course.id,
             department=subject,
             course_code=str(course.number) if course.number is not None else "",
             course_name=str(course.name) if course.name is not None else "",
@@ -98,6 +99,7 @@ def get_courses(db: Session = Depends(get_session)) -> List[CourseItem]:
 
     for course, department in results:
         frontend_courses.append(CourseItem(
+            id=course.id,
             department=department.subject,
             course_code=str(course.number) if course.number is not None else "",
             course_name=str(course.name) if course.name is not None else "",

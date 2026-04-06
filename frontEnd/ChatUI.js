@@ -14,9 +14,296 @@ async function sendMessageLLM(userText, onToken) {
 	onToken(data.reply);
 }
 
+// ── Prerequisite Chain Visualizer (Dynamic Width + Proper AND/OR Logic) ────────────────────────────────────────────
+
+function PrereqChainViz({ prereqs, current, unlocks }) {
+	const hasPrereqs = prereqs.length > 0;
+	const hasUnlocks = unlocks.length > 0;
+
+	if (!hasPrereqs && !hasUnlocks) {
+		return (
+			<div className="rounded-lg border border-slate-200 bg-slate-50 py-5 px-4 text-center text-slate-400 text-sm">
+				No prerequisite relationships found for this course.
+			</div>
+		);
+	}
+
+	// Constants
+	const NODE_H = 38;
+	const MIN_NODE_W = 100;
+	const CHAR_WIDTH = 7.5; // Approximate width per character at font-size 11
+	const NODE_PADDING = 24; // Horizontal padding inside node
+	const COL_GAP = 60;
+	const ROW_GAP = 12;
+	const PILL_R = 8;
+	const ARROW_SZ = 6;
+	const MARGIN = 10;
+
+	// Calculate dynamic width for a node based on its label
+	const calcNodeWidth = (label) => {
+		const textWidth = label.length * CHAR_WIDTH;
+		return Math.max(MIN_NODE_W, textWidth + NODE_PADDING);
+	};
+
+	// Calculate max width for each column
+	const prereqMaxW = hasPrereqs 
+		? Math.max(...prereqs.map(p => calcNodeWidth(p.label)))
+		: 0;
+	const currentW = calcNodeWidth(current.label);
+	const unlockMaxW = hasUnlocks 
+		? Math.max(...unlocks.map(u => calcNodeWidth(u.label)))
+		: 0;
+
+	// Calculate column center X positions
+	const prereqCX = hasPrereqs ? MARGIN + prereqMaxW / 2 : 0;
+	const currentCX = (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) + currentW / 2;
+	const unlockCX = hasUnlocks 
+		? (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) + currentW + COL_GAP + unlockMaxW / 2
+		: 0;
+
+	// Calculate total SVG dimensions
+	const totalW = MARGIN + 
+		(hasPrereqs ? prereqMaxW + COL_GAP : 0) + 
+		currentW + 
+		(hasUnlocks ? COL_GAP + unlockMaxW : 0) + 
+		MARGIN;
+
+	const colH = (n) => Math.max(1, n) * NODE_H + (Math.max(1, n) - 1) * ROW_GAP;
+	const totalH = Math.max(
+		hasPrereqs ? colH(prereqs.length) : NODE_H, 
+		NODE_H, 
+		hasUnlocks ? colH(unlocks.length) : NODE_H
+	) + 50;
+
+	// Calculate Y positions
+	const centredYs = (count) => {
+		const bH = colH(count);
+		const start = (totalH - bH) / 2 + NODE_H / 2;
+		return Array.from({ length: count }, (_, i) => start + i * (NODE_H + ROW_GAP));
+	};
+
+	const prereqYs = hasPrereqs ? centredYs(prereqs.length) : [];
+	const currentY = totalH / 2;
+	const unlockYs = hasUnlocks ? centredYs(unlocks.length) : [];
+
+	const PAL = {
+		prereq: { fill: "#FFF3E0", stroke: "#FB8C00", text: "#7C3800" },
+		current: { fill: "#BE0000", stroke: "#7A0000", text: "#FFFFFF" },
+		unlock: { fill: "#E8F5E9", stroke: "#43A047", text: "#145214" }
+	};
+
+	// Dynamic width node component
+	const Node = ({ label, cx, cy, pal, width }) => {
+		return (
+			<g>
+				<rect
+					x={cx - width / 2}
+					y={cy - NODE_H / 2}
+					width={width}
+					height={NODE_H}
+					rx={PILL_R}
+					ry={PILL_R}
+					fill={pal.fill}
+					stroke={pal.stroke}
+					strokeWidth="1.5"
+				/>
+				<text
+					x={cx}
+					y={cy}
+					textAnchor="middle"
+					dominantBaseline="central"
+					fontSize="11"
+					fontWeight="700"
+					fill={pal.text}
+					fontFamily="system-ui,sans-serif"
+				>
+					{label}
+				</text>
+			</g>
+		);
+	};
+
+	const Arrow = ({ x1, y1, x2, y2 }) => {
+		const mx = (x1 + x2) / 2;
+		return (
+			<g>
+				<path
+					d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`}
+					fill="none"
+					stroke="#CBD5E1"
+					strokeWidth="1.5"
+				/>
+				<path
+					d={`M${x2},${y2} L${x2 - ARROW_SZ},${y2 - ARROW_SZ / 2} L${x2 - ARROW_SZ},${y2 + ARROW_SZ / 2}Z`}
+					fill="#CBD5E1"
+				/>
+			</g>
+		);
+	};
+
+	// Format prerequisites with proper AND/OR logic
+	// - Commas within a node = OR (alternatives)
+	// - Multiple nodes = AND (all required)
+	const formatPrereqSummary = () => {
+		const formattedGroups = prereqs.map(p => {
+			const label = p.label;
+			// Split by comma to find alternatives within this node
+			const alternatives = label.split(/,/).map(s => s.trim()).filter(s => s.length > 0);
+			
+			if (alternatives.length === 1) {
+				// Single prerequisite, no parentheses needed
+				return alternatives[0];
+			} else {
+				// Multiple alternatives (OR relationship)
+				return `(${alternatives.join(" OR ")})`;
+			}
+		});
+
+		// Join all groups with AND
+		if (formattedGroups.length === 1) {
+			return formattedGroups[0];
+		} else {
+			return formattedGroups.join(" AND ");
+		}
+	};
+
+	// Format unlocks summary (similar logic if needed, but typically unlocks are single courses)
+	const formatUnlocksSummary = () => {
+		return unlocks.map(u => u.label).join(", ");
+	};
+
+	return (
+		<div className="rounded-lg border border-slate-200 bg-slate-50 p-3 overflow-x-auto">
+			<svg width={totalW} height={totalH} style={{ display: "block", minWidth: totalW }}>
+				{/* Column headers */}
+				{hasPrereqs && (
+					<text
+						x={prereqCX}
+						y={14}
+						textAnchor="middle"
+						fontSize="8.5"
+						fontWeight="700"
+						fill="#94A3B8"
+						fontFamily="system-ui,sans-serif"
+					>
+						PREREQUISITES
+					</text>
+				)}
+				<text
+					x={currentCX}
+					y={14}
+					textAnchor="middle"
+					fontSize="8.5"
+					fontWeight="700"
+					fill="#94A3B8"
+					fontFamily="system-ui,sans-serif"
+				>
+					THIS COURSE
+				</text>
+				{hasUnlocks && (
+					<text
+						x={unlockCX}
+						y={14}
+						textAnchor="middle"
+						fontSize="8.5"
+						fontWeight="700"
+						fill="#94A3B8"
+						fontFamily="system-ui,sans-serif"
+					>
+						ENABLED
+					</text>
+				)}
+
+				{/* Arrows from prereqs to current */}
+				{prereqYs.map((py, i) => {
+					const prereqW = calcNodeWidth(prereqs[i].label);
+					return (
+						<Arrow
+							key={`pa${i}`}
+							x1={prereqCX + prereqW / 2 + 2}
+							y1={py}
+							x2={currentCX - currentW / 2 - ARROW_SZ}
+							y2={currentY}
+						/>
+					);
+				})}
+
+				{/* Arrows from current to unlocks */}
+				{unlockYs.map((uy, i) => {
+					const unlockW = calcNodeWidth(unlocks[i].label);
+					return (
+						<Arrow
+							key={`ua${i}`}
+							x1={currentCX + currentW / 2 + 2}
+							y1={currentY}
+							x2={unlockCX - unlockW / 2 - ARROW_SZ}
+							y2={uy}
+						/>
+					);
+				})}
+
+				{/* Prereq nodes */}
+				{prereqs.map((p, i) => {
+					const nodeW = calcNodeWidth(p.label);
+					return (
+						<Node
+							key={`p${i}`}
+							label={p.label}
+							cx={prereqCX}
+							cy={prereqYs[i]}
+							pal={PAL.prereq}
+							width={nodeW}
+						/>
+					);
+				})}
+
+				{/* Current course node */}
+				<Node
+					label={current.label}
+					cx={currentCX}
+					cy={currentY}
+					pal={PAL.current}
+					width={currentW}
+				/>
+
+				{/* Unlock nodes */}
+				{unlocks.map((u, i) => {
+					const nodeW = calcNodeWidth(u.label);
+					return (
+						<Node
+							key={`u${i}`}
+							label={u.label}
+							cx={unlockCX}
+							cy={unlockYs[i]}
+							pal={PAL.unlock}
+							width={nodeW}
+						/>
+					);
+				})}
+			</svg>
+
+			{/* Text summary with proper AND/OR logic */}
+			<div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-500 space-y-0.5">
+				{hasPrereqs && (
+					<p>
+						<span className="font-semibold text-orange-700">Requires: </span>
+						{formatPrereqSummary()}
+					</p>
+				)}
+				{hasUnlocks && (
+					<p>
+						<span className="font-semibold text-green-700">Enables: </span>
+						{formatUnlocksSummary()}
+					</p>
+				)}
+			</div>
+		</div>
+	);
+}
+
 function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, onPlanCreated}) {
 	const [messages, setMessages] = useState([
-		{ role: "assistant", content: "I am your class advisor, please submit your degree audit by pressing the + button! (ONLY HTML)" },
+		{ role: "assistant", content: "Hello! How can I help you?" },
 	]);
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +321,7 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 	const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [hoveredScheduleItem, setHoveredScheduleItem] = useState(null);
+	const [prereqChain, setPrereqChain] = useState({ prereqs: [], unlocks: [], loading: false });
 	const messagesEndRef = useRef(null);
 	const textareaRef = useRef(null);
 	const fileInputRef = useRef(null);
@@ -78,8 +366,107 @@ function ChatUI({userData, onLogout, onBack, savedPlan, semester, onPlanSaved, o
 		};
 	};
 
-	const openCourseDetails = (course) => { setSelectedCourse(course); setShowCourseDetailModal(true); };
-	const closeCourseDetails = () => { setShowCourseDetailModal(false); setSelectedCourse(null); };
+	const openCourseDetails = async (course) => {
+		setSelectedCourse(course);
+		setShowCourseDetailModal(true);
+		setPrereqChain({ prereqs: [], unlocks: [], loading: true });
+		try {
+			let fullCourse = null;
+			if (course.department && course.course_code) {
+				const r = await fetch(`${BASE_URL}/courses/by-code?subject=${encodeURIComponent(course.department)}&number=${encodeURIComponent(course.course_code)}`);
+				if (r.ok) fullCourse = await r.json();
+			}
+			const conditions = fullCourse?.prereq_conditions || [];
+			// Format prereq labels to have consistent spacing (e.g., "CS3810" → "CS 3810")
+			const prereqs = conditions.map((cond, i) => {
+				let label = String(cond);
+				// Insert space between letters and numbers if not already present
+				// Handles: "CS3810" → "CS 3810", "MATH2210" → "MATH 2210"
+				// But preserves: "CS 3810" (already has space)
+				label = label.replace(/([A-Za-z]+)(\d)/, '$1 $2');
+				return { id: i, label: label };
+			});
+			
+			// Build multiple patterns to match against prereq_conditions
+			const dept = (course.department || "").toUpperCase();
+			const code = (course.course_code || "").toString();
+			const courseKeyWithSpace = `${dept} ${code}`;
+			const courseKeyNoSpace = `${dept}${code}`;
+			
+			let coursesWithPrereqs = [];
+			try {
+				const r = await fetch(`${BASE_URL}/courses/`);
+				if (r.ok) coursesWithPrereqs = await r.json();
+			} catch (_) {}
+			
+			// Find courses that this course unlocks, with flexible matching
+			const unlocks = coursesWithPrereqs
+				.filter(c => {
+					if (!Array.isArray(c.prereq_conditions)) return false;
+					return c.prereq_conditions.some(cond => {
+						const condStr = String(cond).toUpperCase();
+						const condNoSpaces = condStr.replace(/\s+/g, '');
+						// Match various formats: "CS 4400", "CS4400", just "4400" with dept context
+						return condStr.includes(courseKeyWithSpace) || 
+							   condNoSpaces.includes(courseKeyNoSpace) ||
+							   (dept && code && condStr.includes(code) && condStr.includes(dept));
+					});
+				})
+				.map(c => {
+					const unlockNum = c.number || "";
+					
+					// Try to get department info from multiple sources
+					let unlockDept = "";
+					let deptSource = "";
+					
+					// Method 1: Check if department is a nested object with subject
+					if (c.department && typeof c.department === 'object' && c.department.subject) {
+						unlockDept = c.department.subject;
+						deptSource = "nested object";
+					}
+					// Method 2: Check if department is directly a string
+					else if (c.department && typeof c.department === 'string') {
+						unlockDept = c.department;
+						deptSource = "direct string";
+					}
+					// Method 3: Check for subject field directly on course
+					else if (c.subject) {
+						unlockDept = c.subject;
+						deptSource = "subject field";
+					}
+					// Method 4: Look up from allCourses (schedule endpoint) by UNIQUE course ID only
+					// (Don't match by course number alone - different departments can have same numbers!)
+					else if (allCourses && allCourses.length > 0) {
+						const matchingCourse = allCourses.find(ac => ac.id === c.id);
+						if (matchingCourse && matchingCourse.department) {
+							unlockDept = matchingCourse.department;
+							deptSource = "allCourses lookup by ID";
+						}
+					}
+					// Method 5: Fallback - assume same department as current course
+					if (!unlockDept) {
+						unlockDept = course.department || "";
+						deptSource = "fallback to current course dept";
+					}
+					
+					console.log(`[unlock] course id=${c.id}, number=${unlockNum}, dept=${unlockDept}, source=${deptSource}, raw c.department=`, c.department);
+					
+					const label = unlockDept 
+						? `${unlockDept} ${unlockNum}`.trim()
+						: unlockNum;
+					
+					return { id: c.id, label: label };
+				});
+			
+			console.log("[openCourseDetails] courseKey:", courseKeyWithSpace, "found unlocks:", unlocks.length, unlocks);
+			
+			setPrereqChain({ prereqs, unlocks, loading: false });
+		} catch (e) {
+			console.warn("[openCourseDetails] failed:", e);
+			setPrereqChain({ prereqs: [], unlocks: [], loading: false });
+		}
+	};
+	const closeCourseDetails = () => { setShowCourseDetailModal(false); setSelectedCourse(null); setPrereqChain({ prereqs: [], unlocks: [], loading: false }); };
 
 	const warmupDoneRef = useRef(false);
 	useEffect(() => {
@@ -641,7 +1028,6 @@ const buildRecurringCourseEvents = (scheduleItems) => {
 			if (!res.ok) { const errText = await res.text(); throw new Error(errText); }
 			const data = await res.json();
 			if (data.id && data.semester_db_id) setSavedPlanIds({ plan_id: data.id, semester_db_id: data.semester_db_id });
-			alert("Plan saved successfully");
 			setSavedFlash(true);
 			setTimeout(() => setSavedFlash(false), 2000);
 			// Pass the new plan ID up so App can track it for onPlanDeleted matching
@@ -736,7 +1122,9 @@ const buildRecurringCourseEvents = (scheduleItems) => {
 
 				<div className="flex-1 overflow-y-auto">
 					<div className="px-4 py-4 space-y-3">
-						{messages.map((message, index) => (
+						{messages.map((message, index) => {
+							if (!message.content) return null;
+							return (
 							<div key={index} className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
 								{message.role === "assistant" && (
 									<div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-700 flex items-center justify-center shadow-sm text-white text-xs font-bold">AI</div>
@@ -744,11 +1132,11 @@ const buildRecurringCourseEvents = (scheduleItems) => {
 								<div className={`max-w-md rounded-xl px-3 py-2 shadow-sm text-sm ${message.role === "user" ? "text-white" : "bg-slate-50 text-slate-800 border border-slate-200"}`} style={message.role === "user" ? { backgroundColor: "#BE0000" } : {}}>
 									<p className="whitespace-pre-wrap leading-snug">{message.content}</p>
 								</div>
-								{message.role === "user" && (
+								{message.role === "user" && message.content && (
 									<div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center shadow-sm text-white text-sm">👤</div>
 								)}
 							</div>
-						))}
+						)})}
 						{isLoading && (
 							<div className="flex gap-2 justify-start">
 								<div className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
@@ -1060,7 +1448,7 @@ const buildRecurringCourseEvents = (scheduleItems) => {
 			{/* ── Course detail modal ── */}
 			{showCourseDetailModal && selectedCourse && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeCourseDetails}>
-					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+					<div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
 						<div className="flex justify-between items-start mb-4">
 							<div>
 								<h3 className="text-xl font-semibold text-slate-800">{selectedCourse.department} {selectedCourse.course_code}: {selectedCourse.course_name}</h3>
@@ -1070,6 +1458,21 @@ const buildRecurringCourseEvents = (scheduleItems) => {
 						</div>
 						<div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
 							{selectedCourse.description && selectedCourse.description.trim().length > 0 ? selectedCourse.description : "No description available for this course."}
+						</div>
+						<div className="mt-5">
+							<p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Course Path</p>
+							{prereqChain.loading ? (
+								<div className="flex items-center justify-center gap-2 py-8 text-slate-400 text-sm">
+									<svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+									Loading prerequisite chain…
+								</div>
+							) : (
+								<PrereqChainViz
+									prereqs={prereqChain.prereqs}
+									current={{ label: `${selectedCourse.department} ${selectedCourse.course_code}` }}
+									unlocks={prereqChain.unlocks}
+								/>
+							)}
 						</div>
 						<div className="mt-6 flex justify-end">
 							<button type="button" onClick={closeCourseDetails} className="px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90" style={{ backgroundColor: "#BE0000" }}>Close</button>
