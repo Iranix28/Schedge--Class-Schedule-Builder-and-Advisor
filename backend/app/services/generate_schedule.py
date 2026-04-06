@@ -331,8 +331,8 @@ def generate_schedule(audit_id):
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
-                        if section.term_season != term:
-                            continue
+                        # if section.term_season != term:
+                        #     continue
 
                         if conflict:
                             continue
@@ -416,8 +416,8 @@ def generate_schedule(audit_id):
                         if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
-                            if section.term_season != term:
-                                continue
+                            # if section.term_season != term:
+                            #     continue
 
                             if conflict:
                                 continue
@@ -474,8 +474,8 @@ def generate_schedule(audit_id):
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
 
-                        if section.term_season != term:
-                            continue
+                        # if section.term_season != term:
+                        #     continue
 
                         if conflict:
                             continue
