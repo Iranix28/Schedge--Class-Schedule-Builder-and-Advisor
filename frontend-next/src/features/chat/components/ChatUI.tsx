@@ -36,6 +36,272 @@ import type {
 
 import CourseGradeDistributionModal from "./CourseGradeDistributionModal";
 
+// ── Prerequisite Chain Visualizer ─────────────────────────────────────────────
+
+interface PrereqNode {
+  id: number;
+  label: string;
+}
+
+interface PrereqChainVizProps {
+  prereqs: PrereqNode[];
+  current: { label: string };
+  unlocks: PrereqNode[];
+}
+
+function PrereqChainViz({ prereqs, current, unlocks }: PrereqChainVizProps) {
+  const hasPrereqs = prereqs.length > 0;
+  const hasUnlocks = unlocks.length > 0;
+
+  if (!hasPrereqs && !hasUnlocks) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-slate-50 py-5 px-4 text-center text-slate-400 text-sm">
+        No prerequisite relationships found for this course.
+      </div>
+    );
+  }
+
+  const NODE_H = 38;
+  const MIN_NODE_W = 100;
+  const CHAR_WIDTH = 7.5;
+  const NODE_PADDING = 24;
+  const COL_GAP = 60;
+  const ROW_GAP = 12;
+  const PILL_R = 8;
+  const ARROW_SZ = 6;
+  const MARGIN = 10;
+
+  const calcNodeWidth = (label: string) =>
+    Math.max(MIN_NODE_W, label.length * CHAR_WIDTH + NODE_PADDING);
+
+  const prereqMaxW = hasPrereqs
+    ? Math.max(...prereqs.map((p) => calcNodeWidth(p.label)))
+    : 0;
+  const currentW = calcNodeWidth(current.label);
+  const unlockMaxW = hasUnlocks
+    ? Math.max(...unlocks.map((u) => calcNodeWidth(u.label)))
+    : 0;
+
+  const prereqCX = hasPrereqs ? MARGIN + prereqMaxW / 2 : 0;
+  const currentCX =
+    (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) + currentW / 2;
+  const unlockCX = hasUnlocks
+    ? (hasPrereqs ? MARGIN + prereqMaxW + COL_GAP : MARGIN) +
+      currentW +
+      COL_GAP +
+      unlockMaxW / 2
+    : 0;
+
+  const totalW =
+    MARGIN +
+    (hasPrereqs ? prereqMaxW + COL_GAP : 0) +
+    currentW +
+    (hasUnlocks ? COL_GAP + unlockMaxW : 0) +
+    MARGIN;
+
+  const colH = (n: number) =>
+    Math.max(1, n) * NODE_H + (Math.max(1, n) - 1) * ROW_GAP;
+  const totalH =
+    Math.max(
+      hasPrereqs ? colH(prereqs.length) : NODE_H,
+      NODE_H,
+      hasUnlocks ? colH(unlocks.length) : NODE_H,
+    ) + 50;
+
+  const centredYs = (count: number) => {
+    const bH = colH(count);
+    const start = (totalH - bH) / 2 + NODE_H / 2;
+    return Array.from(
+      { length: count },
+      (_, i) => start + i * (NODE_H + ROW_GAP),
+    );
+  };
+
+  const prereqYs = hasPrereqs ? centredYs(prereqs.length) : [];
+  const currentY = totalH / 2;
+  const unlockYs = hasUnlocks ? centredYs(unlocks.length) : [];
+
+  const PAL = {
+    prereq: { fill: "#FFF3E0", stroke: "#FB8C00", text: "#7C3800" },
+    current: { fill: "#BE0000", stroke: "#7A0000", text: "#FFFFFF" },
+    unlock: { fill: "#E8F5E9", stroke: "#43A047", text: "#145214" },
+  };
+
+  const Node = ({
+    label,
+    cx,
+    cy,
+    pal,
+    width,
+  }: {
+    label: string;
+    cx: number;
+    cy: number;
+    pal: { fill: string; stroke: string; text: string };
+    width: number;
+  }) => (
+    <g>
+      <rect
+        x={cx - width / 2}
+        y={cy - NODE_H / 2}
+        width={width}
+        height={NODE_H}
+        rx={PILL_R}
+        ry={PILL_R}
+        fill={pal.fill}
+        stroke={pal.stroke}
+        strokeWidth="1.5"
+      />
+      <text
+        x={cx}
+        y={cy}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="11"
+        fontWeight="700"
+        fill={pal.text}
+        fontFamily="system-ui,sans-serif"
+      >
+        {label}
+      </text>
+    </g>
+  );
+
+  const Arrow = ({
+    x1,
+    y1,
+    x2,
+    y2,
+  }: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  }) => {
+    const mx = (x1 + x2) / 2;
+    return (
+      <g>
+        <path
+          d={`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`}
+          fill="none"
+          stroke="#CBD5E1"
+          strokeWidth="1.5"
+        />
+        <path
+          d={`M${x2},${y2} L${x2 - ARROW_SZ},${y2 - ARROW_SZ / 2} L${x2 - ARROW_SZ},${y2 + ARROW_SZ / 2}Z`}
+          fill="#CBD5E1"
+        />
+      </g>
+    );
+  };
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 overflow-x-auto">
+      <svg
+        width={totalW}
+        height={totalH}
+        style={{ display: "block", minWidth: totalW }}
+      >
+        {hasPrereqs && (
+          <text
+            x={prereqCX}
+            y={14}
+            textAnchor="middle"
+            fontSize="8.5"
+            fontWeight="700"
+            fill="#94A3B8"
+            fontFamily="system-ui,sans-serif"
+          >
+            PREREQUISITES
+          </text>
+        )}
+        <text
+          x={currentCX}
+          y={14}
+          textAnchor="middle"
+          fontSize="8.5"
+          fontWeight="700"
+          fill="#94A3B8"
+          fontFamily="system-ui,sans-serif"
+        >
+          THIS COURSE
+        </text>
+        {hasUnlocks && (
+          <text
+            x={unlockCX}
+            y={14}
+            textAnchor="middle"
+            fontSize="8.5"
+            fontWeight="700"
+            fill="#94A3B8"
+            fontFamily="system-ui,sans-serif"
+          >
+            ENABLED
+          </text>
+        )}
+
+        {prereqYs.map((py, i) => {
+          const prereqW = calcNodeWidth(prereqs[i].label);
+          return (
+            <Arrow
+              key={`pa${i}`}
+              x1={prereqCX + prereqW / 2 + 2}
+              y1={py}
+              x2={currentCX - currentW / 2 - ARROW_SZ}
+              y2={currentY}
+            />
+          );
+        })}
+
+        {unlockYs.map((uy, i) => {
+          const unlockW = calcNodeWidth(unlocks[i].label);
+          return (
+            <Arrow
+              key={`ua${i}`}
+              x1={currentCX + currentW / 2 + 2}
+              y1={currentY}
+              x2={unlockCX - unlockW / 2 - ARROW_SZ}
+              y2={uy}
+            />
+          );
+        })}
+
+        {prereqs.map((p, i) => (
+          <Node
+            key={`p${i}`}
+            label={p.label}
+            cx={prereqCX}
+            cy={prereqYs[i]}
+            pal={PAL.prereq}
+            width={calcNodeWidth(p.label)}
+          />
+        ))}
+
+        <Node
+          label={current.label}
+          cx={currentCX}
+          cy={currentY}
+          pal={PAL.current}
+          width={currentW}
+        />
+
+        {unlocks.map((u, i) => (
+          <Node
+            key={`u${i}`}
+            label={u.label}
+            cx={unlockCX}
+            cy={unlockYs[i]}
+            pal={PAL.unlock}
+            width={calcNodeWidth(u.label)}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// ── ChatUI ────────────────────────────────────────────────────────────────────
+
 export default function ChatUI({
   userData,
   onLogout,
@@ -69,7 +335,7 @@ export default function ChatUI({
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(false);
   const [courseSearchQuery, setCourseSearchQuery] = useState("");
-  const [browserDepartmentFilter, setBrowserDepartmentFilter] = useState(""); // NEW: filter inside browser panel
+  const [browserDepartmentFilter, setBrowserDepartmentFilter] = useState("");
   const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showGradeDistributionModal, setShowGradeDistributionModal] =
@@ -77,6 +343,15 @@ export default function ChatUI({
   const [hoveredScheduleItem, setHoveredScheduleItem] = useState<string | null>(
     null,
   );
+  const [prereqChain, setPrereqChain] = useState<{
+    prereqs: PrereqNode[];
+    unlocks: PrereqNode[];
+    loading: boolean;
+  }>({ prereqs: [], unlocks: [], loading: false });
+  const [calendarSyncStatus, setCalendarSyncStatus] = useState<
+    "success" | "error" | null
+  >(null);
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -95,7 +370,9 @@ export default function ChatUI({
   const [courseGradeStatsError, setCourseGradeStatsError] = useState<
     string | null
   >(null);
-  const [selectedSectionInstructor, setSelectedSectionInstructor] = useState<string | null>(null);
+  const [selectedSectionInstructor, setSelectedSectionInstructor] = useState<
+    string | null
+  >(null);
   const [showRmpModal, setShowRmpModal] = useState(false);
   const [rmpData, setRmpData] = useState<{
     name: string;
@@ -112,6 +389,8 @@ export default function ChatUI({
 
   const IDEAL_ROW_HEIGHT = 55;
   const MAX_SCHEDULE_HEIGHT = 500;
+
+  // ── Time helpers ─────────────────────────────────────────────────────────
 
   const parseTimeToMinutes = (timeStr?: string | null) => {
     if (!timeStr) return 0;
@@ -147,15 +426,382 @@ export default function ChatUI({
     };
   };
 
-  const openCourseDetails = (course: Course) => {
+  // ── Calendar export helpers ───────────────────────────────────────────────
+
+  const GOOGLE_TIME_ZONE = "America/Denver";
+
+  const HARDCODED_UOFU_TERM_DATES: Record<
+    number,
+    Record<string, { start: Date; end: Date; label: string }>
+  > = {
+    2026: {
+      spring: {
+        start: new Date(2026, 0, 5, 0, 0, 0),
+        end: new Date(2026, 3, 21, 23, 59, 59),
+        label: "Spring 2026",
+      },
+      summer: {
+        start: new Date(2026, 4, 11, 0, 0, 0),
+        end: new Date(2026, 6, 29, 23, 59, 59),
+        label: "Summer 2026",
+      },
+      fall: {
+        start: new Date(2026, 7, 24, 0, 0, 0),
+        end: new Date(2026, 11, 10, 23, 59, 59),
+        label: "Fall 2026",
+      },
+    },
+  };
+
+  const normalizeTermKey = (term: string | undefined | null) => {
+    if (!term) return null;
+    const n = String(term).toLowerCase();
+    if (n.includes("spring")) return "spring";
+    if (n.includes("summer")) return "summer";
+    if (n.includes("fall")) return "fall";
+    return null;
+  };
+
+  const parseTermToMonth = (term: string | undefined | null) => {
+    const n = normalizeTermKey(term);
+    if (n === "spring") return 0;
+    if (n === "summer") return 4;
+    if (n === "fall") return 7;
+    return 0;
+  };
+
+  const getHardcodedSemesterRange = (
+    year: number,
+    term: string | undefined | null,
+  ) => {
+    const termKey = normalizeTermKey(term);
+    if (!termKey) return null;
+    return HARDCODED_UOFU_TERM_DATES?.[year]?.[termKey] || null;
+  };
+
+  const getCurrentSemesterRange = (today = new Date()) => {
+    for (const yearData of Object.values(HARDCODED_UOFU_TERM_DATES)) {
+      for (const termData of Object.values(yearData)) {
+        if (today >= termData.start && today <= termData.end) return termData;
+      }
+    }
+    return null;
+  };
+
+  const getSemesterDateRange = () => {
+    const explicitYear = Number(
+      semester?.year ?? semester?.term_year ?? savedPlan?.term_year ?? NaN,
+    );
+    const explicitTerm =
+      semester?.term ?? semester?.term_season ?? savedPlan?.term_season ?? "";
+    const explicitRange = Number.isFinite(explicitYear)
+      ? getHardcodedSemesterRange(explicitYear, explicitTerm)
+      : null;
+    if (explicitRange) return explicitRange;
+
+    const currentRange = getCurrentSemesterRange(new Date());
+    if (currentRange) return currentRange;
+
+    const fallbackYear = Number.isFinite(explicitYear)
+      ? explicitYear
+      : new Date().getFullYear();
+    const fallbackTerm = explicitTerm || planName || "";
+    const startMonth = parseTermToMonth(fallbackTerm);
+    return {
+      start: new Date(fallbackYear, startMonth, 15, 0, 0, 0),
+      end: new Date(fallbackYear, Math.min(startMonth + 4, 11), 15, 23, 59, 59),
+      label: `${fallbackTerm || "Current"} ${fallbackYear}`.trim(),
+    };
+  };
+
+  const dayNameToRRule: Record<string, string> = {
+    Monday: "MO",
+    Tuesday: "TU",
+    Wednesday: "WE",
+    Thursday: "TH",
+    Friday: "FR",
+    Saturday: "SA",
+    Sunday: "SU",
+  };
+
+  const getNextOccurrenceForDay = (
+    dayName: string,
+    timeStr: string | undefined,
+    referenceDate = new Date(),
+  ) => {
+    const dayOrder: Record<string, number> = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    };
+    const targetDay = dayOrder[dayName];
+    if (targetDay === undefined) return null;
+    const minutes = parseTimeToMinutes(timeStr ?? "");
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const base = new Date(referenceDate);
+    base.setHours(0, 0, 0, 0);
+    const diff = (targetDay - base.getDay() + 7) % 7;
+    base.setDate(base.getDate() + diff);
+    base.setHours(hours, mins, 0, 0);
+    if (base < referenceDate) base.setDate(base.getDate() + 7);
+    return base;
+  };
+
+  const pad = (num: number) => String(num).padStart(2, "0");
+
+  const toUntilUtcString = (dateObj: Date) => {
+    if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime()))
+      return null;
+    return `${dateObj.getUTCFullYear()}${pad(dateObj.getUTCMonth() + 1)}${pad(dateObj.getUTCDate())}T${pad(dateObj.getUTCHours())}${pad(dateObj.getUTCMinutes())}${pad(dateObj.getUTCSeconds())}Z`;
+  };
+
+  const formatICSDate = (dateObj: Date) => {
+    if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime()))
+      return null;
+    return `${dateObj.getUTCFullYear()}${pad(dateObj.getUTCMonth() + 1)}${pad(dateObj.getUTCDate())}T${pad(dateObj.getUTCHours())}${pad(dateObj.getUTCMinutes())}${pad(dateObj.getUTCSeconds())}Z`;
+  };
+
+  const escapeICS = (value = "") =>
+    String(value)
+      .replace(/\\/g, "\\\\")
+      .replace(/\r?\n/g, "\\n")
+      .replace(/,/g, "\\,")
+      .replace(/;/g, "\\;");
+
+  const buildRecurringCourseEvents = (scheduleItems: VisualizationItem[]) => {
+    if (!Array.isArray(scheduleItems) || scheduleItems.length === 0) return [];
+    const grouped = new Map<string, VisualizationItem[]>();
+    for (const item of scheduleItems) {
+      const key = [
+        item.class_ || "Untitled Course",
+        item.startTime || "",
+        item.endTime || "",
+        item.room || "",
+      ].join("|");
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key)!.push(item);
+    }
+    const { start: semesterStart, end: semesterEnd } = getSemesterDateRange();
+    const referenceDate =
+      new Date() > semesterStart ? new Date() : semesterStart;
+    const untilUtc = toUntilUtcString(semesterEnd);
+
+    return Array.from(grouped.values())
+      .map((items) => {
+        const first = items[0];
+        const rruleDays = Array.from(
+          new Set(
+            items.map((item) => dayNameToRRule[item.day ?? ""]).filter(Boolean),
+          ),
+        );
+        const firstMeetingStart = getNextOccurrenceForDay(
+          first.day ?? "",
+          first.startTime,
+          referenceDate,
+        );
+        if (!firstMeetingStart) return null;
+        const durationMinutes = Math.max(
+          30,
+          parseTimeToMinutes(first.endTime) -
+            parseTimeToMinutes(first.startTime),
+        );
+        const firstMeetingEnd = new Date(
+          firstMeetingStart.getTime() + durationMinutes * 60000,
+        );
+        return {
+          summary: first.class_ || "Course",
+          location: first.room || "",
+          description: `${first.class_ || "Course"} schedule exported from Advisor Chat`,
+          startDate: firstMeetingStart,
+          endDate: firstMeetingEnd,
+          recurrenceRule:
+            rruleDays.length && untilUtc
+              ? `FREQ=WEEKLY;BYDAY=${rruleDays.join(",")};UNTIL=${untilUtc}`
+              : "",
+        };
+      })
+      .filter(Boolean) as {
+      summary: string;
+      location: string;
+      description: string;
+      startDate: Date;
+      endDate: Date;
+      recurrenceRule: string;
+    }[];
+  };
+
+  const downloadICSFile = (
+    events: {
+      summary: string;
+      location: string;
+      description: string;
+      startDate: Date;
+      endDate: Date;
+      recurrenceRule: string;
+    }[],
+  ) => {
+    const lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Advisor Chat//Course Schedule Export//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      `X-WR-CALNAME:${escapeICS(planName || "Course Schedule")}`,
+      `X-WR-TIMEZONE:${GOOGLE_TIME_ZONE}`,
+    ];
+    events.forEach((event, index) => {
+      const dtStart = formatICSDate(event.startDate);
+      const dtEnd = formatICSDate(event.endDate);
+      if (!dtStart || !dtEnd) return;
+      lines.push("BEGIN:VEVENT");
+      lines.push(`UID:${Date.now()}-${index}@advisor-chat`);
+      lines.push(`DTSTAMP:${formatICSDate(new Date())}`);
+      lines.push(`SUMMARY:${escapeICS(event.summary)}`);
+      lines.push(`DESCRIPTION:${escapeICS(event.description || "")}`);
+      if (event.location) lines.push(`LOCATION:${escapeICS(event.location)}`);
+      lines.push(`DTSTART:${dtStart}`);
+      lines.push(`DTEND:${dtEnd}`);
+      if (event.recurrenceRule) lines.push(`RRULE:${event.recurrenceRule}`);
+      lines.push("END:VEVENT");
+    });
+    lines.push("END:VCALENDAR");
+
+    const blob = new Blob([lines.join("\r\n")], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    const safeName =
+      (planName || "course-schedule")
+        .replace(/[^a-z0-9-_]+/gi, "-")
+        .replace(/^-+|-+$/g, "") || "course-schedule";
+    anchor.href = url;
+    anchor.download = `${safeName}.ics`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const handleDownloadCalendarFile = () => {
+    if (!visualizationData?.data?.length)
+      return alert("No schedule available to export.");
+    const events = buildRecurringCourseEvents(visualizationData.data);
+    if (!events.length)
+      return alert(
+        "Could not build calendar events from the current schedule.",
+      );
+    try {
+      downloadICSFile(events);
+      setCalendarSyncStatus("success");
+      setTimeout(() => setCalendarSyncStatus(null), 2500);
+    } catch (err) {
+      console.error("[Calendar Export] .ics download failed:", err);
+      setCalendarSyncStatus("error");
+      alert(
+        `Calendar export failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
+    }
+  };
+
+  // ── Course detail / prereq chain ──────────────────────────────────────────
+
+  const openCourseDetails = async (course: Course) => {
     setSelectedCourse(course);
     setShowCourseDetailModal(true);
+    setPrereqChain({ prereqs: [], unlocks: [], loading: true });
+
+    try {
+      let fullCourse: Record<string, unknown> | null = null;
+      if (course.department && course.course_code) {
+        const r = await fetch(
+          `${BASE_URL}/courses/by-code?subject=${encodeURIComponent(course.department)}&number=${encodeURIComponent(course.course_code)}`,
+        );
+        if (r.ok) fullCourse = await r.json();
+      }
+
+      const conditions: unknown[] =
+        (fullCourse?.prereq_conditions as unknown[]) || [];
+      const prereqs: PrereqNode[] = conditions.map((cond, i) => {
+        let label = String(cond);
+        label = label.replace(/([A-Za-z]+)(\d)/, "$1 $2");
+        return { id: i, label };
+      });
+
+      const dept = (course.department || "").toUpperCase();
+      const code = (course.course_code || "").toString();
+      const courseKeyWithSpace = `${dept} ${code}`;
+      const courseKeyNoSpace = `${dept}${code}`;
+
+      let coursesWithPrereqs: Record<string, unknown>[] = [];
+      try {
+        const r = await fetch(`${BASE_URL}/courses/`);
+        if (r.ok) coursesWithPrereqs = await r.json();
+      } catch (_) {}
+
+      const unlocks: PrereqNode[] = coursesWithPrereqs
+        .filter((c) => {
+          if (!Array.isArray(c.prereq_conditions)) return false;
+          return (c.prereq_conditions as unknown[]).some((cond) => {
+            const condStr = String(cond).toUpperCase();
+            const condNoSpaces = condStr.replace(/\s+/g, "");
+            return (
+              condStr.includes(courseKeyWithSpace) ||
+              condNoSpaces.includes(courseKeyNoSpace) ||
+              (dept && code && condStr.includes(code) && condStr.includes(dept))
+            );
+          });
+        })
+        .map((c) => {
+          const unlockNum = String(c.number || "");
+          let unlockDept = "";
+
+          if (
+            c.department &&
+            typeof c.department === "object" &&
+            (c.department as Record<string, unknown>).subject
+          ) {
+            unlockDept = String(
+              (c.department as Record<string, unknown>).subject,
+            );
+          } else if (c.department && typeof c.department === "string") {
+            unlockDept = c.department;
+          } else if (c.subject && typeof c.subject === "string") {
+            unlockDept = c.subject;
+          } else {
+            const matchingCourse = allCourses.find(
+              (ac) => ac.id === (c.id as number),
+            );
+            if (matchingCourse?.department) {
+              unlockDept = matchingCourse.department;
+            } else {
+              unlockDept = course.department || "";
+            }
+          }
+
+          const label = unlockDept
+            ? `${unlockDept} ${unlockNum}`.trim()
+            : unlockNum;
+          return { id: c.id as number, label };
+        });
+
+      setPrereqChain({ prereqs, unlocks, loading: false });
+    } catch (e) {
+      console.warn("[openCourseDetails] failed:", e);
+      setPrereqChain({ prereqs: [], unlocks: [], loading: false });
+    }
   };
 
   const closeCourseDetails = () => {
     setShowCourseDetailModal(false);
     setShowGradeDistributionModal(false);
     setSelectedCourse(null);
+    setPrereqChain({ prereqs: [], unlocks: [], loading: false });
     setCourseGradeStats(null);
     setCourseGradeStatsError(null);
     setSelectedSectionInstructor(null);
@@ -163,7 +809,6 @@ export default function ChatUI({
 
   const openGradeDistributionModal = async () => {
     if (!selectedCourse) return;
-
     setShowGradeDistributionModal(true);
     await loadCourseGradeStats(selectedCourse);
   };
@@ -174,16 +819,29 @@ export default function ChatUI({
     setCourseGradeStatsError(null);
   };
 
+  const handleViewRmp = async () => {
+    if (!selectedSectionInstructor) return;
+    setIsLoadingRmp(true);
+    setShowRmpModal(true);
+    try {
+      const data = await fetchProfessorRating(selectedSectionInstructor);
+      setRmpData(data);
+    } catch (e) {
+      console.error("RMP fetch failed:", e);
+      setRmpData(null);
+    } finally {
+      setIsLoadingRmp(false);
+    }
+  };
+
   const loadCourseGradeStats = async (course: Course) => {
     if (!course?.department || !course?.course_code) {
       setCourseGradeStats(null);
       setCourseGradeStatsError("Missing course info");
       return;
     }
-
     setIsLoadingCourseGradeStats(true);
     setCourseGradeStatsError(null);
-
     try {
       const stats = await fetchCourseGradeStatsRequest(
         course.department,
@@ -201,20 +859,7 @@ export default function ChatUI({
     }
   };
 
-  const handleViewRmp = async () => {
-    if (!selectedSectionInstructor) return;
-    setIsLoadingRmp(true);
-    setShowRmpModal(true);
-    try {
-      const data = await fetchProfessorRating(selectedSectionInstructor);
-      setRmpData(data);
-    } catch (e) {
-      console.error("RMP fetch failed:", e);
-      setRmpData(null);
-    } finally {
-      setIsLoadingRmp(false);
-    }
-  };
+  // ── Effects ───────────────────────────────────────────────────────────────
 
   const warmupDoneRef = useRef(false);
   useEffect(() => {
@@ -335,7 +980,6 @@ export default function ChatUI({
     const registerSemester = async () => {
       if (isCreatingPlanRef.current) return;
       isCreatingPlanRef.current = true;
-
       try {
         const data = await createSemesterForPlanRequest(
           existingPlanId,
@@ -343,12 +987,10 @@ export default function ChatUI({
           term,
           year,
         );
-
         const ids: SavedPlanIds = {
           plan_id: existingPlanId,
           semester_db_id: data.semester_db_id,
         };
-
         createdPlanRef.current = ids;
         if (onPlanCreated) onPlanCreated(ids);
       } catch (e) {
@@ -370,27 +1012,26 @@ export default function ChatUI({
     isFreshMultiMode,
   );
 
+  // ── Plan ID helpers ───────────────────────────────────────────────────────
+
   const getActivePlanIds = (): SavedPlanIds | null => {
-    if (semester?.plan_id && semester?.semester_db_id) {
+    if (semester?.plan_id && semester?.semester_db_id)
       return {
         plan_id: semester.plan_id,
         semester_db_id: semester.semester_db_id,
       };
-    }
     if (createdPlanRef.current) return createdPlanRef.current;
     if (savedPlanIds) return savedPlanIds;
-    if (savedPlan?.id && savedPlan?.semester_db_id) {
+    if (savedPlan?.id && savedPlan?.semester_db_id)
       return {
         plan_id: savedPlan.id,
         semester_db_id: savedPlan.semester_db_id,
       };
-    }
     return null;
   };
 
   const createFreshMultiPlan = async (): Promise<SavedPlanIds> => {
     if (!userData?.id) throw new Error("User not loaded");
-
     const allSemesters = semester?._allSemesters || [];
     const planTitle = semester?._planTitle || "Multi-Semester Plan";
     const thisSemesterIndex = allSemesters.findIndex(
@@ -410,7 +1051,6 @@ export default function ChatUI({
         })),
       );
       planId = created.id;
-
       const detail = await fetchMultiPlanDetailRequest(userData.id, planId);
       semesterDbId = detail.semesters[thisSemesterIndex]?.id;
       if (onPlanSaved) onPlanSaved();
@@ -432,6 +1072,8 @@ export default function ChatUI({
       onPlanCreated({ plan_id: planId, semester_db_id: semesterDbId });
     return ids;
   };
+
+  // ── Autosave ──────────────────────────────────────────────────────────────
 
   const autosave = async (
     msgs: ChatMessage[],
@@ -497,6 +1139,8 @@ export default function ChatUI({
       setAutosaveStatus("error");
     }
   };
+
+  // ── File / message handlers ───────────────────────────────────────────────
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -591,9 +1235,9 @@ export default function ChatUI({
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const toggleRightPanel = () => {
-    setIsRightPanelExpanded(!isRightPanelExpanded);
-  };
+  const toggleRightPanel = () => setIsRightPanelExpanded(!isRightPanelExpanded);
+
+  // ── Course helpers ────────────────────────────────────────────────────────
 
   const parseDayAbbreviations = (dayStr: string) => {
     const dayMap: Record<string, string> = {
@@ -623,7 +1267,6 @@ export default function ChatUI({
         class_code,
         selectedDepartment || undefined,
       );
-
       if (sections.length === 0) {
         alert(
           `No sections found for course code "${class_code}". Make sure you're entering just the number (e.g. 1410).`,
@@ -635,9 +1278,7 @@ export default function ChatUI({
     } catch (err) {
       console.error("handleAddCourse error:", err);
       alert(
-        `Failed to add course: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        `Failed to add course: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
     }
   };
@@ -680,7 +1321,12 @@ export default function ChatUI({
       day,
       course_id: courseId,
       class_section_id: classSectionId,
-      instructor: section.instructor || (section as Record<string, unknown>)["professor_name"] as string | null || null,
+      instructor:
+        section.instructor ||
+        ((section as Record<string, unknown>)["professor_name"] as
+          | string
+          | null) ||
+        null,
     }));
 
     const newVizData = visualizationData
@@ -721,9 +1367,7 @@ export default function ChatUI({
     } catch (err) {
       console.error("Error fetching courses:", err);
       alert(
-        `Failed to load courses: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        `Failed to load courses: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
     } finally {
       setIsLoadingCourses(false);
@@ -737,7 +1381,7 @@ export default function ChatUI({
 
   const handleCourseClick = (course: Course) => {
     setShowCoursesPanel(false);
-    openCourseDetails(course);
+    void openCourseDetails(course);
   };
 
   const fetchCourseSections = async (courseCode: string | number) => {
@@ -748,9 +1392,7 @@ export default function ChatUI({
     } catch (err) {
       console.error(err);
       alert(
-        `Failed to add course: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        `Failed to add course: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
     }
   };
@@ -771,20 +1413,19 @@ export default function ChatUI({
           c.department.toUpperCase() === dept.toUpperCase(),
       ) || allCourses.find((c) => c.course_code.toString() === courseCode);
 
-    if (course) {
-      setSelectedSectionInstructor(scheduleItem.instructor || null);
-      openCourseDetails(course);
-    } else {
-      setSelectedSectionInstructor(scheduleItem.instructor || null);
-      openCourseDetails({
+    void openCourseDetails(
+      course ?? {
         department: dept,
         course_code: courseCode,
         course_name: scheduleItem.class_ || "",
         credits: "N/A",
         description:
           "Course details not available. Please check the course catalog.",
-      });
-    }
+      },
+    );
+    setSelectedSectionInstructor(
+      (scheduleItem.instructor as string | null) || null,
+    );
   };
 
   const handleDeleteCourse = (
@@ -813,12 +1454,12 @@ export default function ChatUI({
     }
   };
 
-  // Unique departments for the browser filter dropdown
+  // ── Filtering ─────────────────────────────────────────────────────────────
+
   const browserDepartments = [
     ...new Set(allCourses.map((c) => c.department).filter(Boolean)),
   ].sort();
 
-  // Filter by both search query AND browser department filter
   const filteredCourses = allCourses.filter((course) => {
     const searchLower = courseSearchQuery.toLowerCase().trim();
     const combined = `${course.department} ${course.course_code}`.toLowerCase();
@@ -835,6 +1476,8 @@ export default function ChatUI({
     return matchesSearch && matchesDept;
   });
 
+  // ── Save plan ─────────────────────────────────────────────────────────────
+
   const handleSavePlan = async () => {
     try {
       if (!userData?.id) {
@@ -843,7 +1486,6 @@ export default function ChatUI({
       }
 
       const scheduleItems = visualizationData?.data || [];
-
       const payload = {
         user_id: userData.id,
         name: planName,
@@ -870,12 +1512,9 @@ export default function ChatUI({
 
       if (scheduleItems.length > 0) {
         const seen = new Set<string>();
-
         scheduleItems.forEach((item) => {
           if (!item.course_id) return;
-
           const key = `${item.course_id}-${item.class_section_id || "null"}`;
-
           if (!seen.has(key)) {
             seen.add(key);
             payload.courseSelections.push({
@@ -898,14 +1537,14 @@ export default function ChatUI({
       alert("Plan saved successfully");
       setSavedFlash(true);
       setTimeout(() => setSavedFlash(false), 2000);
-
-      // Pass the new plan ID up so App can track it for onPlanDeleted matching
       if (onPlanSaved) onPlanSaved(data.id);
     } catch (err) {
       console.error("Save error:", err);
       alert("Error saving plan");
     }
   };
+
+  // ── Section conflict check ────────────────────────────────────────────────
 
   const getSectionConflict = (section: Section) => {
     const toMinutes = (timeStr: string) => {
@@ -944,32 +1583,31 @@ export default function ChatUI({
         const newEnd = toMinutes(section.endTime);
         return newStart < existEnd && newEnd > existStart;
       });
-
       for (const c of conflicting) {
         const className = c.class_ || "Unknown";
         if (!conflictsByClass[className]) conflictsByClass[className] = [];
         conflictsByClass[className].push(day);
       }
     }
-
     for (const [className, classDays] of Object.entries(conflictsByClass)) {
       reasons.push(`Conflicts with ${className} on ${classDays.join(", ")}`);
     }
-
     return reasons.length > 0 ? reasons : null;
   };
 
+  // ── Schedule grid setup ───────────────────────────────────────────────────
+
   const titleInputStyle = `
-		.plan-title-input:-webkit-autofill,
-		.plan-title-input:-webkit-autofill:hover,
-		.plan-title-input:-webkit-autofill:focus {
-			-webkit-box-shadow: 0 0 0px 1000px #BE0000 inset !important;
-			-webkit-text-fill-color: white !important;
-			transition: background-color 5000s ease-in-out 0s;
-		}
-		.plan-title-input::selection { background: rgba(255,255,255,0.3); color: white; }
-		.plan-title-input:focus { background: transparent !important; }
-	`;
+    .plan-title-input:-webkit-autofill,
+    .plan-title-input:-webkit-autofill:hover,
+    .plan-title-input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0px 1000px #BE0000 inset !important;
+      -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+    .plan-title-input::selection { background: rgba(255,255,255,0.3); color: white; }
+    .plan-title-input:focus { background: transparent !important; }
+  `;
 
   const scheduleRange = visualizationData
     ? getScheduleTimeRange(visualizationData.data)
@@ -990,6 +1628,8 @@ export default function ChatUI({
 
   const hourLabels: number[] = [];
   for (let h = scheduleStartHour; h <= scheduleEndHour; h++) hourLabels.push(h);
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="flex h-screen bg-slate-100 relative">
@@ -1041,41 +1681,44 @@ export default function ChatUI({
 
         <div className="flex-1 overflow-y-auto">
           <div className="px-4 py-4 space-y-3">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex gap-2 ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                {message.role === "assistant" && (
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-700 flex items-center justify-center shadow-sm text-white text-xs font-bold">
-                    AI
-                  </div>
-                )}
+            {messages.map((message, index) => {
+              if (!message.content) return null;
+              return (
                 <div
-                  className={`max-w-md rounded-xl px-3 py-2 shadow-sm text-sm ${
-                    message.role === "user"
-                      ? "text-white"
-                      : "bg-slate-50 text-slate-800 border border-slate-200"
+                  key={index}
+                  className={`flex gap-2 ${
+                    message.role === "user" ? "justify-end" : "justify-start"
                   }`}
-                  style={
-                    message.role === "user"
-                      ? { backgroundColor: "#BE0000" }
-                      : {}
-                  }
                 >
-                  <p className="whitespace-pre-wrap leading-snug">
-                    {message.content}
-                  </p>
-                </div>
-                {message.role === "user" && (
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center shadow-sm text-white text-sm">
-                    👤
+                  {message.role === "assistant" && (
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-red-700 flex items-center justify-center shadow-sm text-white text-xs font-bold">
+                      AI
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-md rounded-xl px-3 py-2 shadow-sm text-sm ${
+                      message.role === "user"
+                        ? "text-white"
+                        : "bg-slate-50 text-slate-800 border border-slate-200"
+                    }`}
+                    style={
+                      message.role === "user"
+                        ? { backgroundColor: "#BE0000" }
+                        : {}
+                    }
+                  >
+                    <p className="whitespace-pre-wrap leading-snug">
+                      {message.content}
+                    </p>
                   </div>
-                )}
-              </div>
-            ))}
+                  {message.role === "user" && message.content && (
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center shadow-sm text-white text-sm">
+                      👤
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             {isLoading && (
               <div className="flex gap-2 justify-start">
                 <div className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
@@ -1083,15 +1726,15 @@ export default function ChatUI({
                     <div
                       className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
                       style={{ animationDelay: "0ms" }}
-                    ></div>
+                    />
                     <div
                       className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
                       style={{ animationDelay: "150ms" }}
-                    ></div>
+                    />
                     <div
                       className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
                       style={{ animationDelay: "300ms" }}
-                    ></div>
+                    />
                   </div>
                 </div>
               </div>
@@ -1230,13 +1873,11 @@ export default function ChatUI({
           >
             <div className="h-full flex flex-col">
               <div className="p-4 border-b border-slate-200">
-                {/* ── Header row: title + department filter ── */}
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-semibold text-slate-800 flex-shrink-0">
                     Available Courses
                   </h3>
                   <div className="flex items-center gap-2">
-                    {/* Department filter dropdown — sits to the right of the title */}
                     <select
                       value={browserDepartmentFilter}
                       onChange={(e) =>
@@ -1261,7 +1902,6 @@ export default function ChatUI({
                     </button>
                   </div>
                 </div>
-                {/* Search bar */}
                 <input
                   type="text"
                   value={courseSearchQuery}
@@ -1269,7 +1909,6 @@ export default function ChatUI({
                   placeholder="Search courses..."
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
                 />
-                {/* Active filter chip */}
                 {browserDepartmentFilter && (
                   <div className="mt-2 flex items-center gap-1">
                     <span className="text-xs text-slate-500">Showing:</span>
@@ -1295,7 +1934,7 @@ export default function ChatUI({
                     <div
                       className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-2"
                       style={{ borderColor: "#BE0000" }}
-                    ></div>
+                    />
                     <p>Loading courses...</p>
                   </div>
                 ) : filteredCourses.length === 0 ? (
@@ -1339,12 +1978,33 @@ export default function ChatUI({
           {/* ── Weekly schedule grid ── */}
           {visualizationData && (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-              <h3 className="text-base font-semibold text-slate-800 mb-3">
-                Weekly Class Schedule
-              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <h3 className="text-base font-semibold text-slate-800">
+                  Weekly Class Schedule
+                </h3>
+                <button
+                  type="button"
+                  onClick={handleDownloadCalendarFile}
+                  className="px-3 py-1.5 text-sm font-semibold rounded-lg transition-all shadow-sm border"
+                  style={{
+                    backgroundColor: "white",
+                    color: "#BE0000",
+                    borderColor: "#BE0000",
+                  }}
+                >
+                  {calendarSyncStatus === "success"
+                    ? "✓ Downloaded calendar file"
+                    : "Download calendar (.ics)"}
+                </button>
+              </div>
+              {calendarSyncStatus === "error" && (
+                <p className="text-sm text-red-600 mb-3">
+                  Could not export the calendar file. Please try again.
+                </p>
+              )}
               <div className="w-full">
                 <div className="flex gap-1 mb-1">
-                  <div style={{ width: "45px", flexShrink: 0 }}></div>
+                  <div style={{ width: "45px", flexShrink: 0 }} />
                   {["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
                     <div
                       key={day}
@@ -1372,7 +2032,6 @@ export default function ChatUI({
                           className="text-slate-400 text-right pr-3 leading-none whitespace-nowrap"
                           style={{
                             fontSize: "10px",
-                            marginTop: "0px",
                             width: "45px",
                             flexShrink: 0,
                           }}
@@ -1390,14 +2049,14 @@ export default function ChatUI({
                             key={`${day}-${hour}`}
                             className="flex-1 border-t border-slate-200 bg-slate-50"
                             style={{ height: `${rowHeight}px` }}
-                          ></div>
+                          />
                         ))}
                       </div>
                     ))}
                   </div>
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="flex gap-1 h-full">
-                      <div style={{ width: "45px", flexShrink: 0 }}></div>
+                      <div style={{ width: "45px", flexShrink: 0 }} />
                       {[
                         "Monday",
                         "Tuesday",
@@ -1658,7 +2317,7 @@ export default function ChatUI({
               type="button"
               onClick={toggleCoursesPanel}
               className="px-6 py-2 text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-              style={{ backgroundColor: "#BE0000", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#BE0000" }}
             >
               {showCoursesPanel ? "Hide Courses" : "Browse Courses"}
             </button>
@@ -1706,32 +2365,24 @@ export default function ChatUI({
                       <div className="flex justify-between items-start">
                         <div>
                           <h4
-                            className={`font-semibold mb-1 ${
-                              isDisabled ? "text-slate-400" : "text-slate-800"
-                            }`}
+                            className={`font-semibold mb-1 ${isDisabled ? "text-slate-400" : "text-slate-800"}`}
                           >
                             {section.class_}
                           </h4>
                           <p
-                            className={`text-sm ${
-                              isDisabled ? "text-slate-400" : "text-slate-600"
-                            }`}
+                            className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}
                           >
                             <span className="font-medium">Day:</span>{" "}
                             {section.day}
                           </p>
                           <p
-                            className={`text-sm ${
-                              isDisabled ? "text-slate-400" : "text-slate-600"
-                            }`}
+                            className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}
                           >
                             <span className="font-medium">Time:</span>{" "}
                             {section.startTime} - {section.endTime}
                           </p>
                           <p
-                            className={`text-sm ${
-                              isDisabled ? "text-slate-400" : "text-slate-600"
-                            }`}
+                            className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}
                           >
                             <span className="font-medium">Room:</span>{" "}
                             {section.room}
@@ -1775,7 +2426,7 @@ export default function ChatUI({
           onClick={closeCourseDetails}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+            className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">
@@ -1812,6 +2463,7 @@ export default function ChatUI({
                 ×
               </button>
             </div>
+
             <div className="text-slate-700 whitespace-pre-wrap leading-relaxed">
               {selectedCourse.description &&
               selectedCourse.description.trim().length > 0
@@ -1819,6 +2471,46 @@ export default function ChatUI({
                 : "No description available for this course."}
             </div>
 
+            {/* Prerequisite chain visualizer */}
+            <div className="mt-5">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                Course Path
+              </p>
+              {prereqChain.loading ? (
+                <div className="flex items-center justify-center gap-2 py-8 text-slate-400 text-sm">
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Loading prerequisite chain…
+                </div>
+              ) : (
+                <PrereqChainViz
+                  prereqs={prereqChain.prereqs}
+                  current={{
+                    label: `${selectedCourse.department} ${selectedCourse.course_code}`,
+                  }}
+                  unlocks={prereqChain.unlocks}
+                />
+              )}
+            </div>
+
+            {/* Grade distribution button */}
             <div className="mt-4">
               <button
                 type="button"
@@ -1833,6 +2525,7 @@ export default function ChatUI({
                 View Grade Distribution
               </button>
             </div>
+
             <div className="mt-6 flex justify-end">
               <button
                 type="button"
@@ -1855,21 +2548,30 @@ export default function ChatUI({
         isLoading={isLoadingCourseGradeStats}
         error={courseGradeStatsError}
       />
+
       {/* ── RMP modal ── */}
       {showRmpModal && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]"
-          onClick={() => { setShowRmpModal(false); setRmpData(null); }}
+          onClick={() => {
+            setShowRmpModal(false);
+            setRmpData(null);
+          }}
         >
           <div
             className="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-semibold text-slate-800">Rate My Professor</h3>
+              <h3 className="text-2xl font-semibold text-slate-800">
+                Rate My Professor
+              </h3>
               <button
                 type="button"
-                onClick={() => { setShowRmpModal(false); setRmpData(null); }}
+                onClick={() => {
+                  setShowRmpModal(false);
+                  setRmpData(null);
+                }}
                 className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
               >
                 ×
@@ -1881,36 +2583,61 @@ export default function ChatUI({
             )}
 
             {!isLoadingRmp && (!rmpData || rmpData.error) && (
-              <p className="text-center text-slate-500 py-8">{rmpData?.error ?? "No data found for this professor"}</p>
+              <p className="text-center text-slate-500 py-8">
+                {rmpData?.error ?? "No data found for this professor"}
+              </p>
             )}
 
             {!isLoadingRmp && rmpData && !rmpData.error && (
               <div className="space-y-3">
-                <p className="text-xl font-semibold text-slate-800">{rmpData.name}</p>
+                <p className="text-xl font-semibold text-slate-800">
+                  {rmpData.name}
+                </p>
                 {rmpData.department && (
                   <p className="text-sm text-slate-500">{rmpData.department}</p>
                 )}
                 <div className="grid grid-cols-3 gap-3 my-4">
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
-                      {rmpData.rating ?? "N/A"}{rmpData.rating != null && <span className="text-sm text-slate-400">/5</span>}
+                    <p
+                      className="text-3xl font-bold"
+                      style={{ color: "#BE0000" }}
+                    >
+                      {rmpData.rating ?? "N/A"}
+                      {rmpData.rating != null && (
+                        <span className="text-sm text-slate-400">/5</span>
+                      )}
                     </p>
                     <p className="text-sm text-slate-500 mt-1">Rating</p>
                   </div>
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
-                      {rmpData.difficulty ?? "N/A"}{rmpData.difficulty != null && <span className="text-sm text-slate-400">/5</span>}
+                    <p
+                      className="text-3xl font-bold"
+                      style={{ color: "#BE0000" }}
+                    >
+                      {rmpData.difficulty ?? "N/A"}
+                      {rmpData.difficulty != null && (
+                        <span className="text-sm text-slate-400">/5</span>
+                      )}
                     </p>
                     <p className="text-sm text-slate-500 mt-1">Difficulty</p>
                   </div>
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
-                      {rmpData.would_take_again != null ? `${rmpData.would_take_again}%` : "N/A"}
+                    <p
+                      className="text-3xl font-bold"
+                      style={{ color: "#BE0000" }}
+                    >
+                      {rmpData.would_take_again != null
+                        ? `${rmpData.would_take_again}%`
+                        : "N/A"}
                     </p>
-                    <p className="text-sm text-slate-500 mt-1">Would Take Again</p>
+                    <p className="text-sm text-slate-500 mt-1">
+                      Would Take Again
+                    </p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400">Based on {rmpData.num_ratings} rating(s)</p>
+                <p className="text-xs text-slate-400">
+                  Based on {rmpData.num_ratings} rating(s)
+                </p>
                 {rmpData.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {rmpData.tags.map((tag, i) => (
