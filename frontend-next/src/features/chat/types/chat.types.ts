@@ -17,6 +17,7 @@ export interface VisualizationItem {
   startTime?: string;
   endTime?: string;
   room?: string;
+  instructor?: string | null;
   course_id?: number | string | null;
   class_section_id?: number | string | null;
   id?: number | string | null;
@@ -43,6 +44,7 @@ export interface Section extends VisualizationItem {
   startTime: string;
   endTime: string;
   room: string;
+  instructor?: string | null;
   course_id?: number | string | null;
   class_section_id?: number | string | null;
 }

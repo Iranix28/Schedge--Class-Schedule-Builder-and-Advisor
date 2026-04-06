@@ -172,6 +172,7 @@ export async function autosaveSemesterRequest(
       room: string;
       course_id: number | string | null;
       class_section_id: number | string | null;
+      instructor?: string | null;  
     }>;
   },
 ): Promise<void> {
@@ -209,6 +210,7 @@ export async function saveSinglePlanRequest(payload: {
     room: string;
     course_id: number | string | null;
     class_section_id: number | string | null;
+    instructor?: string | null;
   }>;
 }): Promise<{ id: number | string; semester_db_id: number | string }> {
   const response = await fetch(`${BASE_URL}/plans`, {
@@ -249,4 +251,23 @@ export async function fetchCourseGradeStatsRequest(
   }
 
   return (await response.json()) as CourseGradeStats;
+}
+
+export async function fetchProfessorRating(professorName: string): Promise<{
+  name: string;
+  department: string | null;
+  rating: number | null;
+  difficulty: number | null;
+  num_ratings: number | null;
+  would_take_again: number | null;
+  tags: string[];
+  rmp_url: string;
+  error?: string;
+} | null> {
+  const response = await fetch(
+    `${BASE_URL}/professor-rating/${encodeURIComponent(professorName)}`,
+    { method: "GET" }
+  );
+  if (!response.ok) return null;
+  return response.json();
 }

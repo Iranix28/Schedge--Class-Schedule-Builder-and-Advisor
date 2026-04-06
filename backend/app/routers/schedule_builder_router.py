@@ -5,6 +5,7 @@ from app.models.models import ScheduleItem, CourseItem
 from app.database.session import get_session
 from app.database.query_routers.class_sections_query import *
 from app.database.query_routers.courses_query import *
+from app.services.generate_schedule import format_instructor_name
 
 from datetime import datetime
 
@@ -72,6 +73,7 @@ def get_classes_from_code(
             endTime=datetime.strptime(time_str.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
             class_=f"{subject} {class_code} - {class_section.section_code}",
             room=getattr(class_section, "location", None) or "TBD",
+            instructor=format_instructor_name(getattr(class_section, "professor_name", None)),
         ))
     return frontend_sections
 
@@ -141,5 +143,6 @@ def get_classes_from_code(
             endTime=datetime.strptime(time_str.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
             class_=f"{dept.subject} {class_code} - {class_section.section_code}",
             room=class_section.location or "TBD",
+            instructor=format_instructor_name(class_section.professor_name),
         ))
     return frontend_sections

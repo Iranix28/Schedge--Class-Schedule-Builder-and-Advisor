@@ -61,6 +61,7 @@ class ScheduleItemInput(BaseModel):
     room: str
     course_id: Optional[int] = None
     class_section_id: Optional[int] = None
+    instructor: Optional[str] = None
 
 
 class ScheduleItemResponse(BaseModel):
@@ -71,6 +72,7 @@ class ScheduleItemResponse(BaseModel):
     room: str
     course_id: Optional[int] = None
     class_section_id: Optional[int] = None
+    instructor: Optional[str] = None
 
 
 # Request body for creating a single-semester plan
@@ -455,6 +457,7 @@ def get_multi_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                 room=item.get("room", ""),
                 course_id=item.get("course_id") or None,
                 class_section_id=item.get("class_section_id") or None,
+                instructor=item.get("instructor") or None,
             )
             for item in raw_schedule
         ]
@@ -906,6 +909,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                             room=section.location or "",
                             course_id=selection.course_id,
                             class_section_id=selection.class_section_id,
+                            instructor=section.professor_name or None,
                         )
                     )
 
@@ -928,6 +932,7 @@ def get_plan(plan_id: int, user_id: int, db: Session = Depends(get_db)):
                     room=item.get("room", ""),
                     course_id=item.get("course_id") or None,
                     class_section_id=item.get("class_section_id") or None,
+                    instructor=item.get("instructor") or None,
                 )
             )
 

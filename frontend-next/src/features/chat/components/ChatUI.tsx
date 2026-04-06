@@ -21,6 +21,7 @@ import {
   sendMessageLLM,
   uploadAuditFile,
   fetchCourseGradeStatsRequest,
+  fetchProfessorRating,
 } from "../services/chat.service";
 import type {
   ChatMessage,
@@ -94,6 +95,20 @@ export default function ChatUI({
   const [courseGradeStatsError, setCourseGradeStatsError] = useState<
     string | null
   >(null);
+  const [selectedSectionInstructor, setSelectedSectionInstructor] = useState<string | null>(null);
+  const [showRmpModal, setShowRmpModal] = useState(false);
+  const [rmpData, setRmpData] = useState<{
+    name: string;
+    department: string | null;
+    rating: number | null;
+    difficulty: number | null;
+    num_ratings: number | null;
+    would_take_again: number | null;
+    tags: string[];
+    rmp_url: string;
+    error?: string;
+  } | null>(null);
+  const [isLoadingRmp, setIsLoadingRmp] = useState(false);
 
   const IDEAL_ROW_HEIGHT = 55;
   const MAX_SCHEDULE_HEIGHT = 500;
@@ -143,6 +158,7 @@ export default function ChatUI({
     setSelectedCourse(null);
     setCourseGradeStats(null);
     setCourseGradeStatsError(null);
+    setSelectedSectionInstructor(null);
   };
 
   const openGradeDistributionModal = async () => {
@@ -182,6 +198,21 @@ export default function ChatUI({
       );
     } finally {
       setIsLoadingCourseGradeStats(false);
+    }
+  };
+
+  const handleViewRmp = async () => {
+    if (!selectedSectionInstructor) return;
+    setIsLoadingRmp(true);
+    setShowRmpModal(true);
+    try {
+      const data = await fetchProfessorRating(selectedSectionInstructor);
+      setRmpData(data);
+    } catch (e) {
+      console.error("RMP fetch failed:", e);
+      setRmpData(null);
+    } finally {
+      setIsLoadingRmp(false);
     }
   };
 
@@ -454,6 +485,7 @@ export default function ChatUI({
           room: item.room || "",
           course_id: item.course_id || null,
           class_section_id: item.class_section_id || null,
+          instructor: (item.instructor as string | null) || null,
         })),
       });
 
@@ -648,6 +680,7 @@ export default function ChatUI({
       day,
       course_id: courseId,
       class_section_id: classSectionId,
+      instructor: section.instructor || (section as Record<string, unknown>)["professor_name"] as string | null || null,
     }));
 
     const newVizData = visualizationData
@@ -739,8 +772,10 @@ export default function ChatUI({
       ) || allCourses.find((c) => c.course_code.toString() === courseCode);
 
     if (course) {
+      setSelectedSectionInstructor(scheduleItem.instructor || null);
       openCourseDetails(course);
     } else {
+      setSelectedSectionInstructor(scheduleItem.instructor || null);
       openCourseDetails({
         department: dept,
         course_code: courseCode,
@@ -829,6 +864,7 @@ export default function ChatUI({
           room: item.room || "",
           course_id: item.course_id || null,
           class_section_id: item.class_section_id || null,
+          instructor: (item.instructor as string | null) || null,
         })),
       };
 
@@ -1751,6 +1787,21 @@ export default function ChatUI({
                 <p className="text-sm text-slate-500 mt-1">
                   {selectedCourse.credits} credits
                 </p>
+                {selectedSectionInstructor && (
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-sm text-slate-500">
+                      {selectedSectionInstructor}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void handleViewRmp()}
+                      className="px-2 py-0.5 text-xs text-white font-semibold rounded hover:opacity-90"
+                      style={{ backgroundColor: "#BE0000" }}
+                    >
+                      Rate My Professor
+                    </button>
+                  </div>
+                )}
               </div>
               <button
                 type="button"
@@ -1804,6 +1855,87 @@ export default function ChatUI({
         isLoading={isLoadingCourseGradeStats}
         error={courseGradeStatsError}
       />
+      {/* ── RMP modal ── */}
+      {showRmpModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]"
+          onClick={() => { setShowRmpModal(false); setRmpData(null); }}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-semibold text-slate-800">Rate My Professor</h3>
+              <button
+                type="button"
+                onClick={() => { setShowRmpModal(false); setRmpData(null); }}
+                className="text-slate-400 hover:text-slate-600 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            {isLoadingRmp && (
+              <p className="text-center text-slate-500 py-8">Loading...</p>
+            )}
+
+            {!isLoadingRmp && (!rmpData || rmpData.error) && (
+              <p className="text-center text-slate-500 py-8">{rmpData?.error ?? "No data found for this professor"}</p>
+            )}
+
+            {!isLoadingRmp && rmpData && !rmpData.error && (
+              <div className="space-y-3">
+                <p className="text-xl font-semibold text-slate-800">{rmpData.name}</p>
+                {rmpData.department && (
+                  <p className="text-sm text-slate-500">{rmpData.department}</p>
+                )}
+                <div className="grid grid-cols-3 gap-3 my-4">
+                  <div className="text-center p-3 bg-slate-50 rounded-lg">
+                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
+                      {rmpData.rating ?? "N/A"}{rmpData.rating != null && <span className="text-sm text-slate-400">/5</span>}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1">Rating</p>
+                  </div>
+                  <div className="text-center p-3 bg-slate-50 rounded-lg">
+                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
+                      {rmpData.difficulty ?? "N/A"}{rmpData.difficulty != null && <span className="text-sm text-slate-400">/5</span>}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1">Difficulty</p>
+                  </div>
+                  <div className="text-center p-3 bg-slate-50 rounded-lg">
+                    <p className="text-3xl font-bold" style={{ color: "#BE0000" }}>
+                      {rmpData.would_take_again != null ? `${rmpData.would_take_again}%` : "N/A"}
+                    </p>
+                    <p className="text-sm text-slate-500 mt-1">Would Take Again</p>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-400">Based on {rmpData.num_ratings} rating(s)</p>
+                {rmpData.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {rmpData.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-1 text-sm rounded-full bg-slate-100 text-slate-600"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <a
+                  href={rmpData.rmp_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center mt-4 px-4 py-2 text-white font-semibold rounded-lg hover:opacity-90 bg-[#BE0000]"
+                >
+                  View on Rate My Professor
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Panel expand/collapse toggle */}
       <button
