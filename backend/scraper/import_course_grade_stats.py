@@ -90,6 +90,12 @@ def read_grade_file(file_path: Path) -> pd.DataFrame:
     ].copy()
 
     for col in GRADE_COLUMNS:
+        df[col] = (
+            df[col]
+            .astype(str)
+            .str.replace(",", "", regex=False)
+            .replace({"nan": None, "None": None, "": None})
+        )
         df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
 
     return df
