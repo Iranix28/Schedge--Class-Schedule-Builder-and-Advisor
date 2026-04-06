@@ -300,6 +300,8 @@ def generate_schedule(audit_id):
     major_classes = 2
     total_classes = 4
 
+    term = "Spring"
+
     comp_courses = []
     for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
         department = get_department(db=db, dept_id=comp.department_id)
@@ -328,6 +330,9 @@ def generate_schedule(audit_id):
 
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
+
+                        if section.term_season != term:
+                            continue
 
                         if conflict:
                             continue
@@ -411,6 +416,9 @@ def generate_schedule(audit_id):
                         if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
+                            if section.term_season != term:
+                                continue
+
                             if conflict:
                                 continue
 
@@ -465,6 +473,9 @@ def generate_schedule(audit_id):
                     # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
+
+                        if section.term_season != term:
+                            continue
 
                         if conflict:
                             continue
