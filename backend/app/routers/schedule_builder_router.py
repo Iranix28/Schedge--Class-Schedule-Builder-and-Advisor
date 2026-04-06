@@ -5,6 +5,7 @@ from app.models.models import ScheduleItem, CourseItem
 from app.database.session import get_session
 from app.database.query_routers.class_sections_query import *
 from app.database.query_routers.courses_query import *
+from app.services.generate_schedule import format_instructor_name
 
 from datetime import datetime
 
@@ -28,6 +29,7 @@ def get_courses(db: Session = Depends(get_session)) -> List[CourseItem]:
         subject = getattr(dept_obj, "subject", None) or "Unknown"
 
         frontend_courses.append(CourseItem(
+            id=course.id,
             department=subject,
             course_code=str(course.number) if course.number is not None else "",
             course_name=str(course.name) if course.name is not None else "",
@@ -62,7 +64,10 @@ def get_classes_from_code(
         if department and subject != department:
             continue
 
-        # Convert stored time objects to "H:MM AM/PM" format for the frontend
+        # Skip sections with missing time data
+        if class_section.start_time is None or class_section.end_time is None:
+            continue
+
         time_str = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
         print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time_str}")
 
@@ -72,74 +77,6 @@ def get_classes_from_code(
             endTime=datetime.strptime(time_str.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
             class_=f"{subject} {class_code} - {class_section.section_code}",
             room=getattr(class_section, "location", None) or "TBD",
-        ))
-    return frontend_sections
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# NOTE: The routes below are DUPLICATES of the two above, but use explicit
-# SQLAlchemy joins instead of ORM relationships. Only one pair should be kept.
-# ══════════════════════════════════════════════════════════════════════════════
-
-
-# ── GET /schedule/get_courses (duplicate) ──────────────────────────────────
-# Same as above but uses an explicit Course-Department join instead of the
-# ORM relationship. Returns identical CourseItem data.
-@router.get("/get_courses", response_model=List[CourseItem])
-def get_courses(db: Session = Depends(get_session)) -> List[CourseItem]:
-    # Explicit join: Course + Department to get subject (e.g. "CS", "MATH")
-    results = (
-        db.query(Course, Department)
-        .join(Department, Course.department_id == Department.id)
-        .all()
-    )
-    frontend_courses: list[CourseItem] = []
-    print(len(results))
-
-    for course, department in results:
-        frontend_courses.append(CourseItem(
-            department=department.subject,
-            course_code=str(course.number) if course.number is not None else "",
-            course_name=str(course.name) if course.name is not None else "",
-            credits=course.units if course.units is not None else 0,
-            description=str(course.description) if course.description is not None else "",
-        ))
-    return frontend_courses
-
-
-# ── GET /schedule/{class_code} (duplicate) ─────────────────────────────────
-# Same as above but uses an explicit three-way join (ClassSection -> Course -> Department)
-# instead of ORM relationships. Returns identical ScheduleItem data.
-@router.get("/{class_code}", response_model=List[ScheduleItem])
-def get_classes_from_code(
-    class_code: int,
-    department: Optional[str] = Query(default=None),
-    db: Session = Depends(get_session)
-) -> List[ScheduleItem]:
-    # Explicit three-way join to resolve department subject for each section
-    results = (
-        db.query(ClassSection, Course, Department)
-        .join(Course, ClassSection.course_id == Course.id)
-        .join(Department, Course.department_id == Department.id)
-        .filter(Course.number == str(class_code))
-        .all()
-    )
-
-    # Apply department filter if provided
-    if department:
-        results = [(s, c, d) for s, c, d in results if d.subject == department]
-
-    frontend_sections: list[ScheduleItem] = []
-    for class_section, course, dept in results:
-        # Convert stored time objects to "H:MM AM/PM" format for the frontend
-        time_str = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
-        print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time_str}")
-
-        frontend_sections.append(ScheduleItem(
-            day=class_section.days,
-            startTime=datetime.strptime(time_str.split(" ")[0], "%H:%M").strftime("%-I:%M %p"),
-            endTime=datetime.strptime(time_str.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
-            class_=f"{dept.subject} {class_code} - {class_section.section_code}",
-            room=class_section.location or "TBD",
+            instructor=format_instructor_name(getattr(class_section, "professor_name", None)),
         ))
     return frontend_sections

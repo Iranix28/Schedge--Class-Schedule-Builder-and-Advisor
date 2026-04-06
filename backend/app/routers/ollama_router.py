@@ -9,8 +9,9 @@ from sqlalchemy import text
 
 router = APIRouter(prefix="/ollama", tags=["Ollama"])
 
-role = " Your role is a class schedule and class advising at The University of Utah. Always address the school as The University of Utah " \
+role = " Your role is a class schedule and class advising at The University of Utah. Always address the school as The University of Utah" \
             " You can only talk about classes the student is asking about ONLY at the University of Utah." \
+            " If a student asks about a class, tell them the department along witht the course code such as CS 2420." \
             " Your responses are short and concise. Quickly answer only the question the user asks and nothing else. " \
             " Please match the language of the user chatting with you." \
             " You can only talk about course descriptions" \

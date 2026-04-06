@@ -13,8 +13,10 @@ class ScheduleItem(BaseModel):
     endTime: str
     class_: str
     room: str
+    instructor: str | None = None
 
 class CourseItem(BaseModel):
+    id: int
     department: str
     course_code: str
     course_name: str

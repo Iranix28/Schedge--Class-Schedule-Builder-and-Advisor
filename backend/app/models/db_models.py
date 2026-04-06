@@ -1,5 +1,6 @@
 from datetime import time, datetime
 from typing import List, Optional
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -49,6 +50,50 @@ class CourseRead(BaseModel):
     name: str
     units: int
     description: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CourseGradeStatsRead(BaseModel):
+    id: int
+    course_id: int
+
+    a_count: int
+    b_count: int
+    c_count: int
+    d_count: int
+    e_count: int
+    cr_count: int
+    nc_count: int
+    w_count: int
+    other_count: int
+
+    total_students: int
+    letter_graded_students: int
+
+    average_gpa: Optional[Decimal] = None
+
+    withdrawal_rate: Decimal
+    completion_rate: Decimal
+
+    failure_rate_letter_only: Optional[Decimal] = None
+    failure_rate_total: Decimal
+
+    pass_rate_letter_only: Optional[Decimal] = None
+    pass_rate_total: Decimal
+
+    a_rate: Optional[Decimal] = None
+    b_or_better_rate: Optional[Decimal] = None
+    c_or_better_rate: Optional[Decimal] = None
+
+    letter_graded_rate: Decimal
+    nonstandard_grading_rate: Decimal
+    other_rate: Decimal
+
+    is_low_sample: bool
+    has_letter_grades: bool
+    has_nonstandard_grading: bool
+
+    grade_distribution: Optional[dict] = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -11,6 +11,14 @@ from app.database.schema import ClassSection
 from app.database.schema import Course
 from typing import Any, Iterable, Set
 
+def format_instructor_name(name: str | None) -> str | None:
+    if not name:
+        return None
+    parts = name.split(",", 1)
+    if len(parts) == 2:
+        return f"{parts[1].strip()} {parts[0].strip()}"
+    return name
+
 def convert_days(days, day_string):
     if "Mo" in day_string:
         days.append("Monday")
@@ -34,7 +42,8 @@ def add_class_to_schedule(course: str, section: ClassSection, schedule: list[Sch
                 startTime="N/A", 
                 endTime="N/A",
                 class_=course, 
-                room="Online")
+                room="Online",
+                instructor=format_instructor_name(section.professor_name))
         )
     else:  
         day_string = section.days
@@ -55,7 +64,8 @@ def add_class_to_schedule(course: str, section: ClassSection, schedule: list[Sch
                     startTime=datetime.strptime(time.split(" ")[0], "%H:%M").strftime("%-I:%M %p"), 
                     endTime=datetime.strptime(time.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
                     class_=course + " - " + section.section_code, 
-                    room=location)
+                    room=location,
+                    instructor=format_instructor_name(section.professor_name))
             )
 
 def schedule_conflict(db, course: str, schedule: list[ScheduleItem]):
@@ -290,6 +300,8 @@ def generate_schedule(audit_id):
     major_classes = 2
     total_classes = 4
 
+    term = "Spring"
+
     comp_courses = []
     for comp in get_completed_courses(db=db, user_id=1): # Change user ID to actual later
         department = get_department(db=db, dept_id=comp.department_id)
@@ -318,6 +330,9 @@ def generate_schedule(audit_id):
 
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
+
+                        # if section.term_season != term:
+                        #     continue
 
                         if conflict:
                             continue
@@ -401,6 +416,9 @@ def generate_schedule(audit_id):
                         if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                             conflict, section = schedule_conflict(db=db, course=course_code, schedule=schedule)
 
+                            # if section.term_season != term:
+                            #     continue
+
                             if conflict:
                                 continue
 
@@ -455,6 +473,9 @@ def generate_schedule(audit_id):
                     # If prerequisites are met and there are no day and time conflicts, add the class to the schedule
                     if prereqs_satisfied(completed_courses=comp_courses, prereq_conditions=prereqs):
                         conflict, section = schedule_conflict(db=db, course=course, schedule=schedule)
+
+                        # if section.term_season != term:
+                        #     continue
 
                         if conflict:
                             continue
