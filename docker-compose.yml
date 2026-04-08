@@ -6,15 +6,31 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app # live-mount your local code
+      - .:/app
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/schedge_db
 
+  frontend:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-next:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_next:/app/.next
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"
+    depends_on:
+      - backend
+
   db:
-    image: pgvector/pgvector:pg16 #16 probably at some point
+    image: pgvector/pgvector:pg16
     container_name: schedge_db
     environment:
       POSTGRES_DB: schedge_db
@@ -27,3 +43,5 @@ services:
 
 volumes:
   postgres_data:
+  frontend_node_modules:
+  frontend_next:
