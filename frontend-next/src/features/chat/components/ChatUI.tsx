@@ -386,6 +386,7 @@ export default function ChatUI({
     error?: string;
   } | null>(null);
   const [isLoadingRmp, setIsLoadingRmp] = useState(false);
+  const [departmentSearchQuery, setDepartmentSearchQuery] = useState("");
 
   const IDEAL_ROW_HEIGHT = 55;
   const MAX_SCHEDULE_HEIGHT = 500;
@@ -710,6 +711,17 @@ export default function ChatUI({
   };
 
   // ── Course detail / prereq chain ──────────────────────────────────────────
+
+  const handleBrowseDepartmentSelect = (dept: string) => {
+    setBrowserDepartmentFilter(dept);
+    setSelectedDepartment(dept); // optional: sync with Add Course dropdown too
+    setCourseSearchQuery("");
+  };
+
+  const handleBackToDepartments = () => {
+    setBrowserDepartmentFilter("");
+    setCourseSearchQuery("");
+  };
 
   const openCourseDetails = async (course: Course) => {
     setSelectedCourse(course);
@@ -1460,21 +1472,42 @@ export default function ChatUI({
     ...new Set(allCourses.map((c) => c.department).filter(Boolean)),
   ].sort();
 
-  const filteredCourses = allCourses.filter((course) => {
-    const searchLower = courseSearchQuery.toLowerCase().trim();
-    const combined = `${course.department} ${course.course_code}`.toLowerCase();
-    const matchesSearch =
-      !searchLower ||
-      combined.includes(searchLower) ||
-      course.department.toLowerCase().includes(searchLower) ||
-      course.course_code.toString().includes(searchLower) ||
-      course.course_name.toLowerCase().includes(searchLower) ||
-      (!!course.description &&
-        course.description.toLowerCase().includes(searchLower));
-    const matchesDept =
-      !browserDepartmentFilter || course.department === browserDepartmentFilter;
-    return matchesSearch && matchesDept;
-  });
+  const filteredBrowserDepartments = browserDepartments.filter((dept) =>
+    dept.toLowerCase().includes(departmentSearchQuery.toLowerCase().trim()),
+  );
+
+  const groupedBrowserDepartments = filteredBrowserDepartments.reduce(
+    (acc, dept) => {
+      const firstLetter = dept.trim().charAt(0).toUpperCase();
+      const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : "#";
+
+      if (!acc[groupKey]) acc[groupKey] = [];
+      acc[groupKey].push(dept);
+      return acc;
+    },
+    {} as Record<string, string[]>,
+  );
+
+  const groupedDepartmentLetters = Object.keys(
+    groupedBrowserDepartments,
+  ).sort();
+
+  const filteredCourses = !browserDepartmentFilter
+    ? []
+    : allCourses.filter((course) => {
+        if (course.department !== browserDepartmentFilter) return false;
+
+        const searchLower = courseSearchQuery.toLowerCase().trim();
+        const combined =
+          `${course.department} ${course.course_code} ${course.course_name}`.toLowerCase();
+
+        return (
+          !searchLower ||
+          combined.includes(searchLower) ||
+          (!!course.description &&
+            course.description.toLowerCase().includes(searchLower))
+        );
+      });
 
   // ── Save plan ─────────────────────────────────────────────────────────────
 
@@ -1874,60 +1907,74 @@ export default function ChatUI({
             <div className="h-full flex flex-col">
               <div className="p-4 border-b border-slate-200">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold text-slate-800 flex-shrink-0">
-                    Available Courses
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={browserDepartmentFilter}
-                      onChange={(e) =>
-                        setBrowserDepartmentFilter(e.target.value)
-                      }
-                      className="text-xs px-2 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-slate-700 bg-white max-w-[130px]"
-                      title="Filter by department"
-                    >
-                      <option value="">All Depts</option>
-                      {browserDepartments.map((dept) => (
-                        <option key={dept} value={dept}>
-                          {dept}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={toggleCoursesPanel}
-                      className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-                <input
-                  type="text"
-                  value={courseSearchQuery}
-                  onChange={(e) => setCourseSearchQuery(e.target.value)}
-                  placeholder="Search courses..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                />
-                {browserDepartmentFilter && (
-                  <div className="mt-2 flex items-center gap-1">
-                    <span className="text-xs text-slate-500">Showing:</span>
-                    <span
-                      className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full text-white"
-                      style={{ backgroundColor: "#BE0000" }}
-                    >
-                      {browserDepartmentFilter}
+                  {!browserDepartmentFilter ? (
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-800">
+                        Choose Department
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Select a department first, then browse its courses
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => setBrowserDepartmentFilter("")}
-                        className="hover:opacity-75 font-bold leading-none ml-0.5"
+                        onClick={handleBackToDepartments}
+                        className="w-8 h-8 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100 transition-all"
+                        title="Back to departments"
                       >
-                        ×
+                        ←
                       </button>
-                    </span>
-                  </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          {browserDepartmentFilter} Courses
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Browse and search within this department
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={toggleCoursesPanel}
+                    className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {!browserDepartmentFilter ? (
+                  <input
+                    type="text"
+                    value={departmentSearchQuery}
+                    onChange={(e) => setDepartmentSearchQuery(e.target.value)}
+                    placeholder="Search departments..."
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+                  />
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={courseSearchQuery}
+                      onChange={(e) => setCourseSearchQuery(e.target.value)}
+                      placeholder={`Search ${browserDepartmentFilter} courses...`}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+                    />
+                    <div className="mt-2">
+                      <span
+                        className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full text-white"
+                        style={{ backgroundColor: "#BE0000" }}
+                      >
+                        {browserDepartmentFilter}
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
+
               <div className="flex-1 overflow-y-auto p-4">
                 {isLoadingCourses ? (
                   <div className="text-center py-8 text-slate-500">
@@ -1937,11 +1984,42 @@ export default function ChatUI({
                     />
                     <p>Loading courses...</p>
                   </div>
+                ) : !browserDepartmentFilter ? (
+                  groupedDepartmentLetters.length === 0 ? (
+                    <p className="text-center text-slate-500 py-8">
+                      No departments match your search
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {groupedDepartmentLetters.map((letter) => (
+                        <div key={letter}>
+                          <div className="mb-2">
+                            <h4 className="text-xl font-semibold text-slate-800 underline underline-offset-2">
+                              {letter}
+                            </h4>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            {groupedBrowserDepartments[letter].map((dept) => (
+                              <button
+                                key={dept}
+                                type="button"
+                                onClick={() =>
+                                  handleBrowseDepartmentSelect(dept)
+                                }
+                                className="text-left px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition-all"
+                              >
+                                {dept}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
                 ) : filteredCourses.length === 0 ? (
                   <p className="text-center text-slate-500 py-8">
-                    {courseSearchQuery || browserDepartmentFilter
-                      ? "No courses match your filters"
-                      : "No courses available"}
+                    No courses match your search in {browserDepartmentFilter}
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -2273,13 +2351,11 @@ export default function ChatUI({
               className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BE0000]/50 text-slate-800 bg-white"
             >
               <option value="">All Depts</option>
-              {[...new Set(allCourses.map((c) => c.department).filter(Boolean))]
-                .sort()
-                .map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
-                  </option>
-                ))}
+              {browserDepartments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
             </select>
             <input
               type="text"
