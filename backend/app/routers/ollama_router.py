@@ -42,7 +42,7 @@ def chat(req: ChatRequest, db: DBSession):
 def build_rag_prompt(system_prompt: str, retrieved_classes: List[dict], user_message: str):
     
     context_block = "\n\n".join(
-        f"{c['number']}: {c['description']}"
+        f"{c['subject']} {c['number']}: {c['description']}"
         for c in retrieved_classes
     )
 
@@ -114,10 +114,18 @@ def retrieve_classes_from_db(query_embedding: List[float], db: DBSession, limit:
 
         result = db.execute(
             text("""
-                SELECT id, number, name, units, description
-                FROM courses
-                WHERE embedding IS NOT NULL
-                ORDER BY embedding <-> (:query_embedding)::vector
+                SELECT 
+                    c.id,
+                    c.number,
+                    c.name,
+                    c.units,
+                    c.description,
+                    d.subject
+                FROM courses c
+                JOIN departments d
+                    ON c.department_id = d.id
+                WHERE c.embedding IS NOT NULL
+                ORDER BY c.embedding <-> (:query_embedding)::vector
                 LIMIT :limit;
             """),
             {
@@ -131,6 +139,7 @@ def retrieve_classes_from_db(query_embedding: List[float], db: DBSession, limit:
         return [
             {
                 "course_id": r.id,
+                "subject": r.subject,
                 "number": r.number,
                 "name": r.name,
                 "units": r.units,
