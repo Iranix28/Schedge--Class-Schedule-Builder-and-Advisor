@@ -18,8 +18,8 @@ app = FastAPI(
 app.add_middleware(
     SessionMiddleware,
     secret_key="change-this-to-a-long-random-secret-in-production",
-    same_site="lax",       # "lax" works for localhost; "strict" breaks cross-port cookies
-    https_only=False,      # must be False for http://localhost
+    same_site="none",    
+    https_only=True,
     max_age=86400,         # session lasts 24 hours (seconds); increase if using remember_me
 )
 
@@ -34,6 +34,10 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://127.0.0.1:3000",
         "http://136.36.121.11:8000",
+        "https://www.schedge.online",
+        "https://schedge.online",
+        "http://www.schedge.online",
+        "http://schedge.online",
     ],
     allow_credentials=True,
     allow_methods=["*"],
