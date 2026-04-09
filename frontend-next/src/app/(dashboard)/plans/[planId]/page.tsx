@@ -14,6 +14,7 @@ import {
 import type {
   MultiPlanRecord,
   SemesterSelectionPayload,
+  SemesterUI,
 } from "@/features/plans/types/plan.types";
 import type { ChatSavedPlan } from "@/features/chat/types/chat.types";
 
@@ -37,29 +38,33 @@ export default function PlanDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
+  // In-page semester state — used when a new (unsaved) semester is clicked
+  const [selectedSemester, setSelectedSemester] =
+    useState<SemesterSelectionPayload | null>(null);
+  const [semesterChatKey, setSemesterChatKey] = useState("none");
+  // Lifted semester state so new semesters survive the ChatUI round-trip
+  const [multiSemesters, setMultiSemesters] = useState<SemesterUI[]>([]);
+
   const loadPlan = useCallback(async () => {
     if (!userData?.id || !planId) return;
-
     const userId = userData.id;
-
     try {
       setIsLoading(true);
       setLoadError("");
-
       const savedPlans = await fetchUserPlans(userId);
       const summaryPlan = savedPlans.find(
         (plan) => String(plan.id) === String(planId),
       );
-
       if (!summaryPlan) {
         setLoadedPlan(null);
         setLoadError("Plan not found.");
         return;
       }
-
       const fullPlan = (await fetchFullPlan(userId, summaryPlan)) as LoadedPlan;
       setLoadedPlan(fullPlan);
       setPlanTitle(fullPlan.name || "");
+      // Reset lifted semester state when plan reloads
+      setMultiSemesters([]);
     } catch (error) {
       console.error("Failed to load plan:", error);
       setLoadedPlan(null);
@@ -85,13 +90,37 @@ export default function PlanDetailPage() {
 
   const handleSelectSemester = useCallback(
     (semester: SemesterSelectionPayload) => {
-      const semesterId = semester.semester_db_id ?? semester.id;
-
-      if (semesterId === undefined || semesterId === null) return;
-
-      router.push(`/plans/${planId}/semester/${String(semesterId)}`);
+      const semesterId = semester.semester_db_id;
+      if (semesterId) {
+        // Saved semester — navigate to its own route
+        router.push(`/plans/${planId}/semester/${String(semesterId)}`);
+      } else {
+        // New unsaved semester — handle in-page, same as new plan flow
+        const stableKey = `sem-new-${String(semester.id ?? Date.now())}`;
+        setSemesterChatKey(stableKey);
+        setSelectedSemester(semester);
+      }
     },
     [router, planId],
+  );
+
+  const handleBackToMultiSemester = useCallback(() => {
+    setSelectedSemester(null);
+  }, []);
+
+  const handlePlanCreated = useCallback(
+    (ids: { plan_id?: number | string; semester_db_id?: number | string }) => {
+      // Update selectedSemester with the real DB ids so autosave works
+      setSelectedSemester((prev) =>
+        prev
+          ? { ...prev, plan_id: ids.plan_id, semester_db_id: ids.semester_db_id }
+          : prev,
+      );
+      refreshSidebar();
+      // Reload the plan so the new semester appears as a saved card next time
+      void loadPlan();
+    },
+    [refreshSidebar, loadPlan],
   );
 
   if (isLoading) {
@@ -113,6 +142,21 @@ export default function PlanDetailPage() {
     );
   }
 
+  // New unsaved semester clicked — render ChatUI in-page
+  if (isMultiPlan && selectedSemester) {
+    return (
+      <ChatUI
+        key={semesterChatKey}
+        userData={userData}
+        onLogout={onLogout}
+        semester={selectedSemester}
+        onBack={handleBackToMultiSemester}
+        onPlanSaved={handleRefresh}
+        onPlanCreated={handlePlanCreated}
+      />
+    );
+  }
+
   if (isMultiPlan) {
     return (
       <MultiSemesterUI
@@ -121,11 +165,13 @@ export default function PlanDetailPage() {
         onLogout={onLogout}
         onSelectSemester={handleSelectSemester}
         savedPlan={loadedPlan as MultiPlanRecord}
-        onPlanSaved={async () => {}}
-        onPlanCreated={async () => {}}
+        onPlanSaved={async () => { refreshSidebar(); }}
+        onPlanCreated={async () => { refreshSidebar(); }}
         initialTitle={planTitle || loadedPlan.name || ""}
         onTitleChange={setPlanTitle}
         planId={(loadedPlan.id ?? planId) as number | string}
+        externalSemesters={multiSemesters.length > 0 ? multiSemesters : undefined}
+        onSemestersChange={setMultiSemesters}
       />
     );
   }

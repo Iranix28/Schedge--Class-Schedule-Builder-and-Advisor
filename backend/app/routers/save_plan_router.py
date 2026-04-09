@@ -86,6 +86,7 @@ class PlanCreateRequest(BaseModel):
 
 
 class MultiSemesterInput(BaseModel):
+    semester_db_id: Optional[int] = None   # existing DB id; None means new semester
     term_season: str
     term_year: int
     courses: List[CourseSelectionInput] = []
@@ -337,29 +338,20 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
         existing_semesters = (
             db.query(PlanSemester)
             .filter(PlanSemester.plan_id == plan_id)
-            .order_by(PlanSemester.position)
             .all()
         )
+        existing_by_id = {sem.id: sem for sem in existing_semesters}
 
-        # Update existing semesters or create new ones as needed
-        for position, sem_input in enumerate(payload.semesters):
-            if position < len(existing_semesters):
-                # Update term info but preserve semester ID (keeps chat history intact)
-                existing_semesters[position].term_season = sem_input.term_season
-                existing_semesters[position].term_year = sem_input.term_year
-                existing_semesters[position].position = position
-            else:
-                new_semester = PlanSemester(
-                    plan_id=plan_id,
-                    term_season=sem_input.term_season,
-                    term_year=sem_input.term_year,
-                    position=position,
-                )
-                db.add(new_semester)
+        # Determine which existing semester IDs the frontend wants to keep
+        incoming_ids = {
+            sem_input.semester_db_id
+            for sem_input in payload.semesters
+            if sem_input.semester_db_id
+        }
 
-        # Cascade-delete removed semesters and their related data
-        if len(existing_semesters) > len(payload.semesters):
-            for sem in existing_semesters[len(payload.semesters):]:
+        # Delete semesters that are no longer in the payload (matched by id, not position)
+        for sem in existing_semesters:
+            if sem.id not in incoming_ids:
                 db.query(PlanCourseSelection).filter(
                     PlanCourseSelection.plan_semester_id == sem.id
                 ).delete(synchronize_session=False)
@@ -374,6 +366,23 @@ def update_multi_plan(plan_id: int, payload: MultiPlanCreateRequest, db: Session
                     ChatConversation.plan_semester_id == sem.id
                 ).delete(synchronize_session=False)
                 db.delete(sem)
+
+        db.flush()
+
+        # Update existing semesters or insert new ones
+        for position, sem_input in enumerate(payload.semesters):
+            if sem_input.semester_db_id and sem_input.semester_db_id in existing_by_id:
+                # Update position only — term already correct, changing it risks constraint violations
+                existing_by_id[sem_input.semester_db_id].position = position
+            else:
+                # Genuinely new semester
+                new_semester = PlanSemester(
+                    plan_id=plan_id,
+                    term_season=sem_input.term_season,
+                    term_year=sem_input.term_year,
+                    position=position,
+                )
+                db.add(new_semester)
 
         db.commit()
         db.refresh(plan)
@@ -538,6 +547,20 @@ def add_semester(plan_id: int, payload: AddSemesterRequest, db: Session = Depend
         plan = db.query(Plan).filter(Plan.id == plan_id, Plan.user_id == payload.user_id).first()
         if not plan:
             raise HTTPException(status_code=404, detail="Plan not found")
+
+        # If this (plan, term_season, term_year) already exists, return its ID instead
+        # of inserting a duplicate — the frontend re-registers on every ChatUI mount.
+        existing = (
+            db.query(PlanSemester)
+            .filter(
+                PlanSemester.plan_id == plan_id,
+                PlanSemester.term_season == payload.term_season,
+                PlanSemester.term_year == payload.term_year,
+            )
+            .first()
+        )
+        if existing:
+            return AddSemesterResponse(semester_db_id=existing.id)
 
         # Position is based on existing semester count
         existing_count = db.query(PlanSemester).filter(PlanSemester.plan_id == plan_id).count()

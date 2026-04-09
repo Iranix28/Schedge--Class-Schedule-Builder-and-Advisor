@@ -48,16 +48,32 @@ export async function uploadAuditFile(
   return (await response.json()) as VisualizationItem[];
 }
 
-export async function fetchAllCoursesRequest(): Promise<Course[]> {
-  const response = await fetch(`${BASE_URL}/schedule/get_courses`, {
-    method: "GET",
-  });
+let _allCoursesCache: Course[] | null = null;
+let _allCoursesPromise: Promise<Course[]> | null = null;
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch courses");
+export async function fetchAllCoursesRequest(): Promise<Course[]> {
+  if (_allCoursesCache) return _allCoursesCache;
+
+  if (!_allCoursesPromise) {
+    _allCoursesPromise = fetch(`${BASE_URL}/schedule/get_courses`, {
+      method: "GET",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+
+        const data = (await response.json()) as Course[];
+        _allCoursesCache = data;
+        return data;
+      })
+      .catch((err) => {
+        _allCoursesPromise = null;
+        throw err;
+      });
   }
 
-  return (await response.json()) as Course[];
+  return _allCoursesPromise;
 }
 
 export async function fetchCourseSectionsRequest(

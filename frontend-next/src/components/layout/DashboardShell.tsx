@@ -14,6 +14,8 @@ import {
   logoutUser,
 } from "@/features/auth/services/auth.service";
 import Sidebar from "@/features/sidebar/components/Sidebar";
+import { fetchAllCoursesRequest } from "@/features/chat/services/chat.service";
+import type { Course } from "@/features/chat/types/chat.types";
 
 interface DashboardUser {
   id: number | string;
@@ -26,6 +28,8 @@ interface DashboardShellContextValue {
   onLogout: () => Promise<void>;
   sidebarRefreshKey: number;
   refreshSidebar: () => void;
+  courseCatalog: Course[];
+  isCourseCatalogLoading: boolean;
 }
 
 const DashboardShellContext = createContext<DashboardShellContextValue | null>(
@@ -55,6 +59,8 @@ export default function DashboardShell({
   const [userData, setUserData] = useState<DashboardUser | null>(null);
 
   const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+  const [courseCatalog, setCourseCatalog] = useState<Course[]>([]);
+  const [isCourseCatalogLoading, setIsCourseCatalogLoading] = useState(false);
 
   const refreshSidebar = useCallback(() => {
     setSidebarRefreshKey((current) => current + 1);
@@ -76,6 +82,17 @@ export default function DashboardShell({
           role: user.role,
         });
         setIsAuthenticated(true);
+
+        setIsCourseCatalogLoading(true);
+        try {
+          const courses = await fetchAllCoursesRequest();
+          setCourseCatalog(courses);
+        } catch (e) {
+          console.error("Failed to preload course catalog:", e);
+          setCourseCatalog([]);
+        } finally {
+          setIsCourseCatalogLoading(false);
+        }
       } catch {
         router.replace("/login");
       } finally {
@@ -120,8 +137,17 @@ export default function DashboardShell({
       onLogout: handleLogout,
       sidebarRefreshKey,
       refreshSidebar,
+      courseCatalog,
+      isCourseCatalogLoading,
     };
-  }, [userData, handleLogout, sidebarRefreshKey, refreshSidebar]);
+  }, [
+    userData,
+    handleLogout,
+    sidebarRefreshKey,
+    refreshSidebar,
+    courseCatalog,
+    isCourseCatalogLoading,
+  ]);
 
   if (!authChecked) {
     return (
