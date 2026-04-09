@@ -8,6 +8,7 @@ import {
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
+import { useDashboardShell } from "@/components/layout/DashboardShell";
 import {
   BASE_URL,
   REGISTRATION_URL,
@@ -312,6 +313,7 @@ export default function ChatUI({
   onPlanCreated,
 }: ChatUIProps) {
   void onLogout;
+  const { courseCatalog, isCourseCatalogLoading } = useDashboardShell();
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -332,8 +334,10 @@ export default function ChatUI({
   const [availableSections, setAvailableSections] = useState<Section[]>([]);
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [showCoursesPanel, setShowCoursesPanel] = useState(false);
-  const [allCourses, setAllCourses] = useState<Course[]>([]);
-  const [isLoadingCourses, setIsLoadingCourses] = useState(false);
+  const [allCourses, setAllCourses] = useState<Course[]>(courseCatalog || []);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(
+    isCourseCatalogLoading && (!courseCatalog || courseCatalog.length === 0),
+  );
   const [courseSearchQuery, setCourseSearchQuery] = useState("");
   const [browserDepartmentFilter, setBrowserDepartmentFilter] = useState("");
   const [showCourseDetailModal, setShowCourseDetailModal] = useState(false);
@@ -874,8 +878,21 @@ export default function ChatUI({
   // ── Effects ───────────────────────────────────────────────────────────────
 
   const warmupDoneRef = useRef(false);
+
   useEffect(() => {
-    void fetchAllCourses();
+    if (courseCatalog && courseCatalog.length > 0) {
+      setAllCourses(courseCatalog);
+      setIsLoadingCourses(false);
+    }
+  }, [courseCatalog]);
+
+  useEffect(() => {
+    setIsLoadingCourses(
+      isCourseCatalogLoading && (!courseCatalog || courseCatalog.length === 0),
+    );
+  }, [isCourseCatalogLoading, courseCatalog]);
+
+  useEffect(() => {
     if (warmupDoneRef.current) return;
     warmupDoneRef.current = true;
     void (async () => {
@@ -1492,6 +1509,7 @@ export default function ChatUI({
     groupedBrowserDepartments,
   ).sort();
 
+  const isInitialCourseLoad = isLoadingCourses && allCourses.length === 0;
   const filteredCourses = !browserDepartmentFilter
     ? []
     : allCourses.filter((course) => {
@@ -2348,9 +2366,12 @@ export default function ChatUI({
             <select
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BE0000]/50 text-slate-800 bg-white"
+              disabled={isInitialCourseLoad}
+              className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BE0000]/50 text-slate-800 bg-white disabled:bg-slate-100 disabled:text-slate-400"
             >
-              <option value="">All Depts</option>
+              <option value="">
+                {isInitialCourseLoad ? "Loading departments..." : "All Depts"}
+              </option>
               {browserDepartments.map((dept) => (
                 <option key={dept} value={dept}>
                   {dept}
