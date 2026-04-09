@@ -118,28 +118,33 @@ export default function MultiSemesterUI({
     return match ? `${match[1]} ${match[2]}` : null;
   };
 
-  // Compute credits for a semester: prefer stored values, otherwise sum from schedule via catalog
+  // Compute credits for a semester: always derive from courses/schedule via catalog.
+  // Only fall back to stored total_credits/credits if there are no course items to compute from.
   const computeSemesterCredits = (semester: SemesterUI | BackendSemester) => {
-    if ((semester.total_credits || 0) > 0) return semester.total_credits || 0;
-    if ((semester.credits || 0) > 0) return semester.credits || 0;
+    const items = [...(semester.schedule || []), ...(semester.courses || [])];
+
+    if (items.length === 0) {
+      // No course data — fall back to whatever the backend stored
+      return (semester.total_credits || 0) > 0
+        ? semester.total_credits || 0
+        : semester.credits || 0;
+    }
 
     const seen = new Set<string>();
     let total = 0;
-    [...(semester.schedule || []), ...(semester.courses || [])].forEach(
-      (item) => {
-        const key = parseDeptCode(
-          String(
-            (item as { class_?: string; class_name?: string }).class_ ||
-              (item as { class_?: string; class_name?: string }).class_name ||
-              "",
-          ),
-        );
-        if (key && !seen.has(key)) {
-          seen.add(key);
-          total += creditsByDeptCode[key] || 0;
-        }
-      },
-    );
+    items.forEach((item) => {
+      const key = parseDeptCode(
+        String(
+          (item as { class_?: string; class_name?: string }).class_ ||
+            (item as { class_?: string; class_name?: string }).class_name ||
+            "",
+        ),
+      );
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        total += creditsByDeptCode[key] || 0;
+      }
+    });
     return total;
   };
   // ────────────────────────────────────────────────────────────────────────
