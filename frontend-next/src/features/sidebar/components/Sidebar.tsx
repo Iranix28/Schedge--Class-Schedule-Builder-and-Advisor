@@ -62,7 +62,6 @@ export default function Sidebar({
     plan: SidebarPlan,
   ) => {
     e.stopPropagation();
-    if (!confirm(`Delete "${plan.name}"?`)) return;
     if (!userData?.id) return;
 
     const userId = userData.id;

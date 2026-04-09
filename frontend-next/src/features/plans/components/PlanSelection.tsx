@@ -172,7 +172,7 @@ export default function PlanSelection({
 
       {/* Bottom Footer */}
       <footer className="py-4 text-center text-sm text-slate-600">
-        <p>© 2025 Schedge. All rights reserved.</p>
+        <p>© 2026 Schedge. All rights reserved.</p>
       </footer>
     </div>
   );

@@ -1597,8 +1597,6 @@ export default function ChatUI({
           semester_db_id: data.semester_db_id,
         });
       }
-
-      alert("Plan saved successfully");
       setSavedFlash(true);
       setTimeout(() => setSavedFlash(false), 2000);
       if (onPlanSaved) onPlanSaved(data.id);
