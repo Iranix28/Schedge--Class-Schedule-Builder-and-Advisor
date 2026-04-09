@@ -14,6 +14,24 @@ import type {
   SemesterUI,
 } from "../types/plan.types";
 
+// Module-level cache — persists across mounts, fetched only once per session
+let _catalogCache: Array<{ department?: string; course_code?: string | number; credits?: number | string }> | null = null;
+let _catalogPromise: Promise<typeof _catalogCache> | null = null;
+
+const getCatalog = async () => {
+  if (_catalogCache) return _catalogCache;
+  if (!_catalogPromise) {
+    _catalogPromise = fetchCourseCatalog().then((data) => {
+      _catalogCache = data;
+      return data;
+    }).catch(() => {
+      _catalogPromise = null; // allow retry on failure
+      return [];
+    });
+  }
+  return _catalogPromise;
+};
+
 // Multi-semester planner view — lets users create, name, and manage a multi-semester degree plan
 export default function MultiSemesterUI({
   userData,
@@ -26,16 +44,24 @@ export default function MultiSemesterUI({
   initialTitle,
   onTitleChange,
   planId,
-}: MultiSemesterUIProps) {
+  externalSemesters,
+  onSemestersChange,
+}: MultiSemesterUIProps & {
+  externalSemesters?: SemesterUI[];
+  onSemestersChange?: (semesters: SemesterUI[]) => void;
+}) {
   void onLogout;
   void onPlanCreated;
 
   const [plannerTitle, setPlannerTitle] = useState(initialTitle || "");
   const [isSaving, setIsSaving] = useState(false);
+  const [saveToast, setSaveToast] = useState<string | null>(null);
   const [activePlanId, setActivePlanId] = useState<number | string | null>(
     null,
   );
   const titleMountedRef = useRef(false); // Prevents autosave on initial mount
+  const isSavingRef = useRef(false);     // Prevents savedPlan sync overwriting state mid-save
+  const hasSyncedFromProp = useRef(false); // Only sync semesters from savedPlan prop once (on mount)
 
   // ── Course catalog for credit lookups ──────────────────────────────────
   const [courseCatalog, setCourseCatalog] = useState<
@@ -47,24 +73,27 @@ export default function MultiSemesterUI({
   >([]);
   const [catalogReady, setCatalogReady] = useState(false);
 
-  // Fetch full course catalog on mount
+  // Fetch full course catalog on mount — uses module-level cache so it only
+  // hits the network once per session regardless of how many times this mounts
   useEffect(() => {
     let cancelled = false;
+    // If already cached, resolve synchronously without showing loader
+    if (_catalogCache) {
+      setCourseCatalog(_catalogCache);
+      setCatalogReady(true);
+      return;
+    }
     void (async () => {
       try {
-        const courses = await fetchCourseCatalog();
-        if (!cancelled) {
-          setCourseCatalog(courses);
-        }
+        const courses = await getCatalog();
+        if (!cancelled) setCourseCatalog(courses ?? []);
       } catch (e) {
         console.warn("[MultiSemesterUI] failed to fetch course catalog:", e);
       } finally {
         if (!cancelled) setCatalogReady(true);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   // Build "DEPT CODE" -> credits lookup map from catalog
@@ -89,36 +118,50 @@ export default function MultiSemesterUI({
     return match ? `${match[1]} ${match[2]}` : null;
   };
 
-  // Compute credits for a semester: prefer stored values, otherwise sum from schedule via catalog
+  // Compute credits for a semester: always derive from courses/schedule via catalog.
+  // Only fall back to stored total_credits/credits if there are no course items to compute from.
   const computeSemesterCredits = (semester: SemesterUI | BackendSemester) => {
-    if ((semester.total_credits || 0) > 0) return semester.total_credits || 0;
-    if ((semester.credits || 0) > 0) return semester.credits || 0;
+    const items = [...(semester.schedule || []), ...(semester.courses || [])];
+
+    if (items.length === 0) {
+      // No course data — fall back to whatever the backend stored
+      return (semester.total_credits || 0) > 0
+        ? semester.total_credits || 0
+        : semester.credits || 0;
+    }
 
     const seen = new Set<string>();
     let total = 0;
-    [...(semester.schedule || []), ...(semester.courses || [])].forEach(
-      (item) => {
-        const key = parseDeptCode(
-          String(
-            (item as { class_?: string; class_name?: string }).class_ ||
-              (item as { class_?: string; class_name?: string }).class_name ||
-              "",
-          ),
-        );
-        if (key && !seen.has(key)) {
-          seen.add(key);
-          total += creditsByDeptCode[key] || 0;
-        }
-      },
-    );
+    items.forEach((item) => {
+      const key = parseDeptCode(
+        String(
+          (item as { class_?: string; class_name?: string }).class_ ||
+            (item as { class_?: string; class_name?: string }).class_name ||
+            "",
+        ),
+      );
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        total += creditsByDeptCode[key] || 0;
+      }
+    });
     return total;
   };
   // ────────────────────────────────────────────────────────────────────────
 
-  // Sync active plan ID from props
+  // Sync active plan ID from props.
+  // When planId becomes null (new plan), also reset stale state so the old plan's
+  // ID doesn't leak into autosave/save calls for the new plan.
   useEffect(() => {
-    setActivePlanId(savedPlan?.id || planId || null);
-  }, [savedPlan, planId]);
+    const resolved = savedPlan?.id || planId || null;
+    setActivePlanId(resolved);
+    if (!resolved) {
+      // Full reset for new-plan flow — clear title autosave guard and semester sync guard
+      titleMountedRef.current = false;
+      hasSyncedFromProp.current = false;
+      setPlannerTitle(initialTitle || "");
+    }
+  }, [savedPlan?.id, planId]);
 
   // Update title locally and notify parent
   const handleTitleChange = (val: string) => {
@@ -127,6 +170,8 @@ export default function MultiSemesterUI({
   };
 
   // Debounced autosave of plan name (1s after typing stops)
+  // NOTE: does NOT call onPlanSaved — title changes don't need a full plan re-fetch
+  // and doing so would cause an infinite loop (re-fetch → re-render → effect re-runs)
   useEffect(() => {
     if (!titleMountedRef.current) {
       titleMountedRef.current = true;
@@ -141,13 +186,12 @@ export default function MultiSemesterUI({
           userData.id as number | string,
           plannerTitle.trim(),
         );
-        if (onPlanSaved) onPlanSaved();
       } catch (e) {
         console.error("[MultiSemesterUI] failed to autosave plan name:", e);
       }
     }, 1000);
     return () => clearTimeout(timer);
-  }, [plannerTitle, activePlanId, userData?.id, onPlanSaved]);
+  }, [plannerTitle, activePlanId, userData?.id]);
 
   // Determine the next upcoming semester based on current date
   const getNextSemester = () => {
@@ -206,9 +250,13 @@ export default function MultiSemesterUI({
     if (savedPlan) handleTitleChange(savedPlan.name || "");
   }, [savedPlan?.name]);
 
-  // Re-map semesters when saved plan data updates
+  // Sync semesters from savedPlan prop — only once on initial mount.
+  // After that, semester state is owned entirely by this component.
   useEffect(() => {
+    if (hasSyncedFromProp.current) return;
+    if (isSavingRef.current) return;
     if (savedPlan && savedPlan.semesters && savedPlan.semesters.length > 0) {
+      hasSyncedFromProp.current = true;
       setSemesters(
         savedPlan.semesters.map((sem, idx) =>
           mapSemesterFromBackend(sem, idx, savedPlan.id),
@@ -217,9 +265,15 @@ export default function MultiSemesterUI({
     }
   }, [savedPlan]);
 
-  const [semesters, setSemesters] = useState<SemesterUI[]>(
+  const [internalSemesters, setInternalSemesters] = useState<SemesterUI[]>(
     buildInitialSemesters,
   );
+  const semesters = externalSemesters ?? internalSemesters;
+  const setSemesters = (val: SemesterUI[] | ((prev: SemesterUI[]) => SemesterUI[])) => {
+    const resolved = typeof val === "function" ? val(semesters) : val;
+    setInternalSemesters(resolved);
+    if (onSemestersChange) onSemestersChange(resolved);
+  };
 
   // CSS for pulsing border animation and title input autofill styling
   const pulseStyle = `
@@ -236,6 +290,39 @@ export default function MultiSemesterUI({
 		.plan-title-input:focus { background: transparent !important; }
 	`;
 
+  // Sync a given semester list to the backend immediately (used by add/remove)
+  const syncSemesters = async (updatedSemesters: SemesterUI[]) => {
+    if (!userData?.id || !activePlanId) return; // only sync if plan already exists
+    const name = plannerTitle.trim() || "Multi-Semester Plan";
+    const payload = {
+      user_id: userData.id,
+      name,
+      semesters: updatedSemesters.map((sem) => ({
+        semester_db_id: sem.semester_db_id ?? null,
+        term_season: sem.term,
+        term_year: sem.year,
+        courses: sem.courses || [],
+      })),
+    };
+    try {
+      isSavingRef.current = true;
+      await saveOrUpdateMultiPlan(activePlanId, payload);
+      // Re-fetch to get server-assigned IDs for any newly added semesters
+      const fullPlan = (await fetchMultiPlanDetail(userData.id, activePlanId)) as MultiPlanRecord;
+      if (fullPlan.semesters) {
+        const synced = fullPlan.semesters.map((sem, idx) =>
+          mapSemesterFromBackend(sem, idx, activePlanId),
+        );
+        setSemesters(synced);
+      }
+      if (onPlanSaved) void onPlanSaved();
+    } catch (e) {
+      console.error("[MultiSemesterUI] failed to sync semesters:", e);
+    } finally {
+      isSavingRef.current = false;
+    }
+  };
+
   // Add a new semester sequentially after the last one (Spring -> Summer -> Fall -> Spring)
   const handleAddSemester = () => {
     const lastSemester = semesters[semesters.length - 1];
@@ -250,7 +337,7 @@ export default function MultiSemesterUI({
       newTerm = "Spring";
       newYear = lastSemester.year + 1;
     }
-    setSemesters([
+    const updated = [
       ...semesters,
       {
         id: semesters.length + 1,
@@ -262,7 +349,9 @@ export default function MultiSemesterUI({
         courses: [],
         schedule: [],
       },
-    ]);
+    ];
+    setSemesters(updated);
+    void syncSemesters(updated);
   };
 
   // Remove a semester (minimum one must remain)
@@ -271,7 +360,12 @@ export default function MultiSemesterUI({
       alert("You must have at least one semester");
       return;
     }
-    setSemesters(semesters.filter((sem) => sem.id !== semesterId));
+    // Re-number display ids after removal, but preserve semester_db_id for backend matching
+    const updated = semesters
+      .filter((sem) => sem.id !== semesterId)
+      .map((sem, idx) => ({ ...sem, id: idx + 1 }));
+    setSemesters(updated);
+    void syncSemesters(updated);
   };
 
   // Save or update the entire multi-semester plan to the backend
@@ -286,13 +380,16 @@ export default function MultiSemesterUI({
       user_id: userData.id,
       name,
       semesters: semesters.map((sem) => ({
+        semester_db_id: sem.semester_db_id ?? null,
         term_season: sem.term,
         term_year: sem.year,
         courses: sem.courses || [],
       })),
     };
+    let savedSuccessfully = false;
     try {
       setIsSaving(true);
+      isSavingRef.current = true;
       const data = await saveOrUpdateMultiPlan(existingPlanId, payload);
       // Track new plan ID if this was a first-time save
       if (!existingPlanId && data.id) {
@@ -319,16 +416,17 @@ export default function MultiSemesterUI({
           e,
         );
       }
-      if (onPlanSaved) onPlanSaved();
-      alert(existingPlanId ? "Plan updated!" : "Multi-semester plan saved!");
+      savedSuccessfully = true;
+      setSaveToast(existingPlanId ? "Plan updated!" : "Plan saved!");
+      setTimeout(() => setSaveToast(null), 3000);
     } catch (err) {
       console.error("Save error:", err);
-      alert(
-        "Error saving plan: " +
-          (err instanceof Error ? err.message : "Unknown error"),
-      );
+      setSaveToast("Error saving: " + (err instanceof Error ? err.message : "Unknown error"));
+      setTimeout(() => setSaveToast(null), 4000);
     } finally {
       setIsSaving(false);
+      isSavingRef.current = false;
+      if (savedSuccessfully && onPlanSaved) void onPlanSaved();
     }
   };
 
@@ -343,6 +441,15 @@ export default function MultiSemesterUI({
   return (
     <div className="flex flex-col h-screen bg-slate-100">
       <style>{pulseStyle}</style>
+
+      {saveToast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-lg text-white font-medium text-sm"
+          style={{ backgroundColor: saveToast.startsWith("Error") ? "#b91c1c" : "#15803d" }}
+        >
+          {saveToast}
+        </div>
+      )}
 
       {/* Header with editable plan title */}
       <header
