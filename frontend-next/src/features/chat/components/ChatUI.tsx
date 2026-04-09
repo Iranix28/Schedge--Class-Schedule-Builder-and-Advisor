@@ -1286,6 +1286,19 @@ export default function ChatUI({
     return days;
   };
 
+  const formatSectionTypeLabel = (value?: string | null) => {
+    const upper = (value || "").toUpperCase().trim();
+
+    if (!upper) return null;
+    if (upper.includes("LECTURE") || upper === "LEC") return "Lecture";
+    if (upper.includes("LAB")) return "Lab";
+    if (upper.includes("DISCUSSION") || upper === "DIS") return "Discussion";
+    if (upper.includes("SEMINAR") || upper === "SEM") return "Seminar";
+    if (upper.includes("TUTORIAL") || upper === "TUT") return "Tutorial";
+
+    return value;
+  };
+
   const handleAddCourse = async () => {
     if (!class_code.trim()) {
       alert("Please enter a class code");
@@ -2536,11 +2549,25 @@ export default function ChatUI({
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4
-                            className={`font-semibold mb-1 ${isDisabled ? "text-slate-400" : "text-slate-800"}`}
-                          >
-                            {section.class_}
-                          </h4>
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <h4
+                              className={`font-semibold ${isDisabled ? "text-slate-400" : "text-slate-800"}`}
+                            >
+                              {section.class_}
+                            </h4>
+
+                            {formatSectionTypeLabel(section.section_type) && (
+                              <span
+                                className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                                  isDisabled
+                                    ? "text-slate-400 border-slate-300 bg-slate-200"
+                                    : "text-[#BE0000] border-red-200 bg-red-50"
+                                }`}
+                              >
+                                {formatSectionTypeLabel(section.section_type)}
+                              </span>
+                            )}
+                          </div>
                           <p
                             className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}
                           >
