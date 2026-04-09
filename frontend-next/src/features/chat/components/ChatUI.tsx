@@ -431,6 +431,23 @@ export default function ChatUI({
     };
   };
 
+  const formatSeasonLabel = (
+    season?: string | null,
+    year?: string | number | null,
+  ) => {
+    const cleanSeason = (season || "").trim();
+    const cleanYear =
+      year !== null && year !== undefined && String(year).trim() !== ""
+        ? String(year).trim()
+        : "";
+
+    if (!cleanSeason && !cleanYear) return null;
+    if (!cleanSeason) return cleanYear;
+    if (!cleanYear) return cleanSeason;
+
+    return `${cleanSeason} ${cleanYear}`;
+  };
+
   // ── Calendar export helpers ───────────────────────────────────────────────
 
   const GOOGLE_TIME_ZONE = "America/Denver";
@@ -2547,24 +2564,44 @@ export default function ChatUI({
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <h4
-                              className={`font-semibold ${isDisabled ? "text-slate-400" : "text-slate-800"}`}
-                            >
-                              {section.class_}
-                            </h4>
-
-                            {formatSectionTypeLabel(section.section_type) && (
-                              <span
-                                className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
-                                  isDisabled
-                                    ? "text-slate-400 border-slate-300 bg-slate-200"
-                                    : "text-[#BE0000] border-red-200 bg-red-50"
-                                }`}
+                          <div>
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <h4
+                                className={`font-semibold ${isDisabled ? "text-slate-400" : "text-slate-800"}`}
                               >
-                                {formatSectionTypeLabel(section.section_type)}
-                              </span>
-                            )}
+                                {section.class_}
+                              </h4>
+
+                              {formatSectionTypeLabel(section.section_type) && (
+                                <span
+                                  className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                                    isDisabled
+                                      ? "text-slate-400 border-slate-300 bg-slate-200"
+                                      : "text-[#BE0000] border-red-200 bg-red-50"
+                                  }`}
+                                >
+                                  {formatSectionTypeLabel(section.section_type)}
+                                </span>
+                              )}
+
+                              {formatSeasonLabel(
+                                section.term_season,
+                                section.term_year,
+                              ) && (
+                                <span
+                                  className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                                    isDisabled
+                                      ? "text-slate-400 border-slate-300 bg-slate-200"
+                                      : "text-emerald-700 border-emerald-200 bg-emerald-50"
+                                  }`}
+                                >
+                                  {formatSeasonLabel(
+                                    section.term_season,
+                                    section.term_year,
+                                  )}
+                                </span>
+                              )}
+                            </div>
                           </div>
                           <p
                             className={`text-sm ${isDisabled ? "text-slate-400" : "text-slate-600"}`}

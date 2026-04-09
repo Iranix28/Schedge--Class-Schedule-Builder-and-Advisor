@@ -82,6 +82,8 @@ def get_classes_from_code(
                 section_code=class_section.section_code,
                 section_type=class_section.section_type,
                 parent_section_id=class_section.parent_section_id,
+                term_season=class_section.term_season,
+                term_year=class_section.term_year,
             )
         )
 

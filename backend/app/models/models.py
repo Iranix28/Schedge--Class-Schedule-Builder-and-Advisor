@@ -20,6 +20,8 @@ class ScheduleItem(BaseModel):
     section_code: str | None = None
     section_type: str | None = None
     parent_section_id: int | None = None
+    term_season: str | None = None
+    term_year: int | None = None
 
 class CourseItem(BaseModel):
     id: int

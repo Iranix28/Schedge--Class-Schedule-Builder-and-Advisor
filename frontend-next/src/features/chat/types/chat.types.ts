@@ -25,6 +25,9 @@ export interface VisualizationItem {
   section_code?: string | null;
   section_type?: string | null;
   parent_section_id?: number | string | null;
+  
+  term_season?: string | null;
+  term_year?: number | string | null;
 
   [key: string]: unknown;
 }
@@ -56,6 +59,9 @@ export interface Section extends VisualizationItem {
   section_code?: string | null;
   section_type?: string | null;
   parent_section_id?: number | string | null;
+
+  term_season?: string | null;
+  term_year?: number | string | null;
 }
 
 export interface SavedPlanIds {
