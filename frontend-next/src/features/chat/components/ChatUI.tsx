@@ -1599,50 +1599,125 @@ export default function ChatUI({
 
   const getSectionConflict = (section: Section) => {
     const toMinutes = (timeStr: string) => {
-      const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/);
+      const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
       if (!m) return 0;
+
       let h = parseInt(m[1], 10);
-      if (m[3] === "PM" && h !== 12) h += 12;
-      if (m[3] === "AM" && h === 12) h = 0;
+      if (m[3].toUpperCase() === "PM" && h !== 12) h += 12;
+      if (m[3].toUpperCase() === "AM" && h === 12) h = 0;
+
       return h * 60 + parseInt(m[2], 10);
     };
 
+    const normalizeSectionType = (value?: string | null) => {
+      const upper = (value || "").toUpperCase().trim();
+
+      if (!upper) return null;
+      if (upper.includes("LAB")) return "LAB";
+      if (upper.includes("LECTURE") || upper.includes("LEC")) return "LEC";
+      if (upper.includes("DISCUSSION") || upper.includes("DIS")) return "DIS";
+      if (upper.includes("SEMINAR") || upper.includes("SEM")) return "SEM";
+      if (upper.includes("TUTORIAL") || upper.includes("TUT")) return "TUT";
+
+      return upper;
+    };
+
+    const getSectionId = (item: Section | VisualizationItem) =>
+      item.class_section_id ?? item.id ?? null;
+
+    const getCourseKey = (item: Section | VisualizationItem) => {
+      if (item.course_id != null) return `course-${item.course_id}`;
+
+      const match = item.class_?.match(/^([A-Z]+)\s+(\d+)/i);
+      if (!match) return null;
+      return `${match[1].toUpperCase()}-${match[2]}`;
+    };
+
     const reasons: string[] = [];
-    const sectionMatch = section.class_?.match(/^([A-Z]+)\s+(\d+)/);
-    if (sectionMatch) {
-      const sectionDept = sectionMatch[1];
-      const courseCode = sectionMatch[2];
-      const duplicate = visualizationData?.data?.find((item) => {
-        const existingMatch = item.class_?.match(/^([A-Z]+)\s+(\d+)/);
-        return (
-          !!existingMatch &&
-          existingMatch[1] === sectionDept &&
-          existingMatch[2] === courseCode
-        );
-      });
-      if (duplicate) reasons.push(`Already on schedule (${duplicate.class_})`);
+
+    const newSectionId = getSectionId(section);
+    const newCourseKey = getCourseKey(section);
+    const newType = normalizeSectionType(section.section_type);
+
+    // exact same section already added
+    if (newSectionId != null) {
+      const exactDuplicate = (visualizationData?.data || []).find(
+        (item) => getSectionId(item) === newSectionId,
+      );
+
+      if (exactDuplicate) {
+        reasons.push(`Already added (${exactDuplicate.class_})`);
+      }
     }
 
+    // same course + same section type already added
+    if (newCourseKey && newType) {
+      const duplicateType = (visualizationData?.data || []).find((item) => {
+        const existingCourseKey = getCourseKey(item);
+        const existingType = normalizeSectionType(
+          (item.section_type as string | null | undefined) ?? null,
+        );
+
+        return existingCourseKey === newCourseKey && existingType === newType;
+      });
+
+      if (duplicateType) {
+        if (newType === "LAB") {
+          reasons.push(
+            `A lab is already on schedule for this course (${duplicateType.class_})`,
+          );
+        } else if (newType === "LEC") {
+          reasons.push(
+            `A lecture is already on schedule for this course (${duplicateType.class_})`,
+          );
+        } else if (newType === "DIS") {
+          reasons.push(
+            `A discussion is already on schedule for this course (${duplicateType.class_})`,
+          );
+        } else {
+          reasons.push(
+            `A ${newType.toLowerCase()} section is already on schedule for this course (${duplicateType.class_})`,
+          );
+        }
+      }
+    }
+
+    // actual time conflicts
     const days = parseDayAbbreviations(section.day);
     const conflictsByClass: Record<string, string[]> = {};
+
     for (const day of days) {
       const conflicting = (visualizationData?.data || []).filter((existing) => {
         if (existing.day !== day) return false;
+
+        const existingSectionId = getSectionId(existing);
+        if (
+          newSectionId != null &&
+          existingSectionId != null &&
+          newSectionId === existingSectionId
+        ) {
+          return false;
+        }
+
         const existStart = toMinutes(existing.startTime || "");
         const existEnd = toMinutes(existing.endTime || "");
         const newStart = toMinutes(section.startTime);
         const newEnd = toMinutes(section.endTime);
+
         return newStart < existEnd && newEnd > existStart;
       });
+
       for (const c of conflicting) {
         const className = c.class_ || "Unknown";
         if (!conflictsByClass[className]) conflictsByClass[className] = [];
         conflictsByClass[className].push(day);
       }
     }
+
     for (const [className, classDays] of Object.entries(conflictsByClass)) {
       reasons.push(`Conflicts with ${className} on ${classDays.join(", ")}`);
     }
+
     return reasons.length > 0 ? reasons : null;
   };
 

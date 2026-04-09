@@ -21,6 +21,11 @@ export interface VisualizationItem {
   course_id?: number | string | null;
   class_section_id?: number | string | null;
   id?: number | string | null;
+
+  section_code?: string | null;
+  section_type?: string | null;
+  parent_section_id?: number | string | null;
+
   [key: string]: unknown;
 }
 
@@ -47,6 +52,10 @@ export interface Section extends VisualizationItem {
   instructor?: string | null;
   course_id?: number | string | null;
   class_section_id?: number | string | null;
+
+  section_code?: string | null;
+  section_type?: string | null;
+  parent_section_id?: number | string | null;
 }
 
 export interface SavedPlanIds {
@@ -60,6 +69,8 @@ export interface ChatSavedPlan {
   name?: string;
   messages?: ChatMessage[];
   schedule?: VisualizationItem[];
+  term_season?: string;
+  term_year?: number;
 }
 
 export interface ChatSemesterContext {

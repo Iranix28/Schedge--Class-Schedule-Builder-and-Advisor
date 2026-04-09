@@ -15,6 +15,12 @@ class ScheduleItem(BaseModel):
     room: str
     instructor: str | None = None
 
+    course_id: int | None = None
+    class_section_id: int | None = None
+    section_code: str | None = None
+    section_type: str | None = None
+    parent_section_id: int | None = None
+
 class CourseItem(BaseModel):
     id: int
     department: str

@@ -51,32 +51,38 @@ def get_classes_from_code(
     department: Optional[str] = Query(default=None),
     db: Session = Depends(get_session)
 ) -> List[ScheduleItem]:
-    list_section = get_class_sections_by_course_number(db, str(class_code))
+    list_section = get_class_sections_by_course_number(
+        db,
+        str(class_code),
+        department_subject=department,
+    )
     frontend_sections: list[ScheduleItem] = []
 
     for class_section in list_section:
-        # Walk the relationship chain: ClassSection -> Course -> Department -> subject
         course_obj = getattr(class_section, "course", None)
         dept_obj = getattr(course_obj, "department", None)
         subject = getattr(dept_obj, "subject", None) or department or "Unknown"
 
-        # Skip sections that don't match the requested department filter
-        if department and subject != department:
-            continue
-
-        # Skip sections with missing time data
         if class_section.start_time is None or class_section.end_time is None:
             continue
 
-        time_str = f"{class_section.start_time.strftime('%H:%M')} {class_section.end_time.strftime('%H:%M')}"
-        print(f"\nid: {class_section.id}, section: {class_section.section_code}, days: {class_section.days}, time: {time_str}")
+        frontend_sections.append(
+            ScheduleItem(
+                day=class_section.days or "",
+                startTime=class_section.start_time.strftime("%-I:%M %p"),
+                endTime=class_section.end_time.strftime("%-I:%M %p"),
+                class_=f"{subject} {class_code} - {class_section.section_code}",
+                room=getattr(class_section, "location", None) or "TBD",
+                instructor=format_instructor_name(
+                    getattr(class_section, "professor_name", None)
+                ),
 
-        frontend_sections.append(ScheduleItem(
-            day=class_section.days,
-            startTime=datetime.strptime(time_str.split(" ")[0], "%H:%M").strftime("%-I:%M %p"),
-            endTime=datetime.strptime(time_str.split(" ")[1], "%H:%M").strftime("%-I:%M %p"),
-            class_=f"{subject} {class_code} - {class_section.section_code}",
-            room=getattr(class_section, "location", None) or "TBD",
-            instructor=format_instructor_name(getattr(class_section, "professor_name", None)),
-        ))
+                course_id=class_section.course_id,
+                class_section_id=class_section.id,
+                section_code=class_section.section_code,
+                section_type=class_section.section_type,
+                parent_section_id=class_section.parent_section_id,
+            )
+        )
+
     return frontend_sections
