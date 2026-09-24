@@ -12,10 +12,8 @@
 - [Ollama Setup](#ollama-setup)
 - [Cloudflare Tunnel Setup](#cloudflare-tunnel-setup)
 - [Running the Application](#running-the-application)
-- [Contributing](#contributing)
 - [Authors](#authors)
 - [License](#license)
-- [Support](#support)
  
 ---
  
@@ -45,7 +43,7 @@ The software is designed primarily for college students, but it also benefits ac
 |---|---|---|
 | Docker | 20.10+ | Required for containerized deployment |
 | Docker Compose | 2.0+ | For multi-service orchestration |
-| Node.js | 18+ | Frontend (React/TypeScript) |
+| Node.js | 20.9+ | Required for the Next.js frontend |
 | Python | 3.10+ | Backend (FastAPI) |
 | PostgreSQL | 14+ | Database (included in Docker Compose) |
  
@@ -60,9 +58,11 @@ The software is designed primarily for college students, but it also benefits ac
 - `beautifulsoup4` — Course web scraping
 - `requests` — HTTP client
  
-**Frontend (Node.js):**
-- `react` + `react-dom` — UI framework
-- `typescript` — Type safety
+**Frontend (Next.js):**
+- `Next.js` — React framework
+- `React` + `React DOM` — UI
+- `TypeScript` — Type safety
+- `Tailwind CSS` — Styling
 - All dependencies listed in `package.json`
  
 ---
@@ -72,8 +72,8 @@ The software is designed primarily for college students, but it also benefits ac
 ### 1. Clone the Repository
  
 ```bash
-git clone https://gitlab.com/your-group/schedge.git
-cd schedge
+git clone https://github.com/Iranix28/Schedge--Class-Schedule-Builder-and-Advisor.git
+cd Schedge--Class-Schedule-Builder-and-Advisor
 ```
  
 ### 2. Configure Environment Variables
@@ -280,39 +280,10 @@ docker compose up -d
  
 ---
  
-## Contributing
- 
-We welcome contributions! To get started:
- 
-1. **Fork** the repository and create a feature branch:
-  ```bash
-  git checkout -b feature/your-feature-name
-  ```
- 
-2. **Set up** your development environment following the [Installation](#installation--setup) steps above.
- 
-3. **Make your changes.** Ensure your code is:
-  - Professionally commented
-  - Consistent with the existing style
-  - Tested where applicable
- 
-4. **Run linting** before submitting:
-  ```bash
-  # Backend
-  cd backend && flake8 .
- 
-  # Frontend
-  cd frontend && npm run lint
-  ```
- 
-5. **Submit a merge request** with a clear description of what you changed and why.
- 
-Please open an issue first for significant changes so the team can discuss the approach before implementation.
- 
----
- 
 ## Authors
- 
+
+Schedge was developed as a team project.
+
 - **Abdulahad Asim**
 - **Valentin Motta De Castro**
 - **Iran Paz Ocando**
@@ -349,10 +320,4 @@ SOFTWARE.
 ```
  
 ---
- 
-## Support
- 
-For questions or support, contact **Patrick Schlegel** at [u1289242@utah.edu](mailto:u1289242@utah.edu).
- 
-For bugs or feature requests, open an issue in the GitLab repository.
 
